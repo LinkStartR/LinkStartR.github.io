@@ -2,7 +2,7 @@
 
 线上地址：https://linkstartr.github.io/
 
-以 [Brittany Chiang v4](https://github.com/bchiang7/v4) 的视觉和布局为基础，移植为 HTML、CSS 和 JavaScript 静态站点。保留深蓝背景、薄荷绿强调、编号导航和项目展示布局，以及原作者的设计署名和 MIT 许可。
+以 [Brittany Chiang v4](https://github.com/bchiang7/v4) 为起点，移植为 HTML、CSS 和 JavaScript 静态站点。保留深蓝背景、薄荷绿强调与编号导航，加入中文首屏、原创 L 字形轨道线稿和个人创作索引布局；保留原作者的设计署名和 MIT 许可。
 
 ## 修改主页
 
