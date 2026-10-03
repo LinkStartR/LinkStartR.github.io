@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 52">
+  <title>LinkStartR</title>
+  <path d="M24 2.5 45 14.5v23L24 49.5 3 37.5v-23z" fill="#0a192f" stroke="#64ffda" stroke-width="2.5"/>
+  <text x="24" y="32" fill="#64ffda" font-family="system-ui,sans-serif" font-size="21" font-weight="600" text-anchor="middle">L</text>
+</svg>
