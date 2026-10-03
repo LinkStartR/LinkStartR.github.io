@@ -1,50 +1,72 @@
 (() => {
-  const toggle = document.querySelector('.menu-toggle');
-  const menu = document.querySelector('#mobile-nav');
+  const navigation = document.querySelector('.site-navigation');
+  const trigger = document.querySelector('.nav-trigger');
+  const menu = document.querySelector('#site-menu');
+  let closeTimer;
 
-  if (!toggle || !menu) return;
-
-  const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
-
-  function closeMenu(returnFocus = false) {
-    if (!isOpen()) return;
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', '打开导航菜单');
-    menu.hidden = true;
-    if (returnFocus) toggle.focus();
+  function cancelClose() {
+    clearTimeout(closeTimer);
   }
 
-  toggle.addEventListener('click', () => {
-    if (isOpen()) {
-      closeMenu();
-      return;
-    }
+  function openMenu() {
+    cancelClose();
     menu.hidden = false;
-    toggle.setAttribute('aria-expanded', 'true');
-    toggle.setAttribute('aria-label', '关闭导航菜单');
-  });
+    trigger.setAttribute('aria-expanded', 'true');
+    trigger.setAttribute('aria-label', '关闭站点导航');
+  }
 
-  menu.addEventListener('click', event => {
-    if (event.target.closest('a')) closeMenu();
-  });
+  function closeMenu(returnFocus = false) {
+    cancelClose();
+    menu.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-label', '打开站点导航');
+    if (returnFocus) trigger.focus();
+  }
 
-  menu.addEventListener('focusout', event => {
-    if (event.relatedTarget && !menu.contains(event.relatedTarget) && event.relatedTarget !== toggle) {
-      closeMenu();
-    }
-  });
+  if (navigation && trigger && menu) {
+    trigger.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'mouse' && matchMedia('(hover: hover)').matches) openMenu();
+    });
+    navigation.addEventListener('pointerenter', cancelClose);
+    navigation.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'mouse' && !navigation.contains(document.activeElement)) {
+        closeTimer = setTimeout(() => closeMenu(), 180);
+      }
+    });
+    trigger.addEventListener('click', () => {
+      if (menu.hidden) openMenu();
+      else closeMenu();
+    });
+    trigger.addEventListener('keydown', event => {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        openMenu();
+        menu.querySelector('a').focus();
+      }
+    });
+    menu.querySelector('.nav-close').addEventListener('click', () => closeMenu(true));
+    menu.addEventListener('click', event => {
+      if (event.target.closest('a')) closeMenu();
+    });
+    navigation.addEventListener('focusout', event => {
+      if (event.relatedTarget && !navigation.contains(event.relatedTarget)) closeMenu();
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!menu.hidden && !navigation.contains(event.target)) closeMenu();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !menu.hidden) closeMenu(true);
+    });
+  }
 
-  document.addEventListener('click', event => {
-    if (isOpen() && !menu.contains(event.target) && !toggle.contains(event.target)) {
-      closeMenu();
-    }
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && isOpen()) closeMenu(true);
-  });
-
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 640) closeMenu();
+  const motionToggles = document.querySelectorAll('.motion-toggle');
+  motionToggles.forEach(motionToggle => {
+    motionToggle.addEventListener('click', () => {
+      const paused = document.body.classList.toggle('motion-paused');
+      motionToggles.forEach(button => {
+        button.setAttribute('aria-pressed', String(paused));
+        button.textContent = paused ? '继续动画' : '暂停动画';
+      });
+    });
   });
 })();
