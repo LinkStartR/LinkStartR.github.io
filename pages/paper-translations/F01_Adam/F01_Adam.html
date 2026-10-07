@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adam：一种随机优化方法 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">Adam：一种随机优化方法</span><span>Kingma 和 Ba，2017 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#top">题录与摘要</a>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 算法</a>
+<a class="sub" href="#s21">2.1 Adam 的更新规则</a>
+<a href="#s3">3 初始化偏差校正</a>
+<a href="#s4">4 收敛性分析</a>
+<a href="#s5">5 相关工作</a>
+<a href="#s6">6 实验</a>
+<a class="sub" href="#s61">6.1 实验：逻辑回归</a>
+<a class="sub" href="#s62">6.2 实验：多层神经网络</a>
+<a class="sub" href="#s63">6.3 实验：卷积神经网络</a>
+<a class="sub" href="#s64">6.4 实验：偏差校正项</a>
+<a href="#s7">7 扩展</a>
+<a class="sub" href="#s71">7.1 AdaMax</a>
+<a class="sub" href="#s72">7.2 时间平均</a>
+<a href="#s8">8 结论</a>
+<a href="#s9">9 致谢</a>
+<a href="#refs">参考文献</a>
+<hr>
+<a href="#s10">10 附录</a>
+<a class="sub" href="#s101">10.1 收敛性证明</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+<h1 class="doc">Adam：一种随机优化方法<span class="en">Adam: A Method for Stochastic Optimization</span></h1>
+<p class="meta">Diederik P. Kingma（阿姆斯特丹大学 / OpenAI）· Jimmy Lei Ba（多伦多大学）<br>arXiv:1412.6980 · ICLR 2015 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>我们提出 Adam，一种对随机目标函数做一阶梯度优化的算法，其依据是对低阶矩的<span class="term" data-tip="adaptive estimates：根据梯度历史自动调整的估计值，无需手工指定">自适应估计</span>。该方法易于实现、计算高效、内存需求很小、对梯度的对角缩放<span class="term" data-tip="invariant to diagonal rescaling of the gradients：把梯度按任意正数缩放（每个维度可以不同），参数更新量几乎不变">保持不变</span>，并且很适合数据量和/或参数量很大的问题。该方法同样适用于<span class="term" data-tip="non-stationary objectives：目标函数的统计特性随时间变化，不是固定不变的">非平稳目标</span>以及梯度噪声很大和/或<span class="term" data-tip="sparse gradients：梯度向量中绝大多数分量为零，只有少数维度有信号">梯度稀疏</span>的问题。其超参数具有直观解释，通常只需很少的调参。文中还讨论了若干相关算法，Adam 正是从它们中获得启发。我们也分析了该算法的理论收敛性质，并在在线凸优化框架下给出了收敛速率的<span class="term" data-tip="regret bound：在线学习中，累计损失相对事后最优固定参数的超额，界越小说明算法越接近最优">遗憾界</span>，其量级与已知最好结果相当。实验结果表明 Adam 在实践中表现良好，优于其他随机优化方法。最后，我们讨论了 AdaMax，它是 Adam 的一个基于无穷范数的变体。</p>
+</div>
+
+<h2 id="s1">1 引言</h2>
+<p>基于梯度的随机优化在许多科学与工程领域都具有核心的实用价值。这些领域中的许多问题都可以表述为对某个标量参数化目标函数的优化，即针对其参数求最大或最小值。如果该函数对其参数可微，梯度下降就是一种相对高效的优化方法，因为计算关于全部参数的一阶偏导数，其计算复杂度与仅仅求值该函数相当。目标函数常常是随机的。例如，许多目标函数由在不同数据子样本上求值的若干子函数之和构成；此时，通过针对单个子函数做梯度步，即随机梯度下降（stochastic gradient descent, SGD）或上升，可以使优化更高效。SGD 已经证明自己是一种高效且有效的优化方法，并且是许多机器学习成功案例的核心，例如近年来深度学习的进展（Deng et al., 2013; Krizhevsky et al., 2012; Hinton &amp; Salakhutdinov, 2006; Hinton et al., 2012a; Graves et al., 2013）。目标函数也可能有除数据子采样之外的噪声来源，例如 dropout（Hinton et al., 2012b）正则化。对于所有这类带噪目标，都需要高效的随机优化技术。本文关注的是高维参数空间下随机目标的优化。在这类情形下，高阶优化方法并不适用，因此本文的讨论仅限于一阶方法。</p>
+<p>我们提出 Adam，一种高效的随机优化方法，只需要一阶梯度且内存需求很小。该方法根据梯度的一阶矩与二阶矩的估计，为不同参数分别计算自适应的学习率；Adam 这个名字来自 adaptive moment estimation（自适应矩估计）。我们的方法旨在结合两种近期流行方法的长处：AdaGrad（Duchi et al., 2011）在稀疏梯度下表现良好，RMSProp（Tieleman &amp; Hinton, 2012）在在线与非平稳环境下表现良好；第 5 节澄清了 Adam 与这些方法及其他随机优化方法之间的重要联系。Adam 的若干优势在于：参数更新的幅度对梯度的缩放保持不变；其步长近似地被步长超参数所界定；它不要求目标函数平稳；它能够处理稀疏梯度；并且它自然地实施了一种步长的退火。</p>
+
+<h2 id="s2">2 算法</h2>
+<p>我们提出的算法 Adam 的伪代码见算法 1。设 f(θ) 是一个带噪目标函数：一个关于参数 θ 可微的随机标量函数。我们关心的是最小化该函数关于其参数 θ 的期望值 E[f(θ)]。我们用 f<sub>1</sub>(θ), …, f<sub>T</sub>(θ) 表示该随机函数在相继时间步 1, …, T 上的实现。这种随机性可能来自对数据点随机子样本（小批量）的取用，也可能来自函数本身的固有噪声。我们用 g<sub>t</sub> = ∇<sub>θ</sub> f<sub>t</sub>(θ) 表示梯度，即 f<sub>t</sub> 关于 θ 的偏导数向量在时间步 t 的取值。</p>
+<p>该算法对梯度的指数滑动平均 (m<sub>t</sub>) 与梯度平方的指数滑动平均 (v<sub>t</sub>) 进行更新，其中超参数 β<sub>1</sub>, β<sub>2</sub> ∈ [0, 1) 控制这些滑动平均的指数衰减率。滑动平均本身就是梯度一阶矩（均值）与二阶原始矩（未中心化方差）的估计。然而，这些滑动平均被初始化为 0（零向量），这使得矩估计偏向零，在最初的若干时间步尤为明显，而当衰减率较小（即 β 接近 1）时更是如此。好消息是，这种初始化偏差很容易被抵消，从而得到偏差校正后的估计 m̂<sub>t</sub> 与 v̂<sub>t</sub>。详见第 3 节。</p>
+<p>注意，算法 1 的效率可以（以清晰性为代价）通过改变计算顺序来提升，例如把循环中的最后三行替换为：α<sub>t</sub> = α · √(1 − β<sub>2</sub><sup>t</sup>) / (1 − β<sub>1</sub><sup>t</sup>)，以及 θ<sub>t</sub> ← θ<sub>t−1</sub> − α<sub>t</sub> · m<sub>t</sub> / (√v<sub>t</sub> + ε̂)。</p>
+
+<div class="alg" id="alg1">
+<div class="cap">算法 1：Adam——我们提出的随机优化算法</div>
+<p class="reflist-note">细节见第 2 节；那里也给出了一种略微更高效（但较不清晰）的计算顺序。g<sub>t</sub><sup>2</sup> 表示逐元素平方 g<sub>t</sub> ⊙ g<sub>t</sub>。在被测试的机器学习问题上，良好的默认设置为 α = 0.001、β<sub>1</sub> = 0.9、β<sub>2</sub> = 0.999、ε = 10<sup>−8</sup>。所有向量运算都是逐元素的。β<sub>1</sub><sup>t</sup> 与 β<sub>2</sub><sup>t</sup> 分别表示 β<sub>1</sub> 与 β<sub>2</sub> 的 t 次幂。</p>
+<div class="req">
+要求：α：步长<br>
+要求：β<sub>1</sub>, β<sub>2</sub> ∈ [0, 1)：矩估计的指数衰减率<br>
+要求：f(θ)：带参数 θ 的随机目标函数<br>
+要求：θ<sub>0</sub>：初始参数向量
+</div>
+<ol>
+<li>m<sub>0</sub> ← 0（初始化一阶矩向量）</li>
+<li>v<sub>0</sub> ← 0（初始化二阶矩向量）</li>
+<li>t ← 0（初始化时间步）</li>
+<li>当 θ<sub>t</sub> 未收敛时，重复：</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;t ← t + 1</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;g<sub>t</sub> ← ∇<sub>θ</sub> f<sub>t</sub>(θ<sub>t−1</sub>)（获取时间步 t 上目标函数关于 θ 的随机梯度）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;m<sub>t</sub> ← β<sub>1</sub> · m<sub>t−1</sub> + (1 − β<sub>1</sub>) · g<sub>t</sub>（更新有偏一阶矩估计）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;v<sub>t</sub> ← β<sub>2</sub> · v<sub>t−1</sub> + (1 − β<sub>2</sub>) · g<sub>t</sub><sup>2</sup>（更新有偏二阶原始矩估计）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;m̂<sub>t</sub> ← m<sub>t</sub> / (1 − β<sub>1</sub><sup>t</sup>)（计算偏差校正后的一阶矩估计）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;v̂<sub>t</sub> ← v<sub>t</sub> / (1 − β<sub>2</sub><sup>t</sup>)（计算偏差校正后的二阶原始矩估计）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;θ<sub>t</sub> ← θ<sub>t−1</sub> − α · m̂<sub>t</sub> / (√v̂<sub>t</sub> + ε)（更新参数）</li>
+<li>结束循环</li>
+<li>返回 θ<sub>t</sub>（所得参数）</li>
+</ol>
+</div>
+
+<p>第 2 节描述该算法及其更新规则的性质。第 3 节解释我们的初始化偏差校正技术，第 4 节对 Adam 在在线凸规划中的收敛性做理论分析。在实验上，如第 6 节所示，我们的方法在各种模型与数据集上一致地优于其他方法。总体而言，我们表明 Adam 是一种通用算法，能够扩展到大规模、高维的机器学习问题。</p>
+
+<h3 id="s21">2.1 Adam 的更新规则</h3>
+<p>Adam 更新规则的一个重要性质是它对步长的细致选择。假设 ε = 0，则在时间步 t 于参数空间中实际迈出的有效步为 Δ<sub>t</sub> = α · m̂<sub>t</sub> / √v̂<sub>t</sub>。有效步长有两个上界：当 (1 − β<sub>1</sub>) &gt; √(1 − β<sub>2</sub>) 时，|Δ<sub>t</sub>| ≤ α · (1 − β<sub>1</sub>) / √(1 − β<sub>2</sub>)；否则 |Δ<sub>t</sub>| ≤ α。第一种情况只在最严重的稀疏情形下出现：某个梯度除当前时间步之外，在所有时间步上都为零。在稀疏程度较低的情形下，有效步长会更小。当 (1 − β<sub>1</sub>) = √(1 − β<sub>2</sub>) 时，有 |m̂<sub>t</sub> / √v̂<sub>t</sub>| &lt; 1，因此 |Δ<sub>t</sub>| &lt; α。在更常见的情形中，由于 |E[g] / √(E[g<sup>2</sup>])| ≤ 1，我们有 m̂<sub>t</sub> / √v̂<sub>t</sub> ≈ ±1。每个时间步在参数空间中迈出的有效幅度近似地被步长设置 α 所界定，即 |Δ<sub>t</sub>| ≲ α。这可以理解为在当前参数值附近建立了一个<span class="term" data-tip="trust region：优化中限定每一步允许活动的范围，只在该范围内信任当前梯度估计">信赖域</span>；超出这个范围，当前的梯度估计就不再提供足够的信息。这通常使得事先判断 α 的正确量级变得相对容易。例如对许多机器学习模型，我们往往事先就知道：好的最优点以很高的概率落在参数空间中的某个区域内；例如对参数有先验分布并不罕见。由于 α 设定了参数空间中步幅（的上界），我们常常能够推断出 α 合适的量级，使得从 θ<sub>0</sub> 出发可以在若干次迭代内到达最优点。稍微滥用一下术语，我们把比值 m̂<sub>t</sub> / √v̂<sub>t</sub> 称为<span class="term" data-tip="signal-to-noise ratio, SNR：这里指一阶矩估计与二阶矩平方根之比，衡量梯度信号相对噪声的强度">信噪比</span>（signal-to-noise ratio, SNR）。SNR 越小，有效步长 Δ<sub>t</sub> 就越接近零。这是一个值得期望的性质，因为 SNR 较小意味着：m̂<sub>t</sub> 的方向是否对应真实梯度的方向，存在更大的不确定性。例如，SNR 在接近最优点时通常趋近于 0，从而使参数空间中的有效步变小：这是一种自动退火的形式。有效步长 Δ<sub>t</sub> 还对梯度的尺度保持不变：把梯度 g 缩放 c 倍，会以 c 倍缩放 m̂<sub>t</sub>、以 c<sup>2</sup> 倍缩放 v̂<sub>t</sub>，两者相互抵消：(c · m̂<sub>t</sub>) / √(c<sup>2</sup> · v̂<sub>t</sub>) = m̂<sub>t</sub> / √v̂<sub>t</sub>。</p>
+
+<h2 id="s3">3 初始化偏差校正</h2>
+<p>如第 2 节所述，Adam 使用了初始化偏差校正项。这里我们推导二阶矩估计对应的项；一阶矩估计的推导与之完全类似。设 g 是随机目标 f 的梯度，我们希望用梯度平方的指数滑动平均来估计它的二阶原始矩（未中心化方差），衰减率为 β<sub>2</sub>。设 g<sub>1</sub>, …, g<sub>T</sub> 是相继时间步上的梯度，每个都是从某个底层梯度分布中抽取的，即 g<sub>t</sub> ~ p(g<sub>t</sub>)。把该指数滑动平均初始化为 v<sub>0</sub> = 0（零向量）。首先注意，指数滑动平均在时间步 t 的更新 v<sub>t</sub> = β<sub>2</sub> · v<sub>t−1</sub> + (1 − β<sub>2</sub>) · g<sub>t</sub><sup>2</sup>（其中 g<sub>t</sub><sup>2</sup> 表示逐元素平方 g<sub>t</sub> ⊙ g<sub>t</sub>）可以写成此前所有时间步上梯度的函数：</p>
+
+<div class="eq" id="eq1"><div class="body">v<sub>t</sub> = (1 − β<sub>2</sub>) <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> β<sub>2</sub><sup>t − i</sup> · g<sub>i</sub><sup>2</sup></div><div class="no">(1)</div></div>
+
+<p>我们希望知道 E[v<sub>t</sub>]，即指数滑动平均在时间步 t 的期望值，与真实二阶矩 E[g<sub>t</sub><sup>2</sup>] 的关系，这样就能修正二者之间的偏差。对式 (1) 左右两边取期望：</p>
+
+<div class="eq" id="eq2"><div class="body">E[v<sub>t</sub>] = E[ (1 − β<sub>2</sub>) <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> β<sub>2</sub><sup>t − i</sup> · g<sub>i</sub><sup>2</sup> ]</div><div class="no">(2)</div></div>
+
+<div class="eq" id="eq3"><div class="body">= E[g<sub>t</sub><sup>2</sup>] · (1 − β<sub>2</sub>) <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> β<sub>2</sub><sup>t − i</sup> + ζ</div><div class="no">(3)</div></div>
+
+<div class="eq" id="eq4"><div class="body">= E[g<sub>t</sub><sup>2</sup>] · (1 − β<sub>2</sub><sup>t</sup>) + ζ</div><div class="no">(4)</div></div>
+
+<p>其中，若真实二阶矩 E[g<sub>i</sub><sup>2</sup>] 是平稳的，则 ζ = 0；否则 ζ 也可以保持很小，因为指数衰减率 β<sub>1</sub> 可以（也应该）取得使指数滑动平均对距今过远的梯度只赋予很小的权重<span class="tn" data-tip="译者注：此处原文写的是 β1，但从上下文看，控制 v（二阶矩滑动平均）衰减的应是 β2。原文疑似笔误，按原样保留并在此说明。">译注</span>。剩下的是 (1 − β<sub>2</sub><sup>t</sup>) 这一项，它源于把滑动平均初始化为零。因此在算法 1 中我们除以这一项，以校正初始化偏差。</p>
+<p>在梯度稀疏的情况下，要想可靠地估计二阶矩，就需要通过对许多梯度求平均，也就是取一个较小的 β<sub>2</sub>；然而恰恰是在 β<sub>2</sub> 较小的这种情形下，若缺少初始化偏差校正，初始几步会大得多。</p>
+
+<h2 id="s4">4 收敛性分析</h2>
+<p>我们借助 (Zinkevich, 2003) 提出的在线学习框架来分析 Adam 的收敛性。给定任意一段未知的凸代价函数序列 f<sub>1</sub>(θ), f<sub>2</sub>(θ), …, f<sub>T</sub>(θ)。在每个时刻 t，我们的目标是预测参数 θ<sub>t</sub>，并在一个事先未知的代价函数 f<sub>t</sub> 上对它进行评估。由于事先并不知道该序列的性质，我们用<span class="term" data-tip="regret：在线学习中的累计超额损失，衡量算法相对于事后最优固定参数差了多少">遗憾</span>来评价算法，即对此前所有步，在线预测 f<sub>t</sub>(θ<sub>t</sub>) 与来自可行集的、最好的固定点参数 f<sub>t</sub>(θ<sup>*</sup>) 之间差值的总和。具体而言，遗憾定义为：</p>
+
+<div class="eq" id="eq5"><div class="body">R(T) = <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> [ f<sub>t</sub>(θ<sub>t</sub>) − f<sub>t</sub>(θ<sup>*</sup>) ]</div><div class="no">(5)</div></div>
+
+<p>其中 θ<sup>*</sup> = arg min<sub>θ ∈ X</sub> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> f<sub>t</sub>(θ)。我们证明 Adam 具有 O(√T) 的遗憾界，证明见附录。我们的结果与这一一般凸在线学习问题已知的最好界相当。为简化记号，我们还用到一些定义：g<sub>t</sub> ≜ ∇f<sub>t</sub>(θ<sub>t</sub>)，g<sub>t,i</sub> 为其中第 i 个元素；我们定义 g<sub>1:t,i</sub> ∈ R<sup>t</sup> 为一个向量，它包含截至 t 的所有迭代中梯度的第 i 维，即 g<sub>1:t,i</sub> = [g<sub>1,i</sub>, g<sub>2,i</sub>, ···, g<sub>t,i</sub>]。此外，我们定义 γ ≜ β<sub>1</sub><sup>2</sup> / √β<sub>2</sub>。后面的定理在下列条件下成立：学习率 α<sub>t</sub> 以 t<sup>−1/2</sup> 的速率衰减，一阶矩滑动平均系数 β<sub>1,t</sub> 以 λ 呈指数衰减，而 λ 通常接近 1，例如 1 − 10<sup>−8</sup>。</p>
+
+<div class="thm" id="thm41">
+<p><b>定理 4.1。</b>假设函数 f<sub>t</sub> 的梯度有界，对所有 θ ∈ R<sup>d</sup> 有 ‖∇f<sub>t</sub>(θ)‖<sub>2</sub> ≤ G、‖∇f<sub>t</sub>(θ)‖<sub>∞</sub> ≤ G<sub>∞</sub>；且 Adam 生成的任意 θ<sub>t</sub> 之间的距离有界，对任意 m, n ∈ {1, …, T} 有 ‖θ<sub>n</sub> − θ<sub>m</sub>‖<sub>2</sub> ≤ D、‖θ<sub>m</sub> − θ<sub>n</sub>‖<sub>∞</sub> ≤ D<sub>∞</sub>；并且 β<sub>1</sub>, β<sub>2</sub> ∈ [0, 1) 满足 β<sub>1</sub><sup>2</sup> / √β<sub>2</sub> &lt; 1。令 α<sub>t</sub> = α / √t，β<sub>1,t</sub> = β<sub>1</sub> λ<sup>t−1</sup>，λ ∈ (0, 1)。则对所有 T ≥ 1，Adam 满足如下保证：</p>
+<div class="eq"><div class="body">R(T) ≤ <span class="frac"><span class="n2">D<sup>2</sup></span><span class="d2">2α(1 − β<sub>1</sub>)</span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> √(T v̂<sub>T,i</sub>) &nbsp;+&nbsp; <span class="frac"><span class="n2">α(1 + β<sub>1</sub>) G<sub>∞</sub></span><span class="d2">(1 − β<sub>1</sub>) √(1 − β<sub>2</sub>) (1 − γ)<sup>2</sup></span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> &nbsp;+&nbsp; <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="frac"><span class="n2">D<sub>∞</sub><sup>2</sup> G<sub>∞</sub> √(1 − β<sub>2</sub>)</span><span class="d2">2α(1 − β<sub>1</sub>)(1 − λ)<sup>2</sup></span></span></div></div>
+</div>
+
+<p>我们的定理 4.1 意味着：当数据特征稀疏且梯度有界时，其中的求和项可以远小于其上界——即 <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> ≪ d G<sub>∞</sub>√T 且 <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> √(T v̂<sub>T,i</sub>) ≪ d G<sub>∞</sub>√T——特别是在函数类与数据特征形如 (Duchi et al., 2011) 第 1.2 节所述的 b 截面形式时。他们关于期望值 E[Σ<sub>i=1</sub><sup>d</sup> ‖g<sub>1:T,i</sub>‖<sub>2</sub>] 的结果同样适用于 Adam。特别地，像 Adam 与 Adagrad 这样的自适应方法，可以取得 O(log d √T)，相对于非自适应方法的 O(√(dT)) 有所改进。让 β<sub>1,t</sub> 向零衰减在我们的理论分析中很重要，并且也与先前的经验发现一致，例如 (Sutskever et al., 2013) 建议在训练末期降低动量系数可以改善收敛。</p>
+<p>最后，我们可以表明 Adam 的平均遗憾收敛：</p>
+
+<div class="thm" id="cor42">
+<p><b>推论 4.2。</b>假设函数 f<sub>t</sub> 的梯度有界，对所有 θ ∈ R<sup>d</sup> 有 ‖∇f<sub>t</sub>(θ)‖<sub>2</sub> ≤ G、‖∇f<sub>t</sub>(θ)‖<sub>∞</sub> ≤ G<sub>∞</sub>；且 Adam 生成的任意 θ<sub>t</sub> 之间的距离有界，对任意 m, n ∈ {1, …, T} 有 ‖θ<sub>n</sub> − θ<sub>m</sub>‖<sub>2</sub> ≤ D、‖θ<sub>m</sub> − θ<sub>n</sub>‖<sub>∞</sub> ≤ D<sub>∞</sub>。则对所有 T ≥ 1，Adam 满足如下保证：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">R(T)</span><span class="d2">T</span></span> = O( <span class="frac"><span class="n2">1</span><span class="d2">√T</span></span> )</div></div>
+</div>
+
+<p>该结果可由定理 4.1 以及 <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> ≤ d G<sub>∞</sub>√T 得到。因此，lim<sub>T→∞</sub> R(T)/T = 0。</p>
+
+<h2 id="s5">5 相关工作</h2>
+<p>与 Adam 有直接关系的优化方法有 RMSProp（Tieleman &amp; Hinton, 2012; Graves, 2013）和 AdaGrad（Duchi et al., 2011）；下面讨论这些关系。其他随机优化方法还包括 vSGD（Schaul et al., 2012）、AdaDelta（Zeiler, 2012）以及 Roux &amp; Fitzgibbon (2010) 提出的自然牛顿法，它们都通过一阶信息估计曲率来设定步长。Sum-of-Functions Optimizer（SFO）（Sohl-Dickstein et al., 2014）是一种基于小批量的拟牛顿方法，但与 Adam 不同，它的内存需求与数据的小批量划分数成正比，在 GPU 这类内存受限的系统上往往不可行。与自然梯度下降（natural gradient descent, NGD）（Amari, 1998）一样，Adam 采用了一个适应数据几何结构的预条件子，因为 v̂<sub>t</sub> 是对<span class="term" data-tip="Fisher information matrix：描述参数估计不确定性/曲率的矩阵；其对角近似可视为各维度的缩放尺度">Fisher 信息矩阵</span>对角线的近似（Pascanu &amp; Bengio, 2013）；不过（与 AdaGrad 一样）Adam 的预条件子比朴素 NGD 更为保守，因为它只用了对角线 Fisher 信息矩阵近似之逆的平方根作为预条件。</p>
+<p><b>RMSProp：</b>与 Adam 密切相关的优化方法是 RMSProp（Tieleman &amp; Hinton, 2012）。有时会使用带动的版本（Graves, 2013）。带动量的 RMSProp 与 Adam 之间有几处重要差别：带动量的 RMSProp 是先对缩放后的梯度加上动量，再据此产生参数更新；而 Adam 的更新则直接用梯度一阶与二阶矩的滑动平均来估计。RMSProp 也缺少偏差校正项；这一点在 β<sub>2</sub> 接近 1 时最为重要（稀疏梯度的情况下正需要如此），因为此时不校正偏差会导致极大的步长，并且常常发散，我们在第 6.4 节也用实验说明了这一点。</p>
+<p><b>AdaGrad：</b>对稀疏梯度表现良好的算法是 AdaGrad（Duchi et al., 2011）。其基本版本按 θ<sub>t+1</sub> = θ<sub>t</sub> − α · g<sub>t</sub> / √( <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> g<sub>t</sub><sup>2</sup> ) 更新参数。注意，如果我们取 β<sub>2</sub> 从下方无限接近 1，则 lim<sub>β<sub>2</sub>→1</sub> v̂<sub>t</sub> = t<sup>−1</sup> · <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> g<sub>t</sub><sup>2</sup>。AdaGrad 相当于一个这样的 Adam 版本：β<sub>1</sub> = 0、(1 − β<sub>2</sub>) 无穷小，并把 α 替换为退火版本 α<sub>t</sub> = α · t<sup>−1/2</sup>，即 θ<sub>t</sub> − α · t<sup>−1/2</sup> · m̂<sub>t</sub> / √(lim<sub>β<sub>2</sub>→1</sub> v̂<sub>t</sub>) = θ<sub>t</sub> − α · t<sup>−1/2</sup> · g<sub>t</sub> / √( t<sup>−1</sup> · <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> g<sub>t</sub><sup>2</sup> ) = θ<sub>t</sub> − α · g<sub>t</sub> / √( <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> g<sub>t</sub><sup>2</sup> )。注意，一旦去掉偏差校正项，Adam 与 AdaGrad 之间的这种直接对应关系就不再成立；若没有偏差校正，如 RMSProp 那样，β<sub>2</sub> 无限接近 1 将导致无穷大的偏差，以及无穷大的参数更新。</p>
+
+<h2 id="s6">6 实验</h2>
+<p>为了从经验上评估所提出的方法，我们考察了几种流行的机器学习模型，包括逻辑回归、多层全连接神经网络和深度卷积神经网络。通过使用大模型与大数据集，我们表明 Adam 能够高效地解决实际的深度学习问题。</p>
+<p>在比较不同的优化算法时，我们使用相同的参数初始化。诸如学习率、动量之类的超参数在一张稠密网格上搜索，结果按最佳超参数设置报告。</p>
+
+<h3 id="s61">6.1 实验：逻辑回归</h3>
+<p>我们在 MNIST 数据集上对 L2 正则化的多类逻辑回归评估所提出的方法。逻辑回归具有已被充分研究的凸目标函数，这使它适合用于比较不同优化器，而不必担心局部极小值问题。我们逻辑回归实验中的步长 α 按 1/√t 衰减调节，即 α<sub>t</sub> = α/√t，与第 4 节的理论预测一致。该逻辑回归直接在 784 维图像向量上分类类别标签。我们用小批量大小 128，把 Adam 与带 Nesterov 动量的加速 SGD 以及 Adagrad 进行比较。根据图 1，我们发现 Adam 的收敛与带动的 SGD 相近，二者都比 Adagrad 收敛更快。</p>
+<p>如 (Duchi et al., 2011) 所讨论的，Adagrad 能高效处理稀疏特征与稀疏梯度，这是其主要理论结果之一；而 SGD 在学习稀有特征方面表现欠佳。步长按 1/√t 衰减的 Adam 在理论上应当匹配 Adagrad 的表现。我们用 (Maas et al., 2011) 的 IMDB 影评数据集考察稀疏特征问题。我们把 IMDB 影评预处理为<span class="term" data-tip="bag-of-words, BoW：把文本表示成词频向量，忽略词序">词袋</span>（bag-of-words, BoW）特征向量，包含出现频率最高的前 10,000 个词。每条影评的 10,000 维 BoW 特征向量高度稀疏。如 (Wang &amp; Manning, 2013) 所建议的，训练时可以对 BoW 特征施加 50% 的 dropout 噪声以防止过拟合。在图 1 中，无论是否加 dropout 噪声，Adagrad 都大幅优于带 Nesterov 动量的 SGD。Adam 的收敛速度与 Adagrad 一样快。Adam 的经验表现与我们在第 2、4 节的理论发现一致。与 Adagrad 类似，Adam 能够利用稀疏特征，取得比通常的带动量 SGD 更快的收敛速度。</p>
+
+<figure id="fig1"><img src="images/fig1.png" alt="Figure 1"><figcaption><span class="lab">图 1</span>逻辑回归在 MNIST 图像与 IMDB 影评（10,000 维词袋特征向量）上的训练负对数似然。</figcaption></figure>
+
+<h3 id="s62">6.2 实验：多层神经网络</h3>
+<p>多层神经网络是具有非凸目标函数的强大模型。虽然我们的收敛性分析并不适用于非凸问题，但我们在经验上发现，Adam 在这类情形下常常优于其他方法。在实验中，我们的模型选择与该领域此前的文献保持一致；本实验使用一个含两个全连接隐层、每层 1000 个隐单元并采用 ReLU 激活的神经网络模型，小批量大小为 128。</p>
+<p>首先，我们在标准确定性交叉熵目标函数上研究不同优化器，并对参数施加 L 权重衰减以防止过拟合<span class="tn" data-tip="译者注：原文此处写作「L weight decay」，未标明范数下标；按上下文与其他文献惯例，通常指 L2 权重衰减。此处按原文保留。">译注</span>。Sum-of-Functions（SFO）方法（Sohl-Dickstein et al., 2014）是近来提出的一种基于数据小批量的拟牛顿方法，在多层神经网络的优化上表现出良好性能。我们使用他们的实现，并与 Adam 比较来训练这类模型。图 2 表明，无论从迭代次数还是从实际时钟时间看，Adam 的进展都更快。由于更新曲率信息的开销，SFO 每次迭代比 Adam 慢 5–10 倍，并且内存需求与小批量数目成正比。</p>
+<p>诸如 dropout 这样的随机正则化方法，是防止过拟合的有效手段，并且以其简单性在实践中常被使用。SFO 假设子函数是确定性的，在带随机正则化的代价函数上确实无法收敛。我们比较 Adam 与其他随机一阶方法在带 dropout 噪声训练的多层神经网络上的效果。图 2 给出我们的结果；Adam 显示出比其他方法更好的收敛性。</p>
+
+<figure id="fig2"><img src="images/fig2.png" alt="Figure 2"><figcaption><span class="lab">图 2</span>多层神经网络在 MNIST 图像上的训练。(a) 使用 dropout 随机正则化的神经网络。(b) 具有确定性代价函数的神经网络。我们与 sum-of-functions（SFO）优化器（Sohl-Dickstein et al., 2014）进行比较。</figcaption></figure>
+
+<h3 id="s63">6.3 实验：卷积神经网络</h3>
+<p>具有若干层卷积、池化与非线性单元的卷积神经网络（CNN）在计算机视觉任务中取得了相当大的成功。与大多数全连接神经网络不同，CNN 中的权重共享导致不同层的梯度差异很大。在实践中应用 SGD 时，卷积层常常使用较小的学习率。我们展示 Adam 在深度 CNN 上的有效性。我们的 CNN 架构有三级交替的 5×5 卷积滤波器与步长为 2 的 3×3 最大池化，其后接一个含 1000 个修正线性隐单元（ReLU）的全连接层。输入图像经过<span class="term" data-tip="whitening：白化，把输入数据去相关并归一化到单位方差，使优化更稳定">白化</span>预处理，并对输入层与全连接层施加 dropout 噪声。小批量大小同样设为 128，与此前实验一致。</p>
+
+<figure id="fig3"><img src="images/fig3.png" alt="Figure 3"><figcaption><span class="lab">图 3</span>卷积神经网络的训练代价。(左) 前三个 epoch 的训练代价。(右) 45 个 epoch 上的训练代价。CIFAR-10，架构 c64-c64-c128-1000。</figcaption></figure>
+
+<p>有趣的是，如图 3（左）所示，虽然 Adam 与 Adagrad 在训练的初始阶段都能迅速降低代价，但对 CNN 而言，如图 3（右）所示，Adam 与 SGD 最终都比 Adagrad 收敛快得多。我们注意到，二阶矩估计 v 在若干 epoch 之后衰减到零，并被算法 1 中的 ε 所主导。因此，与第 6.2 节的全连接网络相比，在 CNN 中二阶矩估计是对代价函数几何结构的一个糟糕近似。相反，在 CNN 中通过一阶矩来降低小批量方差更为重要，并且促成了加速。结果，在这个特定实验中 Adagrad 的收敛比其他方法慢得多。尽管 Adam 相对带动量的 SGD 只有边际改进，但它能自适应地为不同层调整学习率尺度，而不像 SGD 那样需要手工挑选。</p>
+
+<h3 id="s64">6.4 实验：偏差校正项</h3>
+<p>我们还在经验上评估第 2、3 节所述偏差校正项的效果。如第 5 节所讨论的，去掉偏差校正项就得到带动量的 RMSProp（Tieleman &amp; Hinton, 2012）的一个版本。我们在训练一个变分自编码器（variational autoencoder, VAE）时改变 β<sub>1</sub> 与 β<sub>2</sub>；该 VAE 采用与 (Kingma &amp; Welling, 2013) 相同的架构，含一个 500 个隐单元、使用 softplus 非线性的单隐层，以及一个 50 维球形高斯隐变量。我们遍历了很宽的超参数范围，即 β<sub>1</sub> ∈ [0, 0.9]、β<sub>2</sub> ∈ [0.99, 0.999, 0.9999]，以及 log<sub>10</sub>(α) ∈ [−5, …, −1]。为对稀疏梯度保持稳健所需的 β<sub>2</sub> 接近 1 的取值，会导致更大的初始化偏差；因此我们预期偏差校正项在这类衰减缓慢的情形中很重要，能够防止对优化产生不利影响。</p>
+<p>在图 4 中，当不存在偏差校正项时，接近 1 的 β<sub>2</sub> 取值确实会导致训练不稳定，尤其是在训练的头几个 epoch。最优结果是在 (1 − β<sub>2</sub>) 取值较小且带偏差校正时取得的；这一点在优化后期更为明显——随着隐单元逐渐专门化到特定模式，梯度往往变得更稀疏。总之，无论超参数如何设置，Adam 的表现都不逊于 RMSProp，甚至更好。</p>
+
+<figure id="fig4"><img src="images/fig4.png" alt="Figure 4"><figcaption><span class="lab">图 4</span>在学习一个变分自编码器（VAE）（Kingma &amp; Welling, 2013）时，偏差校正项（红线）与无偏差校正项（绿线）在 10 个 epoch（左）与 100 个 epoch（右）后对损失（纵轴）的影响，横轴为不同的步长 α 设置以及超参数 β<sub>1</sub> 与 β<sub>2</sub>。</figcaption></figure>
+
+<h2 id="s7">7 扩展</h2>
+
+<h3 id="s71">7.1 AdaMax</h3>
+<p>在 Adam 中，对单个权重的更新规则是让其梯度与「该权重当前及过去梯度的（缩放后的）L<sup>2</sup> 范数」成反比。我们可以把这种基于 L<sup>2</sup> 范数的更新规则推广为基于 L<sup>p</sup> 范数的更新规则。这类变体在 p 较大时会数值不稳定。不过，在取 p → ∞ 的特殊情形下，会浮现出一个出人意料地简单而稳定的算法；见算法 2。下面我们来推导该算法。在 L<sup>p</sup> 范数情形下，令时间 t 的步长与 v<sub>t</sub><sup>1/p</sup> 成反比，其中：</p>
+
+<div class="eq" id="eq6"><div class="body">v<sub>t</sub> = β<sub>2</sub><sup>p</sup> v<sub>t−1</sub> + (1 − β<sub>2</sub><sup>p</sup>) |g<sub>t</sub>|<sup>p</sup></div><div class="no">(6)</div></div>
+<div class="eq" id="eq7"><div class="body">= (1 − β<sub>2</sub><sup>p</sup>) <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> β<sub>2</sub><sup>p(t − i)</sup> · |g<sub>i</sub>|<sup>p</sup></div><div class="no">(7)</div></div>
+
+<div class="alg" id="alg2">
+<div class="cap">算法 2：AdaMax——Adam 的一个基于无穷范数的变体</div>
+<p class="reflist-note">细节见第 7.1 节。在被测试的机器学习问题上，良好的默认设置为 α = 0.002、β<sub>1</sub> = 0.9、β<sub>2</sub> = 0.999。β<sub>1</sub><sup>t</sup> 表示 β<sub>1</sub> 的 t 次幂。此处 (α/(1 − β<sub>1</sub><sup>t</sup>)) 是带一阶矩偏差校正项的学习率。所有向量运算都是逐元素的。</p>
+<div class="req">
+要求：α：步长<br>
+要求：β<sub>1</sub>, β<sub>2</sub> ∈ [0, 1)：指数衰减率<br>
+要求：f(θ)：带参数 θ 的随机目标函数<br>
+要求：θ<sub>0</sub>：初始参数向量
+</div>
+<ol>
+<li>m<sub>0</sub> ← 0（初始化一阶矩向量）</li>
+<li>u<sub>0</sub> ← 0（初始化指数加权的无穷范数）</li>
+<li>t ← 0（初始化时间步）</li>
+<li>当 θ<sub>t</sub> 未收敛时，重复：</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;t ← t + 1</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;g<sub>t</sub> ← ∇<sub>θ</sub> f<sub>t</sub>(θ<sub>t−1</sub>)（获取时间步 t 上目标函数关于 θ 的随机梯度）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;m<sub>t</sub> ← β<sub>1</sub> · m<sub>t−1</sub> + (1 − β<sub>1</sub>) · g<sub>t</sub>（更新有偏一阶矩估计）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;u<sub>t</sub> ← max(β<sub>2</sub> · u<sub>t−1</sub>, |g<sub>t</sub>|)（更新指数加权的无穷范数）</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;θ<sub>t</sub> ← θ<sub>t−1</sub> − (α/(1 − β<sub>1</sub><sup>t</sup>)) · m<sub>t</sub>/u<sub>t</sub>（更新参数）</li>
+<li>结束循环</li>
+<li>返回 θ<sub>t</sub>（所得参数）</li>
+</ol>
+</div>
+
+<p>注意，这里的衰减项被等价地参数化为 β<sub>2</sub><sup>p</sup> 而不是 β<sub>2</sub>。现在令 p → ∞，并定义 u<sub>t</sub> = lim<sub>p→∞</sub>(v<sub>t</sub>)<sup>1/p</sup>，则有：</p>
+
+<div class="eq" id="eq8"><div class="body">u<sub>t</sub> = lim<sub>p→∞</sub>(v<sub>t</sub>)<sup>1/p</sup> = lim<sub>p→∞</sub> ( (1 − β<sub>2</sub><sup>p</sup>) <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> β<sub>2</sub><sup>p(t − i)</sup> · |g<sub>i</sub>|<sup>p</sup> )<sup>1/p</sup></div><div class="no">(8)</div></div>
+<div class="eq" id="eq9"><div class="body">= lim<sub>p→∞</sub> (1 − β<sub>2</sub><sup>p</sup>)<sup>1/p</sup> ( <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> β<sub>2</sub><sup>p(t − i)</sup> · |g<sub>i</sub>|<sup>p</sup> )<sup>1/p</sup></div><div class="no">(9)</div></div>
+<div class="eq" id="eq10"><div class="body">= lim<sub>p→∞</sub> ( <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">i = 1</span></span> ( β<sub>2</sub><sup>(t − i)</sup> · |g<sub>i</sub>| )<sup>p</sup> )<sup>1/p</sup></div><div class="no">(10)</div></div>
+<div class="eq" id="eq11"><div class="body">= max( β<sub>2</sub><sup>t − 1</sup>|g<sub>1</sub>|, β<sub>2</sub><sup>t − 2</sup>|g<sub>2</sub>|, …, β<sub>2</sub>|g<sub>t − 1</sub>|, |g<sub>t</sub>| )</div><div class="no">(11)</div></div>
+
+<p>这对应着一个格外简单的递推公式：</p>
+
+<div class="eq" id="eq12"><div class="body">u<sub>t</sub> = max( β<sub>2</sub> · u<sub>t−1</sub>, |g<sub>t</sub>| )</div><div class="no">(12)</div></div>
+
+<p>初始值为 u<sub>0</sub> = 0。注意，方便的是，这种情况下我们不需要校正初始化偏差。还请注意，AdaMax 下参数更新的幅度有一个比 Adam 更简单的界，即：|Δ<sub>t</sub>| ≤ α。</p>
+
+<h3 id="s72">7.2 时间平均</h3>
+<p>由于随机近似，最后一次迭代的结果是有噪声的，因此通过平均往往能取得更好的泛化性能。此前在 Moulines &amp; Bach (2011) 中，Polyak-Ruppert 平均（Polyak &amp; Juditsky, 1992; Ruppert, 1988）已被证明能够改善标准 SGD 的收敛，其中 θ̄<sub>t</sub> = (1/t) <span class="sum"><span class="t">n</span><span class="o">Σ</span><span class="b">k = 1</span></span> θ<sub>k</sub>。另一种做法是对参数取指数滑动平均，给更近期的参数值更高权重。这只需在算法 1 与算法 2 的内层循环中加一行即可轻松实现：θ̄<sub>t</sub> ← β<sub>2</sub> · θ̄<sub>t−1</sub> + (1 − β<sub>2</sub>) θ<sub>t</sub>，初始化为 θ̄<sub>0</sub> = 0。初始化偏差同样可以用估计量 θ̂<sub>t</sub> = θ̄<sub>t</sub>/(1 − β<sub>2</sub><sup>t</sup>) 来校正。</p>
+
+<h2 id="s8">8 结论</h2>
+<p>我们提出了一种简单且计算高效的算法，用于随机目标函数的基于梯度的优化。我们的方法面向数据集很大和/或参数空间高维的机器学习问题。它结合了两种近期流行优化方法的长处：AdaGrad 处理稀疏梯度的能力，以及 RMSProp 处理非平稳目标的能力。该方法易于实现，所需内存很小。实验证实了关于凸问题上收敛速率的分析。总体而言，我们发现 Adam 稳健，并且很适合机器学习领域中范围广泛的非凸优化问题。</p>
+
+<h2 id="s9">9 致谢</h2>
+<p>若无 Google Deepmind 的支持，这篇论文大概不会存在。我们要特别感谢 Ivo Danihelka 和 Tom Schaul，是他们造出了「Adam」这个名字。感谢杜克大学的 Kai Fan 指出了最初 AdaMax 推导中的一处错误。本工作的一部分实验在荷兰国家 e-infrastructure 上完成，并得到 SURF Foundation 的支持。Diederik Kingma 受 Google 欧洲深度学习博士奖学金资助。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按约定，参考文献条目保留英文原文，不作翻译（便于与原文及检索工具对照）。</p>
+<div class="refs"><ol>
+<li>Amari, Shun-Ichi. Natural gradient works efficiently in learning. Neural computation, 10(2):251–276, 1998.</li>
+<li>Deng, Li, Li, Jinyu, Huang, Jui-Ting, Yao, Kaisheng, Yu, Dong, Seide, Frank, Seltzer, Michael, Zweig, Geoff, He, Xiaodong, Williams, Jason, et al. Recent advances in deep learning for speech research at microsoft. ICASSP 2013, 2013.</li>
+<li>Duchi, John, Hazan, Elad, and Singer, Yoram. Adaptive subgradient methods for online learning and stochastic optimization. The Journal of Machine Learning Research, 12:2121–2159, 2011.</li>
+<li>Graves, Alex. Generating sequences with recurrent neural networks. arXiv preprint arXiv:1308.0850, 2013.</li>
+<li>Graves, Alex, Mohamed, Abdel-rahman, and Hinton, Geoffrey. Speech recognition with deep recurrent neural networks. In Acoustics, Speech and Signal Processing (ICASSP), 2013 IEEE International Conference on, pp. 6645–6649. IEEE, 2013.</li>
+<li>Hinton, G.E. and Salakhutdinov, R.R. Reducing the dimensionality of data with neural networks. Science, 313(5786):504–507, 2006.</li>
+<li>Hinton, Geoffrey, Deng, Li, Yu, Dong, Dahl, George E, Mohamed, Abdel-rahman, Jaitly, Navdeep, Senior, Andrew, Vanhoucke, Vincent, Nguyen, Patrick, Sainath, Tara N, et al. Deep neural networks for acoustic modeling in speech recognition: The shared views of four research groups. Signal Processing Magazine, IEEE, 29(6):82–97, 2012a.</li>
+<li>Hinton, Geoffrey E, Srivastava, Nitish, Krizhevsky, Alex, Sutskever, Ilya, and Salakhutdinov, Ruslan R. Improving neural networks by preventing co-adaptation of feature detectors. arXiv preprint arXiv:1207.0580, 2012b.</li>
+<li>Kingma, Diederik P and Welling, Max. Auto-Encoding Variational Bayes. In The 2nd International Conference on Learning Representations (ICLR), 2013.</li>
+<li>Krizhevsky, Alex, Sutskever, Ilya, and Hinton, Geoffrey E. Imagenet classification with deep convolutional neural networks. In Advances in neural information processing systems, pp. 1097–1105, 2012.</li>
+<li>Maas, Andrew L, Daly, Raymond E, Pham, Peter T, Huang, Dan, Ng, Andrew Y, and Potts, Christopher. Learning word vectors for sentiment analysis. In Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies-Volume 1, pp. 142–150. Association for Computational Linguistics, 2011.</li>
+<li>Moulines, Eric and Bach, Francis R. Non-asymptotic analysis of stochastic approximation algorithms for machine learning. In Advances in Neural Information Processing Systems, pp. 451–459, 2011.</li>
+<li>Pascanu, Razvan and Bengio, Yoshua. Revisiting natural gradient for deep networks. arXiv preprint arXiv:1301.3584, 2013.</li>
+<li>Polyak, Boris T and Juditsky, Anatoli B. Acceleration of stochastic approximation by averaging. SIAM Journal on Control and Optimization, 30(4):838–855, 1992.</li>
+<li>Roux, Nicolas L and Fitzgibbon, Andrew W. A fast natural newton method. In Proceedings of the 27th International Conference on Machine Learning (ICML-10), pp. 623–630, 2010.</li>
+<li>Ruppert, David. Efficient estimations from a slowly convergent robbins-monro process. Technical report, Cornell University Operations Research and Industrial Engineering, 1988.</li>
+<li>Schaul, Tom, Zhang, Sixin, and LeCun, Yann. No more pesky learning rates. arXiv preprint arXiv:1206.1106, 2012.</li>
+<li>Sohl-Dickstein, Jascha, Poole, Ben, and Ganguli, Surya. Fast large-scale optimization by unifying stochastic gradient and quasi-newton methods. In Proceedings of the 31st International Conference on Machine Learning (ICML-14), pp. 604–612, 2014.</li>
+<li>Sutskever, Ilya, Martens, James, Dahl, George, and Hinton, Geoffrey. On the importance of initialization and momentum in deep learning. In Proceedings of the 30th International Conference on Machine Learning (ICML-13), pp. 1139–1147, 2013.</li>
+<li>Tieleman, T. and Hinton, G. Lecture 6.5 - RMSProp, COURSERA: Neural Networks for Machine Learning. Technical report, 2012.</li>
+<li>Wang, Sida and Manning, Christopher. Fast dropout training. In Proceedings of the 30th International Conference on Machine Learning (ICML-13), pp. 118–126, 2013.</li>
+<li>Zeiler, Matthew D. Adadelta: An adaptive learning rate method. arXiv preprint arXiv:1212.5701, 2012.</li>
+<li>Zinkevich, Martin. Online convex programming and generalized infinitesimal gradient ascent. 2003.</li>
+</ol></div>
+
+<h2 id="s10">10 附录</h2>
+<h3 id="s101">10.1 收敛性证明</h3>
+<style>
+.sq{display:inline-block;border-top:1px solid currentColor;padding:0 4px;margin-left:-2px}
+.arr{display:inline-block;text-align:left;line-height:2.15}
+</style>
+
+<p><b>定义 10.1。</b>若函数 f : ℝ<sup>d</sup> → ℝ 是凸的，则对所有 x, y ∈ ℝ<sup>d</sup> 与所有 λ ∈ [0, 1]，有</p>
+<div class="eq"><div class="body">λf(x) + (1 − λ)f(y) ≥ f(λx + (1 − λ)y)</div></div>
+<p>另外注意，凸函数在其切点处可被一个超平面下界约束。</p>
+<p><b>引理 10.2。</b>若函数 f : ℝ<sup>d</sup> → ℝ 是凸的，则对所有 x, y ∈ ℝ<sup>d</sup>，</p>
+<div class="eq"><div class="body">f(y) ≥ f(x) + ∇f(x)<sup>T</sup>(y − x)</div></div>
+<p>上述引理可用于给出遗憾（regret）的上界；我们为主定理所做的证明，就是把超平面替换成 Adam 的更新规则构造出来的。</p>
+<p>下面两个引理用于支撑我们的主定理。我们还用一些定义来简化记号：g<sub>t</sub> ≜ ∇f<sub>t</sub>(θ<sub>t</sub>)，g<sub>t,i</sub> 为其第 i 个元素。定义 g<sub>1:t,i</sub> ∈ ℝ<sup>t</sup> 为包含到 t 为止所有迭代中梯度第 i 维的向量：g<sub>1:t,i</sub> = [g<sub>1,i</sub>, g<sub>2,i</sub>, ···, g<sub>t,i</sub>]。</p>
+
+<p><b>引理 10.3。</b>设 g<sub>t</sub> = ∇f<sub>t</sub>(θ<sub>t</sub>)，g<sub>1:t</sub> 如上定义且有界，‖g<sub>t</sub>‖<sub>2</sub> ≤ G，‖g<sub>t</sub>‖<sub>∞</sub> ≤ G<sub>∞</sub>。则</p>
+<div class="eq"><div class="body"><span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> √<span class="sq">g<sup>2</sup><sub>t,i</sub> / t</span> ≤ 2G<sub>∞</sub>‖g<sub>1:T,i</sub>‖<sub>2</sub></div></div>
+<p><b>证明。</b>我们用对 T 的归纳来证明该不等式。</p>
+<p>基础情形 T = 1：有 √<span class="sq">g<sup>2</sup><sub>1,i</sub></span> ≤ 2G<sub>∞</sub>‖g<sub>1,i</sub>‖<sub>2</sub>。</p>
+<p>归纳步：</p>
+<div class="eq"><div class="body arr">
+<span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> √<span class="sq">g<sup>2</sup><sub>t,i</sub> / t</span> &nbsp;=&nbsp; <span class="sum"><span class="t">T − 1</span><span class="o">Σ</span><span class="b">t = 1</span></span> √<span class="sq">g<sup>2</sup><sub>t,i</sub> / t</span> + √<span class="sq">g<sup>2</sup><sub>T,i</sub> / T</span><br>
+≤ 2G<sub>∞</sub>‖g<sub>1:T−1,i</sub>‖<sub>2</sub> + √<span class="sq">g<sup>2</sup><sub>T,i</sub> / T</span><br>
+= 2G<sub>∞</sub> √<span class="sq">‖g<sub>1:T,i</sub>‖<sub>2</sub><sup>2</sup> − g<sub>T</sub><sup>2</sup></span> + √<span class="sq">g<sup>2</sup><sub>T,i</sub> / T</span>
+</div></div>
+<p>由 ‖g<sub>1:T,i</sub>‖<sub>2</sub><sup>2</sup> − g<sub>T,i</sub><sup>2</sup> + g<sub>T,i</sub><sup>4</sup>/(4‖g<sub>1:T,i</sub>‖<sub>2</sub><sup>2</sup>) ≥ ‖g<sub>1:T,i</sub>‖<sub>2</sub><sup>2</sup> − g<sub>T,i</sub><sup>2</sup>，两边开平方可得</p>
+<div class="eq"><div class="body arr">
+√<span class="sq">‖g<sub>1:T,i</sub>‖<sub>2</sub><sup>2</sup> − g<sub>T,i</sub><sup>2</sup></span> ≤ ‖g<sub>1:T,i</sub>‖<sub>2</sub> − g<sub>T,i</sub><sup>2</sup> / (2‖g<sub>1:T,i</sub>‖<sub>2</sub>)<br>
+≤ ‖g<sub>1:T,i</sub>‖<sub>2</sub> − g<sub>T,i</sub><sup>2</sup> / (2√<span class="sq">T G<sub>∞</sub><sup>2</sup></span>)
+</div></div>
+<p>整理该不等式并代入 √<span class="sq">‖g<sub>1:T,i</sub>‖<sub>2</sub><sup>2</sup> − g<sub>T,i</sub><sup>2</sup></span> 这一项，</p>
+<div class="eq"><div class="body">G<sub>∞</sub> √<span class="sq">‖g<sub>1:T,i</sub>‖<sub>2</sub><sup>2</sup> − g<sub>T</sub><sup>2</sup></span> + √<span class="sq">g<sup>2</sup><sub>T,i</sub> / T</span> ≤ 2G<sub>∞</sub>‖g<sub>1:T,i</sub>‖<sub>2</sub></div></div>
+
+<p><b>引理 10.4。</b>设 γ ≜ β<sub>1</sub><sup>2</sup>/√<span class="sq">β<sub>2</sub></span>。对满足 β<sub>1</sub><sup>2</sup>/√<span class="sq">β<sub>2</sub></span> &lt; 1 的 β<sub>1</sub>, β<sub>2</sub> ∈ [0, 1)，以及有界的 g<sub>t</sub>（‖g<sub>t</sub>‖<sub>2</sub> ≤ G、‖g<sub>t</sub>‖<sub>∞</sub> ≤ G<sub>∞</sub>），下述不等式成立：</p>
+<div class="eq"><div class="body"><span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> ≤ <span class="frac"><span class="n2">2</span><span class="d2">1 − γ</span></span> <span class="frac"><span class="n2">1</span><span class="d2">√<span class="sq">1 − β<sub>2</sub></span></span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub></div></div>
+<p><b>证明。</b>在假设下，√<span class="sq">1 − β<sub>2</sub><sup>t</sup></span>/(1 − β<sub>1</sub><sup>t</sup>)<sup>2</sup> ≤ 1/(1 − β<sub>1</sub>)<sup>2</sup>。利用算法 1 的更新规则展开求和式中的最后一项：</p>
+<div class="eq"><div class="body arr">
+<span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> = <span class="sum"><span class="t">T − 1</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> + <span class="frac"><span class="n2">√<span class="sq">1 − β<sub>2</sub><sup>T</sup></span></span><span class="d2">(1 − β<sub>1</sub><sup>T</sup>)<sup>2</sup></span></span> <span class="frac"><span class="n2">( <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">k = 1</span></span>(1 − β<sub>1</sub>)β<sub>1</sub><sup>T−k</sup>g<sub>k,i</sub>)<sup>2</sup></span><span class="d2">√<span class="sq">T <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">j = 1</span></span>(1 − β<sub>2</sub>)β<sub>2</sub><sup>T−j</sup>g<sup>2</sup><sub>j,i</sub></span></span></span><br>
+≤ <span class="sum"><span class="t">T − 1</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> + <span class="frac"><span class="n2">√<span class="sq">1 − β<sub>2</sub><sup>T</sup></span></span><span class="d2">(1 − β<sub>1</sub><sup>T</sup>)<sup>2</sup></span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">k = 1</span></span> <span class="frac"><span class="n2">T ((1 − β<sub>1</sub>)β<sub>1</sub><sup>T−k</sup>g<sub>k,i</sub>)<sup>2</sup></span><span class="d2">√<span class="sq">T <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">j = 1</span></span>(1 − β<sub>2</sub>)β<sub>2</sub><sup>T−j</sup>g<sup>2</sup><sub>j,i</sub></span></span></span><br>
+≤ <span class="sum"><span class="t">T − 1</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> + <span class="frac"><span class="n2">√<span class="sq">1 − β<sub>2</sub><sup>T</sup></span></span><span class="d2">(1 − β<sub>1</sub><sup>T</sup>)<sup>2</sup></span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">k = 1</span></span> <span class="frac"><span class="n2">T ((1 − β<sub>1</sub>)β<sub>1</sub><sup>T−k</sup>g<sub>k,i</sub>)<sup>2</sup></span><span class="d2">√<span class="sq">T (1 − β<sub>2</sub>)β<sub>2</sub><sup>T−k</sup>g<sup>2</sup><sub>k,i</sub></span></span></span><br>
+≤ <span class="sum"><span class="t">T − 1</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> + <span class="frac"><span class="n2">√<span class="sq">1 − β<sub>2</sub><sup>T</sup></span></span><span class="d2">(1 − β<sub>1</sub><sup>T</sup>)<sup>2</sup></span></span> <span class="frac"><span class="n2">(1 − β<sub>1</sub>)<sup>2</sup></span><span class="d2">√<span class="sq">T (1 − β<sub>2</sub>)</span></span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">k = 1</span></span> T <span class="frac"><span class="n2">β<sub>1</sub><sup>2</sup></span><span class="d2">√<span class="sq">β<sub>2</sub></span></span></span><sup>T−k</sup> ‖g<sub>k,i</sub>‖<sub>2</sub><br>
+≤ <span class="sum"><span class="t">T − 1</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> + <span class="frac"><span class="n2">T</span><span class="d2">√<span class="sq">T (1 − β<sub>2</sub>)</span></span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">k = 1</span></span> γ<sup>T−k</sup>‖g<sub>k,i</sub>‖<sub>2</sub>
+</div></div>
+<p>类似地，我们可以给出求和式中其余项的上界。</p>
+<div class="eq"><div class="body arr">
+<span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> ≤ <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">‖g<sub>t,i</sub>‖<sub>2</sub></span><span class="d2">√<span class="sq">t(1 − β<sub>2</sub>)</span></span></span> <span class="sum"><span class="t">T − t</span><span class="o">Σ</span><span class="b">j = 0</span></span> tγ<sup>j</sup><br>
+≤ <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">‖g<sub>t,i</sub>‖<sub>2</sub></span><span class="d2">√<span class="sq">t(1 − β<sub>2</sub>)</span></span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">j = 0</span></span> tγ<sup>j</sup>
+</div></div>
+<p>对 γ &lt; 1，利用算术-几何级数的上界 <span class="sum"><span class="t"></span><span class="o">Σ</span><span class="b">t</span></span> tγ<sup>t</sup> &lt; 1/(1 − γ)<sup>2</sup>：</p>
+<div class="eq"><div class="body"><span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">‖g<sub>t,i</sub>‖<sub>2</sub></span><span class="d2">√<span class="sq">t(1 − β<sub>2</sub>)</span></span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">j = 0</span></span> tγ<sup>j</sup> ≤ <span class="frac"><span class="n2">1</span><span class="d2">(1 − γ)<sup>2</sup>√<span class="sq">1 − β<sub>2</sub></span></span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">‖g<sub>t,i</sub>‖<sub>2</sub></span><span class="d2">√<span class="sq">t</span></span></span></div></div>
+<p>应用引理 10.3，</p>
+<div class="eq"><div class="body"><span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">t v̂<sub>t,i</sub></span></span></span> ≤ <span class="frac"><span class="n2">2G<sub>∞</sub></span><span class="d2">(1 − γ)<sup>2</sup>√<span class="sq">1 − β<sub>2</sub></span></span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub></div></div>
+<p>为简化记号，我们定义 γ ≜ β<sub>1</sub><sup>2</sup>/√<span class="sq">β<sub>2</sub></span>。直观上，下面的定理在如下情形成立：学习率 α<sub>t</sub> 以 t<sup>−1/2</sup> 的速率衰减，一阶矩滑动平均系数 β<sub>1,t</sub> 随 λ 指数衰减，而 λ 通常接近 1，例如 1 − 10<sup>−8</sup>。</p>
+
+<p><b>定理 10.5。</b>假设函数 f<sub>t</sub> 的梯度有界，对所有 θ ∈ ℝ<sup>d</sup> 有 ‖∇f<sub>t</sub>(θ)‖<sub>2</sub> ≤ G、‖∇f<sub>t</sub>(θ)‖<sub>∞</sub> ≤ G<sub>∞</sub>；且 Adam 生成的任意 θ<sub>t</sub> 之间的距离有界：对任意 m, n ∈ {1, …, T} 有 ‖θ<sub>n</sub> − θ<sub>m</sub>‖<sub>2</sub> ≤ D、‖θ<sub>m</sub> − θ<sub>n</sub>‖<sub>∞</sub> ≤ D<sub>∞</sub>；又设 β<sub>1</sub>, β<sub>2</sub> ∈ [0, 1) 满足 β<sub>1</sub><sup>2</sup>/√<span class="sq">β<sub>2</sub></span> &lt; 1。令 α<sub>t</sub> = α/√<span class="sq">t</span>，β<sub>1,t</sub> = β<sub>1</sub>λ<sup>t−1</sup>，λ ∈ (0, 1)。则 Adam 对任意 T ≥ 1 都有如下保证：</p>
+<div class="eq"><div class="body arr">
+R(T) ≤ <span class="frac"><span class="n2">D<sup>2</sup></span><span class="d2">2α(1 − β<sub>1</sub>)</span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> √<span class="sq">T v̂<sub>T,i</sub></span> + <span class="frac"><span class="n2">α(β<sub>1</sub> + 1)G<sub>∞</sub></span><span class="d2">(1 − β<sub>1</sub>)√<span class="sq">1 − β<sub>2</sub></span>(1 − γ)<sup>2</sup></span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> + <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="frac"><span class="n2">D<sub>∞</sub><sup>2</sup>G<sub>∞</sub>√<span class="sq">1 − β<sub>2</sub></span></span><span class="d2">2α(1 − β<sub>1</sub>)(1 − λ)<sup>2</sup></span></span>
+</div></div>
+<p><b>证明。</b>利用引理 10.2，我们有</p>
+<div class="eq"><div class="body">f<sub>t</sub>(θ<sub>t</sub>) − f<sub>t</sub>(θ<sup>*</sup>) ≤ g<sub>t</sub><sup>T</sup>(θ<sub>t</sub> − θ<sup>*</sup>) = <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> g<sub>t,i</sub>(θ<sub>t,i</sub> − θ<sup>*</sup><sub>,i</sub>)</div></div>
+<p>由算法 1 给出的更新规则，</p>
+<div class="eq"><div class="body arr">
+θ<sub>t+1</sub> = θ<sub>t</sub> − α<sub>t</sub>m̂<sub>t</sub>/√<span class="sq">v̂<sub>t</sub></span><br>
+= θ<sub>t</sub> − <span class="frac"><span class="n2">α<sub>t</sub></span><span class="d2">1 − β<sub>1</sub><sup>t</sup></span></span> ( <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">√<span class="sq">v̂<sub>t</sub></span></span></span> m<sub>t−1</sub> + <span class="frac"><span class="n2">(1 − β<sub>1,t</sub>)</span><span class="d2">√<span class="sq">v̂<sub>t</sub></span></span></span> g<sub>t</sub> )
+</div></div>
+<p>我们关注参数向量 θ<sub>t</sub> ∈ ℝ<sup>d</sup> 的第 i 维。两边减去标量 θ<sup>*</sup><sub>,i</sub> 并平方，得</p>
+<div class="eq"><div class="body arr">
+(θ<sub>t+1,i</sub> − θ<sup>*</sup><sub>,i</sub>)<sup>2</sup> = (θ<sub>t,i</sub> − θ<sup>*</sup><sub>,i</sub>)<sup>2</sup> − <span class="frac"><span class="n2">2α<sub>t</sub></span><span class="d2">1 − β<sub>1</sub><sup>t</sup></span></span> ( <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">√<span class="sq">v̂<sub>t,i</sub></span></span></span> m<sub>t−1,i</sub> + <span class="frac"><span class="n2">(1 − β<sub>1,t</sub>)</span><span class="d2">√<span class="sq">v̂<sub>t,i</sub></span></span></span> g<sub>t,i</sub> )(θ<sub>t,i</sub> − θ<sup>*</sup><sub>,i</sub>) + α<sub>t</sub><sup>2</sup> ( <span class="frac"><span class="n2">m̂<sub>t,i</sub></span><span class="d2">√<span class="sq">v̂<sub>t,i</sub></span></span></span> )<sup>2</sup>
+</div></div>
+<p>整理上式并使用 Young 不等式 ab ≤ a<sup>2</sup>/2 + b<sup>2</sup>/2。此外可以证明 √<span class="sq">v̂<sub>t,i</sub></span> = √<span class="sq"><span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">j = 1</span></span>(1 − β<sub>2</sub>)β<sub>2</sub><sup>t−j</sup>g<sup>2</sup><sub>j,i</sub>/√<span class="sq">1 − β<sub>2</sub><sup>t</sup></span></span> ≤ ‖g<sub>1:t,i</sub>‖<sub>2</sub>，且 β<sub>1,t</sub> ≤ β<sub>1</sub>。于是</p>
+<div class="eq"><div class="body arr">
+g<sub>t,i</sub>(θ<sub>t,i</sub> − θ<sup>*</sup><sub>,i</sub>) = <span class="frac"><span class="n2">(1 − β<sub>1</sub><sup>t</sup>)√<span class="sq">v̂<sub>t,i</sub></span></span><span class="d2">2α<sub>t</sub>(1 − β<sub>1,t</sub>)</span></span> ( (θ<sub>t,i</sub> − θ<sup>*</sup><sub>,t</sub>)<sup>2</sup> − (θ<sub>t+1,i</sub> − θ<sup>*</sup><sub>,i</sub>)<sup>2</sup> )<br>
++ <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">1 − β<sub>1,t</sub></span></span> <span class="frac"><span class="n2">v̂<sub>t−1,i</sub><sup>1/4</sup></span><span class="d2">√<span class="sq">α<sub>t−1</sub></span></span></span> (θ<sup>*</sup><sub>,i</sub> − θ<sub>t,i</sub>)√<span class="sq">α<sub>t−1</sub></span> <span class="frac"><span class="n2">m<sub>t−1,i</sub></span><span class="d2">v̂<sub>t−1,i</sub><sup>1/4</sup></span></span> + <span class="frac"><span class="n2">α<sub>t</sub>(1 − β<sub>1</sub><sup>t</sup>)√<span class="sq">v̂<sub>t,i</sub></span></span><span class="d2">2(1 − β<sub>1,t</sub>)</span></span> ( <span class="frac"><span class="n2">m̂<sub>t,i</sub></span><span class="d2">√<span class="sq">v̂<sub>t,i</sub></span></span></span> )<sup>2</sup><br>
+≤ <span class="frac"><span class="n2">1</span><span class="d2">2α<sub>t</sub>(1 − β<sub>1</sub>)</span></span> ( (θ<sub>t,i</sub> − θ<sup>*</sup><sub>,t</sub>)<sup>2</sup> − (θ<sub>t+1,i</sub> − θ<sup>*</sup><sub>,i</sub>)<sup>2</sup> )√<span class="sq">v̂<sub>t,i</sub></span> + <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">2α<sub>t−1</sub>(1 − β<sub>1,t</sub>)</span></span> (θ<sup>*</sup><sub>,i</sub> − θ<sub>t,i</sub>)<sup>2</sup>√<span class="sq">v̂<sub>t−1,i</sub></span><br>
++ <span class="frac"><span class="n2">β<sub>1</sub>α<sub>t−1</sub></span><span class="d2">2(1 − β<sub>1</sub>)</span></span> <span class="frac"><span class="n2">m<sup>2</sup><sub>t−1,i</sub></span><span class="d2">√<span class="sq">v̂<sub>t−1,i</sub></span></span></span> + <span class="frac"><span class="n2">α<sub>t</sub></span><span class="d2">2(1 − β<sub>1</sub>)</span></span> <span class="frac"><span class="n2">m̂<sup>2</sup><sub>t,i</sub></span><span class="d2">√<span class="sq">v̂<sub>t,i</sub></span></span></span>
+</div></div>
+<p>我们把引理 10.4 应用于上述不等式，并在 f<sub>t</sub>(θ<sub>t</sub>) − f<sub>t</sub>(θ<sup>*</sup>) 的上界中对 i ∈ {1, …, d} 求和、对 t ∈ {1, …, T} 的凸函数序列求和，从而导出遗憾界：</p>
+<div class="eq"><div class="body arr">
+R(T) ≤ <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="frac"><span class="n2">1</span><span class="d2">2α<sub>1</sub>(1 − β<sub>1</sub>)</span></span> (θ<sub>1,i</sub> − θ<sup>*</sup><sub>,i</sub>)<sup>2</sup>√<span class="sq">v̂<sub>1,i</sub></span> + <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 2</span></span> <span class="frac"><span class="n2">1</span><span class="d2">2(1 − β<sub>1</sub>)</span></span> (θ<sub>t,i</sub> − θ<sup>*</sup><sub>,i</sub>)<sup>2</sup> ( <span class="frac"><span class="n2">√<span class="sq">v̂<sub>t,i</sub></span></span><span class="d2">α<sub>t</sub></span></span> − <span class="frac"><span class="n2">√<span class="sq">v̂<sub>t−1,i</sub></span></span><span class="d2">α<sub>t−1</sub></span></span> )<br>
++ <span class="frac"><span class="n2">β<sub>1</sub>αG<sub>∞</sub></span><span class="d2">(1 − β<sub>1</sub>)√<span class="sq">1 − β<sub>2</sub></span>(1 − γ)<sup>2</sup></span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> + <span class="frac"><span class="n2">αG<sub>∞</sub></span><span class="d2">(1 − β<sub>1</sub>)√<span class="sq">1 − β<sub>2</sub></span>(1 − γ)<sup>2</sup></span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub><br>
++ <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="sum"><span class="t">T</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">2α<sub>t</sub>(1 − β<sub>1,t</sub>)</span></span> (θ<sup>*</sup><sub>,i</sub> − θ<sub>t,i</sub>)<sup>2</sup>√<span class="sq">v̂<sub>t,i</sub></span>
+</div></div>
+<p>由假设 ‖θ<sub>t</sub> − θ<sup>*</sup>‖<sub>2</sub> ≤ D、‖θ<sub>m</sub> − θ<sub>n</sub>‖<sub>∞</sub> ≤ D<sub>∞</sub>，我们有：</p>
+<div class="eq"><div class="body arr">
+R(T) ≤ <span class="frac"><span class="n2">D<sup>2</sup></span><span class="d2">2α(1 − β<sub>1</sub>)</span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> √<span class="sq">T v̂<sub>T,i</sub></span> + <span class="frac"><span class="n2">α(1 + β<sub>1</sub>)G<sub>∞</sub></span><span class="d2">(1 − β<sub>1</sub>)√<span class="sq">1 − β<sub>2</sub></span>(1 − γ)<sup>2</sup></span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> + <span class="frac"><span class="n2">D<sub>∞</sub><sup>2</sup></span><span class="d2">2α</span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">(1 − β<sub>1,t</sub>)</span></span> √<span class="sq">t v̂<sub>t,i</sub></span><br>
+≤ <span class="frac"><span class="n2">D<sup>2</sup></span><span class="d2">2α(1 − β<sub>1</sub>)</span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> √<span class="sq">T v̂<sub>T,i</sub></span> + <span class="frac"><span class="n2">α(1 + β<sub>1</sub>)G<sub>∞</sub></span><span class="d2">(1 − β<sub>1</sub>)√<span class="sq">1 − β<sub>2</sub></span>(1 − γ)<sup>2</sup></span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> + <span class="frac"><span class="n2">D<sub>∞</sub><sup>2</sup>G<sub>∞</sub>√<span class="sq">1 − β<sub>2</sub></span></span><span class="d2">2α</span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">(1 − β<sub>1,t</sub>)</span></span> √<span class="sq">t</span>
+</div></div>
+<p>对最后一项可用算术-几何级数的上界：</p>
+<div class="eq"><div class="body arr">
+<span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">β<sub>1,t</sub></span><span class="d2">(1 − β<sub>1,t</sub>)</span></span> √<span class="sq">t</span> ≤ <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">1</span><span class="d2">(1 − β<sub>1</sub>)</span></span> λ<sup>t−1</sup>√<span class="sq">t</span><br>
+≤ <span class="sum"><span class="t">t</span><span class="o">Σ</span><span class="b">t = 1</span></span> <span class="frac"><span class="n2">1</span><span class="d2">(1 − β<sub>1</sub>)</span></span> λ<sup>t−1</sup>t<br>
+≤ <span class="frac"><span class="n2">1</span><span class="d2">(1 − β<sub>1</sub>)(1 − λ)<sup>2</sup></span></span>
+</div></div>
+<p>因此得到如下遗憾界：</p>
+<div class="eq"><div class="body">R(T) ≤ <span class="frac"><span class="n2">D<sup>2</sup></span><span class="d2">2α(1 − β<sub>1</sub>)</span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> √<span class="sq">T v̂<sub>T,i</sub></span> + <span class="frac"><span class="n2">α(1 + β<sub>1</sub>)G<sub>∞</sub></span><span class="d2">(1 − β<sub>1</sub>)√<span class="sq">1 − β<sub>2</sub></span>(1 − γ)<sup>2</sup></span></span> <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> ‖g<sub>1:T,i</sub>‖<sub>2</sub> + <span class="sum"><span class="t">d</span><span class="o">Σ</span><span class="b">i = 1</span></span> <span class="frac"><span class="n2">D<sub>∞</sub><sup>2</sup>G<sub>∞</sub>√<span class="sq">1 − β<sub>2</sub></span></span><span class="d2">2αβ<sub>1</sub>(1 − λ)<sup>2</sup></span></span></div></div>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　逻辑回归在 MNIST 图像与 IMDB 影评（10,000 维词袋特征）上的训练负对数似然</li>
+<li><a href="#fig2">图 2</a>　多层神经网络在 MNIST 上的训练：(a) 使用 dropout 随机正则化、(b) 使用确定性代价函数，并与 SFO 比较</li>
+<li><a href="#fig3">图 3</a>　卷积神经网络的训练代价（左：前三个 epoch；右：45 个 epoch；CIFAR-10）</li>
+<li><a href="#fig4">图 4</a>　偏差校正项（红线）与无偏差校正项（绿线）在 10 与 100 个 epoch 后对损失的影响</li>
+</ol></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

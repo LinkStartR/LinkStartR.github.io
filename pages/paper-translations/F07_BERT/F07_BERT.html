@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BERT：面向语言理解的深度双向 Transformer 预训练 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">BERT：面向语言理解的深度双向 Transformer 预训练</span><span>Devlin 等，2019 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 相关工作</a>
+<a class="sub" href="#s21">2.1 无监督的基于特征方法</a>
+<a class="sub" href="#s22">2.2 无监督的微调方法</a>
+<a class="sub" href="#s23">2.3 从有监督数据做迁移学习</a>
+<a href="#s3">3 BERT</a>
+<a class="sub" href="#s31">3.1 预训练 BERT</a>
+<a class="sub" href="#s32">3.2 微调 BERT</a>
+<a href="#s4">4 实验</a>
+<a class="sub" href="#s41">4.1 GLUE</a>
+<a class="sub" href="#s42">4.2 SQuAD v1.1</a>
+<a class="sub" href="#s43">4.3 SQuAD v2.0</a>
+<a class="sub" href="#s44">4.4 SWAG</a>
+<a href="#s5">5 消融研究</a>
+<a class="sub" href="#s51">5.1 预训练任务的影响</a>
+<a class="sub" href="#s52">5.2 模型规模的影响</a>
+<a class="sub" href="#s53">5.3 基于特征方法的 BERT</a>
+<a href="#s6">6 结论</a>
+<hr>
+<a href="#refs">参考文献</a>
+<a href="#appx">附录：BERT 的更多细节</a>
+<a href="#appa">A BERT 的额外细节</a>
+<a class="sub" href="#appa1">A.1 预训练任务示例</a>
+<a class="sub" href="#appa2">A.2 预训练过程</a>
+<a class="sub" href="#appa3">A.3 微调过程</a>
+<a class="sub" href="#appa4">A.4 BERT、ELMo 与 OpenAI GPT 的比较</a>
+<a class="sub" href="#appa5">A.5 不同任务的微调示意</a>
+<a href="#appb">B 详细实验设置</a>
+<a class="sub" href="#appb1">B.1 GLUE 基准实验的详细描述</a>
+<a href="#appc">C 额外的消融研究</a>
+<a class="sub" href="#appc1">C.1 训练步数的影响</a>
+<a class="sub" href="#appc2">C.2 不同掩蔽过程的消融</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: BERT：面向语言理解的深度双向 Transformer 预训练 | Devlin 等，2019 · 中文翻译-->
+<h1 class="doc">BERT：面向语言理解的深度双向 Transformer 预训练<span class="en">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</span></h1>
+<p class="meta">Jacob Devlin · Ming-Wei Chang · Kenton Lee · Kristina Toutanova（Google AI Language）<br>
+arXiv:1810.04805v2 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>我们提出一种新的语言表示模型，称为 <span class="term" data-tip="BERT：Bidirectional Encoder Representations from Transformers，来自 Transformer 的双向编码器表示">BERT</span>，它代表来自 Transformer 的双向编码器表示（Bidirectional Encoder Representations from Transformers）。与近来的语言表示模型 (Peters et al., 2018a; Radford et al., 2018) 不同，BERT 设计为在<b>所有层</b>上同时以左、右两侧的上下文为条件，从无标注文本中预训练深层双向表示。因此，预训练好的 BERT 模型只需再添加一个输出层进行<span class="term" data-tip="fine-tune（微调）：在预训练参数基础上用下游任务数据继续训练，通常只需少量额外参数">微调</span>（fine-tune），就能为问答、语言推断等广泛任务构建出当时最好的模型，而不需要对任务特定的架构做实质修改。</p>
+<p>BERT 在概念上简单、在经验上有力。它在 11 项自然语言处理任务上取得了新的当时最好结果，包括把 <span class="term" data-tip="GLUE：General Language Understanding Evaluation，一个汇集多种句子级语言理解任务的基准">GLUE</span> 分数提升到 80.5%（绝对提升 7.7 个百分点）、MultiNLI 准确率提升到 86.7%（绝对提升 4.6）、SQuAD v1.1 问答的 Test F1 提升到 93.2（绝对提升 1.5），以及 SQuAD v2.0 的 Test F1 提升到 83.1（绝对提升 5.1）。</p>
+</div>
+<p class="hint">正文、图表与参考文献均来自源 PDF 解析结果。专业术语、模型名、数据集名、数据集条目名与人名按要求保留原文；术语上的金色虚线表示可悬停（触屏可点按）查看中文解释。参考文献整节保留英文原文不译。</p>
+
+<h2 id="s1">1 引言</h2>
+<p>语言模型预训练已被证明能有效改善许多自然语言处理任务 (Dai and Le, 2015; Peters et al., 2018a; Radford et al., 2018; Howard and Ruder, 2018)。这些任务既包括句子级任务，如自然语言推断 (Bowman et al., 2015; Williams et al., 2018) 与复述 (Dolan and Brockett, 2005)——它们的目标是通过<b>整体</b>分析两个句子来预测句子之间的关系；也包括 token 级任务，如命名实体识别与问答——它们要求模型在 token 级别给出细粒度输出 (Tjong Kim Sang and De Meulder, 2003; Rajpurkar et al., 2016)。</p>
+<p>把预训练语言表示应用到下游任务有两种已有策略：<b>基于特征</b>（feature-based）与<b>微调</b>（fine-tuning）。基于特征的方法（如 ELMo，Peters et al., 2018a）使用包含预训练表示作为额外特征的任务特定架构。微调方法（如生成式预训练 Transformer，OpenAI GPT，Radford et al., 2018）只引入极少的任务特定参数，通过直接微调全部预训练参数来在下游任务上训练。两种方法在预训练时共享同一个目标函数：都用单向语言模型来学习通用语言表示。</p>
+<p>我们认为，现有技术限制了预训练表示的能力，对微调方法尤其如此。主要限制在于标准语言模型是<b>单向</b>的，这限制了预训练时可用的架构选择。例如在 OpenAI GPT 中，作者使用从左到右的架构，每个 token 在 Transformer 的自注意力层中只能关注它之前的 token (Vaswani et al., 2017)。这类限制对句子级任务而言是次优的，而把基于微调的方法用于问答等 token 级任务时可能非常有害，因为这类任务必须同时融合两个方向的上下文。</p>
+<p>在本文中，我们提出 BERT：来自 Transformer 的双向编码器表示，以改进基于微调的方法。BERT 借助一种「<span class="term" data-tip="masked language model（MLM）：随机遮住输入中的部分 token，让模型根据上下文还原它们">掩蔽语言模型</span>」（masked language model，MLM）预训练目标，缓解了前述的单向性限制——该目标受<span class="term" data-tip="Cloze task：完形填空，把文本中某些词挖空、要求根据上下文填回">完形填空任务</span>（Cloze task，Taylor, 1953）启发。掩蔽语言模型随机掩蔽输入中的一些 token，目标仅根据上下文来预测被掩蔽词的原始词表 id。与从左到右的语言模型预训练不同，MLM 目标使表示能够融合左、右两侧上下文，从而让我们可以预训练一个深层双向 Transformer。除掩蔽语言模型之外，我们还使用「<span class="term" data-tip="next sentence prediction（NSP）：判断第二句是否是第一句的真实下一句，用来预训练句子对表示">下一句预测</span>」（next sentence prediction）任务来联合预训练文本对表示。本文的贡献如下：</p>
+<ul>
+<li>我们证明双向预训练对语言表示很重要。与用单向语言模型做预训练的 Radford et al. (2018) 不同，BERT 使用掩蔽语言模型来实现预训练的深层双向表示。这也与 Peters et al. (2018a) 形成对比——后者使用独立训练的从左到右和从右到左语言模型的<b>浅层拼接</b>。</li>
+<li>我们表明预训练表示降低了对许多重度工程化的任务特定架构的需求。BERT 是第一个在大量句子级与 token 级任务上取得当时最好性能的、基于微调的表示模型，超过了许多任务特定架构。</li>
+<li>BERT 推进了 11 项 NLP 任务的最好水平。代码与预训练模型见 https://github.com/google-research/bert。</li>
+</ul>
+
+<h2 id="s2">2 相关工作</h2>
+<p>预训练通用语言表示有很长的历史，本节简要回顾最广泛使用的方法。</p>
+
+<h3 id="s21">2.1 无监督的基于特征方法</h3>
+<p>学习广泛适用的词表示数十年来一直是活跃的研究领域，包括非神经网络方法 (Brown et al., 1992; Ando and Zhang, 2005; Blitzer et al., 2006) 与神经网络方法 (Mikolov et al., 2013; Pennington et al., 2014)。预训练词嵌入是现代 NLP 系统不可分割的一部分，相比从零开始学习的嵌入带来显著改进 (Turian et al., 2010)。为预训练词嵌入向量，人们使用过从左到右的语言建模目标 (Mnih and Hinton, 2009)，也使用过在左右上下文中区分正确词与错误词的目标 (Mikolov et al., 2013)。</p>
+<p>这些方法已被推广到更粗的粒度，例如句子嵌入 (Kiros et al., 2015; Logeswaran and Lee, 2018) 或段落嵌入 (Le and Mikolov, 2014)。为训练句子表示，先前工作使用过对候选下一句排序的目标 (Jernite et al., 2017; Logeswaran and Lee, 2018)、在给定前一句表示的条件下从左到右生成下一句词的目标 (Kiros et al., 2015)，或由去噪自编码器导出的目标 (Hill et al., 2016)。</p>
+<p>ELMo 及其前身 (Peters et al., 2017, 2018a) 沿另一个维度推广了传统词嵌入研究。它们从一个从左到右和一个从右到左的语言模型中提取对上下文敏感的特征。每个 token 的上下文表示是这两个方向表示的<b>拼接</b>。在把上下文词嵌入与现有任务特定架构整合时，ELMo 在若干主要 NLP 基准上推进了最好水平 (Peters et al., 2018a)，包括问答 (Rajpurkar et al., 2016)、情感分析 (Socher et al., 2013) 与命名实体识别 (Tjong Kim Sang and De Meulder, 2003)。Melamud et al. (2016) 提出用一个「从左右上下文预测单个词」的任务、借助 LSTM 学习上下文表示。与 ELMo 类似，他们的模型是基于特征的，且并非深层双向。Fedus et al. (2018) 表明完形填空任务可用于提升文本生成模型的鲁棒性。</p>
+
+<h3 id="s22">2.2 无监督的微调方法</h3>
+<p>与基于特征的方法一样，这一方向的早期工作也只是从无标注文本预训练词嵌入参数 (Collobert and Weston, 2008)。</p>
+<p>更近期，产生上下文 token 表示的句子或文档编码器从无标注文本预训练，再针对有监督的下游任务微调 (Dai and Le, 2015; Howard and Ruder, 2018; Radford et al., 2018)。这类方法的优势在于需要从零学习的参数很少。至少部分由于这一优势，OpenAI GPT (Radford et al., 2018) 在 GLUE 基准 (Wang et al., 2018a) 的许多句子级任务上取得了此前最好的结果。从左到右的语言建模与自编码器目标都被用于预训练这类模型 (Howard and Ruder, 2018; Radford et al., 2018; Dai and Le, 2015)。</p>
+
+<figure id="fig1"><img src="images/fig1.png" alt="Overall pre-training and fine-tuning procedures for BERT">
+<figcaption><span class="lab">图 1</span>BERT 的整体预训练与微调流程。除输出层以外，预训练与微调使用完全相同的架构。同一套预训练模型参数被用来初始化不同下游任务的模型。微调时，所有参数都会被微调。[CLS] 是加在每个输入样例前面的特殊符号，[SEP] 是特殊的分隔 token（例如分隔问题与答案）。</figcaption></figure>
+
+<h3 id="s23">2.3 从有监督数据做迁移学习</h3>
+<p>也有工作表明可以从大数据集的有监督任务中有效迁移，例如自然语言推断 (Conneau et al., 2017) 与机器翻译 (McCann et al., 2017)。计算机视觉研究同样证明了从大型预训练模型做迁移学习的重要性，其中一条有效做法是对用 ImageNet 预训练的模型进行微调 (Deng et al., 2009; Yosinski et al., 2014)。</p>
+
+<h2 id="s3">3 BERT</h2>
+<p>本节介绍 BERT 及其详细实现。我们的框架分两步：<b>预训练</b>与<b>微调</b>。预训练阶段，模型在不同预训练任务上、用无标注数据训练。微调时，BERT 模型先用预训练参数初始化，再用下游任务的有标注数据微调全部参数。每个下游任务都有各自微调后的模型，尽管它们都用同一套预训练参数初始化。图 1 中的问答示例将作为本节贯穿始终的例子。</p>
+<p>BERT 的一个显著特点是它对不同任务使用<b>统一架构</b>。预训练架构与最终的下游架构之间差别极小。</p>
+<p><b>模型架构</b>　BERT 的模型架构是一个多层双向 <span class="term" data-tip="Transformer encoder：由多层多头自注意力＋前馈网络构成的编码器">Transformer 编码器</span>，基于 Vaswani et al. (2017) 所述的原始实现，并在 tensor2tensor 库中发布<span class="tn" data-tip="译者注：原文脚注 1，见本节末">1</span>。由于 Transformer 的使用已很普遍、且我们的实现与原始版本几乎一致，我们将省略对模型架构的详尽背景描述，请读者参阅 Vaswani et al. (2017) 以及「The Annotated Transformer」等优秀指南<span class="tn" data-tip="译者注：原文脚注 2，见本节末">2</span>。</p>
+<p>在本工作中，我们用 <i>L</i> 表示层数（即 Transformer block 数）、<i>H</i> 表示隐藏层大小、<i>A</i> 表示自注意力头的数量<span class="tn" data-tip="译者注：原文脚注 3，见本节末">3</span>。我们主要报告两种模型规模的结果：BERT<sub>BASE</sub>（<i>L</i>=12，<i>H</i>=768，<i>A</i>=12，总参数量 110M）与 BERT<sub>LARGE</sub>（<i>L</i>=24，<i>H</i>=1024，<i>A</i>=16，总参数量 340M）。</p>
+<p>为便于比较，BERT 被选为与 OpenAI GPT 相同的模型规模。但关键在于，BERT 的 Transformer 使用<b>双向</b>自注意力，而 GPT 的 Transformer 使用受限自注意力，每个 token 只能关注其左侧的上下文<span class="tn" data-tip="译者注：原文脚注 4，见本节末">4</span>。</p>
+<p><b>输入/输出表示</b>　为使 BERT 能处理多种下游任务，我们的输入表示能够在一个 token 序列中无歧义地表示单个句子和句子对（例如 ⟨问题, 答案⟩）。在本文中，「句子」可以是任意一段连续文本，而不必是语言学意义上的句子。「序列」指 BERT 的输入 token 序列，它可以是单个句子，也可以是打包在一起的两个句子。</p>
+<p>我们使用 <span class="term" data-tip="WordPiece：把词切成子词单元（如「##less」）的切分方式，可缓解未登录词问题">WordPiece</span> 嵌入 (Wu et al., 2016)，词表大小为 30,000 个 token。每个序列的第一个 token 始终是特殊的分类 token（[CLS]）。该 token 对应的最终隐藏状态被用作分类任务的聚合序列表示。句子对被打包进单个序列。我们用两种方式区分两个句子。第一，用特殊 token（[SEP]）分隔它们。第二，给每个 token 加一个可学习的嵌入，表明它属于句子 A 还是句子 B。如图 1 所示，我们把输入嵌入记为 <i>E</i>，把特殊 [CLS] token 的最终隐藏向量记为 <i>C</i> ∈ ℝ<sup>H</sup>，把第 <i>i</i> 个输入 token 的最终隐藏向量记为 <i>T</i><sub>i</sub> ∈ ℝ<sup>H</sup>。</p>
+<p>对给定的 token，其输入表示由相应的 token 嵌入、片段嵌入与位置嵌入<b>相加</b>构成。图 2 给出了这种构造的可视化。</p>
+
+<figure id="fig2"><img src="images/fig2.png" alt="BERT input representation">
+<figcaption><span class="lab">图 2</span>BERT 的输入表示。输入嵌入是 token 嵌入、片段（segmentation）嵌入与位置嵌入之和。</figcaption></figure>
+
+<h3 id="s31">3.1 预训练 BERT</h3>
+<p>与 Peters et al. (2018a) 和 Radford et al. (2018) 不同，我们不使用传统的从左到右或从右到左的语言模型来预训练 BERT。取而代之，我们用两个无监督任务预训练 BERT，本节加以描述。这一步展示在图 1 的左半部分。</p>
+<p><b>任务 #1：掩蔽 LM（Masked LM）</b>　直观上，可以合理地认为深层双向模型严格强于从左到右模型，也强于从左到右与从右到左模型的浅层拼接。遗憾的是，标准条件语言模型只能从左到右或从右到左训练，因为双向条件会让每个词间接「看到自己」，模型在多层的上下文中可以平凡地预测目标词。</p>
+<p>为训练深层双向表示，我们简单地随机掩蔽输入中一定比例的 token，然后预测这些被掩蔽的 token。我们把这一过程称为「掩蔽 LM」（MLM），文献中它常被称为完形填空任务 (Taylor, 1953)。此时，与掩蔽 token 对应的最终隐藏向量被送入词表上的输出 softmax，正如标准语言模型那样。在我们所有实验中，我们随机掩蔽每个序列中 <b>15%</b> 的 WordPiece token。与去噪自编码器 (Vincent et al., 2008) 不同，我们只预测被掩蔽的词，而不重建整个输入。</p>
+<p>虽然这让我们能得到双向预训练模型，但一个缺点是：由于 [MASK] token 在微调时并不出现，我们制造了预训练与微调之间的<b>不匹配</b>。为缓解这一点，我们并不总是用真正的 [MASK] token 替换「被掩蔽」的词。训练数据生成器随机选择 15% 的 token 位置用于预测。如果第 <i>i</i> 个 token 被选中，我们按以下方式替换第 <i>i</i> 个 token：(1) 80% 的时间替换为 [MASK] token；(2) 10% 的时间替换为一个随机 token；(3) 10% 的时间保持第 <i>i</i> 个 token 不变。然后，用 <i>T</i><sub>i</sub> 以交叉熵损失预测原始 token。我们在附录 C.2 中比较了这一过程的不同变体。</p>
+<p><b>任务 #2：下一句预测（NSP）</b>　许多重要的下游任务，如问答（QA）与自然语言推断（NLI），都建立在理解两个句子之间关系的基础上，而语言建模并不能直接捕捉这种关系。为训练一个理解句子关系的模型，我们预训练一个二分类的下一句预测任务，它可以由任意单语语料平凡地生成。具体地说，在为每个预训练样例选择句子 A 和 B 时，50% 的时间 B 是紧随 A 之后的真实下一句（标记为 <code>IsNext</code>），50% 的时间它是语料中的随机句子（标记为 <code>NotNext</code>）。如图 1 所示，<i>C</i> 被用于下一句预测（NSP）<span class="tn" data-tip="译者注：原文脚注 5，见本节末">5</span>。尽管它很简单，我们在 5.1 节表明朝这一任务预训练对 QA 与 NLI 都非常有益<span class="tn" data-tip="译者注：原文脚注 6，见本节末">6</span>。</p>
+<p>NSP 任务与 Jernite et al. (2017) 和 Logeswaran and Lee (2018) 中使用的表示学习目标密切相关。不过在先前工作中，只有句子嵌入被迁移到下游任务，而 BERT 会把所有参数都迁移过去以初始化端任务模型参数。</p>
+<p><b>预训练数据</b>　预训练过程大体遵循语言模型预训练的既有文献。预训练语料我们使用 BooksCorpus（8 亿词）(Zhu et al., 2015) 与英文 Wikipedia（25 亿词）。对 Wikipedia，我们只提取正文段落，忽略列表、表格与标题。为了抽取长连续序列，使用<b>文档级</b>语料而不是打乱顺序的句子级语料（如 Billion Word Benchmark，Chelba et al., 2013）至关重要。</p>
+
+<h3 id="s32">3.2 微调 BERT</h3>
+<p>微调很直接，因为 Transformer 中的自注意力机制允许 BERT 通过替换相应的输入与输出来建模许多下游任务——无论它们涉及单段文本还是文本对。对涉及文本对的应用，一种常见模式是先把文本对分别编码，再施加双向交叉注意力，如 Parikh et al. (2016)、Seo et al. (2017)。BERT 相反，用自注意力机制统一这两个阶段，因为用自注意力编码一个拼接后的文本对，实际上就包含了两个句子之间的双向交叉注意力。</p>
+<p>对每个任务，我们只需把任务特定的输入与输出接入 BERT，并端到端地微调所有参数。在输入侧，预训练中的句子 A 与句子 B 分别对应：(1) 复述任务中的句子对；(2) 蕴含任务中的假设—前提对；(3) 问答任务中的问题—段落对；(4) 文本分类或序列标注中的退化「文本—∅」对。在输出侧，token 表示被送入输出层用于 token 级任务，如序列标注或问答；[CLS] 表示被送入输出层用于分类，如蕴含或情感分析。</p>
+<p>与预训练相比，微调相对便宜。从完全相同的预训练模型出发，本文所有结果都可以在单块 Cloud TPU 上最多 1 小时（或在 GPU 上数小时）内复现<span class="tn" data-tip="译者注：原文脚注 7，见本节末">7</span>。我们在第 4 章相应小节描述任务特定的细节。更多细节见附录 A.5。</p>
+
+<div class="fn">
+<p><sup>1</sup> https://github.com/tensorflow/tensor2tensor</p>
+<p><sup>2</sup> http://nlp.seas.harvard.edu/2018/04/03/attention.html</p>
+<p><sup>3</sup> 在所有情况下我们取前馈/滤波层大小为 4<i>H</i>，即 <i>H</i> = 768 时为 3072，<i>H</i> = 1024 时为 4096。</p>
+<p><sup>4</sup> 我们注意到，在文献中双向 Transformer 常被称为「Transformer 编码器」，而只使用左侧上下文的版本被称为「Transformer 解码器」，因为它可用于文本生成。</p>
+<p><sup>5</sup> 最终模型在 NSP 上达到 97%–98% 的准确率。</p>
+<p><sup>6</sup> 未经微调时，向量 <i>C</i> 并不是一个有意义的句子表示，因为它是用 NSP 训练的。</p>
+<p><sup>7</sup> 例如，BERT 的 SQuAD 模型可以在单块 Cloud TPU 上约 30 分钟内训练完成，达到 91.0% 的 Dev F1。</p>
+</div>
+
+<h2 id="s4">4 实验</h2>
+<p>本节我们给出 BERT 在 11 项 NLP 任务上的微调结果。</p>
+
+<h3 id="s41">4.1 GLUE</h3>
+<p>通用语言理解评估（GLUE）基准 (Wang et al., 2018a) 汇集了多样的自然语言理解任务。GLUE 数据集的详细描述见附录 B.1。</p>
+<p>为在 GLUE 上微调，我们按第 3 节所述表示输入序列（单句或句子对），并用第一个输入 token（[CLS]）对应的最终隐藏向量 <i>C</i> ∈ ℝ<sup>H</sup> 作为聚合表示。微调期间引入的唯一新参数是分类层权重 <i>W</i> ∈ ℝ<sup>K×H</sup>，其中 <i>K</i> 是标签数。我们用 <i>C</i> 与 <i>W</i> 计算标准分类损失，即 log(softmax(<i>CW</i><sup>T</sup>))。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>系统</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px">MNLI-(m/mm)<br>392k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">QQP<br>363k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">QNLI<br>108k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">SST-2<br>67k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">CoLA<br>8.5k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">STS-B<br>5.7k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">MRPC<br>3.5k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">RTE<br>2.5k</td>
+<td style="border:1px solid var(--line);padding:5px 8px">Average</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Pre-OpenAI SOTA</td><td style="border:1px solid var(--line);padding:5px 8px">80.6/80.1</td><td style="border:1px solid var(--line);padding:5px 8px">66.1</td><td style="border:1px solid var(--line);padding:5px 8px">82.3</td><td style="border:1px solid var(--line);padding:5px 8px">93.2</td><td style="border:1px solid var(--line);padding:5px 8px">35.0</td><td style="border:1px solid var(--line);padding:5px 8px">81.0</td><td style="border:1px solid var(--line);padding:5px 8px">86.0</td><td style="border:1px solid var(--line);padding:5px 8px">61.7</td><td style="border:1px solid var(--line);padding:5px 8px">74.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">BiLSTM+ELMo+Attn</td><td style="border:1px solid var(--line);padding:5px 8px">76.4/76.1</td><td style="border:1px solid var(--line);padding:5px 8px">64.8</td><td style="border:1px solid var(--line);padding:5px 8px">79.8</td><td style="border:1px solid var(--line);padding:5px 8px">90.4</td><td style="border:1px solid var(--line);padding:5px 8px">36.0</td><td style="border:1px solid var(--line);padding:5px 8px">73.3</td><td style="border:1px solid var(--line);padding:5px 8px">84.9</td><td style="border:1px solid var(--line);padding:5px 8px">56.8</td><td style="border:1px solid var(--line);padding:5px 8px">71.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">OpenAI GPT</td><td style="border:1px solid var(--line);padding:5px 8px">82.1/81.4</td><td style="border:1px solid var(--line);padding:5px 8px">70.3</td><td style="border:1px solid var(--line);padding:5px 8px">87.4</td><td style="border:1px solid var(--line);padding:5px 8px">91.3</td><td style="border:1px solid var(--line);padding:5px 8px">45.4</td><td style="border:1px solid var(--line);padding:5px 8px">80.0</td><td style="border:1px solid var(--line);padding:5px 8px">82.3</td><td style="border:1px solid var(--line);padding:5px 8px">56.0</td><td style="border:1px solid var(--line);padding:5px 8px">75.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px"><b>BERT<sub>BASE</sub></b></td><td style="border:1px solid var(--line);padding:5px 8px">84.6/83.4</td><td style="border:1px solid var(--line);padding:5px 8px">71.2</td><td style="border:1px solid var(--line);padding:5px 8px">90.5</td><td style="border:1px solid var(--line);padding:5px 8px">93.5</td><td style="border:1px solid var(--line);padding:5px 8px">52.1</td><td style="border:1px solid var(--line);padding:5px 8px">85.8</td><td style="border:1px solid var(--line);padding:5px 8px">88.9</td><td style="border:1px solid var(--line);padding:5px 8px">66.4</td><td style="border:1px solid var(--line);padding:5px 8px">79.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px"><b>BERT<sub>LARGE</sub></b></td><td style="border:1px solid var(--line);padding:5px 8px">86.7/85.9</td><td style="border:1px solid var(--line);padding:5px 8px">72.1</td><td style="border:1px solid var(--line);padding:5px 8px">92.7</td><td style="border:1px solid var(--line);padding:5px 8px">94.9</td><td style="border:1px solid var(--line);padding:5px 8px">60.5</td><td style="border:1px solid var(--line);padding:5px 8px">86.5</td><td style="border:1px solid var(--line);padding:5px 8px">89.3</td><td style="border:1px solid var(--line);padding:5px 8px">70.1</td><td style="border:1px solid var(--line);padding:5px 8px">82.1</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 1　GLUE 测试结果，由评测服务器打分（https://gluebenchmark.com/leaderboard）。每个任务下方数字表示训练样例数。「Average」列与官方 GLUE 分数略有不同，因为我们排除了有问题的 WNLI 集合<span class="tn" data-tip="译者注：原文脚注 8，见本节末">8</span>。BERT 与 OpenAI GPT 均为单模型、单任务。QQP 与 MRPC 报告 F1，STS-B 报告 Spearman 相关系数，其他任务报告准确率。我们排除了把 BERT 用作组件之一的条目。</p>
+
+<p>我们对所有 GLUE 任务使用批量大小 32，在数据上微调 3 个 epoch。对每个任务，我们在 Dev 集上选择最佳的微调学习率（在 5e-5、4e-5、3e-5、2e-5 中选）。此外，对 BERT<sub>LARGE</sub> 我们发现微调在小数据集上有时不稳定，因此我们做了若干次随机重启，并在 Dev 集上选择最好的模型。随机重启时，我们使用相同的预训练检查点，但进行不同的微调数据打乱与分类层初始化<span class="tn" data-tip="译者注：原文脚注 9，见本节末">9</span>。</p>
+<p>结果列于表 1。BERT<sub>BASE</sub> 与 BERT<sub>LARGE</sub> 都以显著幅度在所有任务上超过所有系统，平均准确率相对此前的最好水平分别提高 4.5% 与 7.0%。注意 BERT<sub>BASE</sub> 与 OpenAI GPT 在模型架构上几乎完全相同，只差注意力掩蔽方式。对最大、被报告最多的 GLUE 任务 MNLI，BERT 取得 4.6% 的绝对准确率提升。在官方 GLUE 排行榜上<span class="tn" data-tip="译者注：原文脚注 10，见本节末">10</span>，BERT 取得 80.5 分，而 OpenAI GPT 在本文写作时得到 72.8。</p>
+<p>我们发现 BERT<sub>LARGE</sub> 在所有任务上都显著优于 BERT<sub>BASE</sub>，尤其是在训练数据很少的任务上。模型规模的影响在 5.2 节中做了更充分的探讨。</p>
+
+<h3 id="s42">4.2 SQuAD v1.1</h3>
+<p>斯坦福问答数据集（SQuAD v1.1）是 10 万条众包问答对的集合 (Rajpurkar et al., 2016)。给定一个问题，以及一段包含答案的 Wikipedia 段落，任务是在段落中预测答案文本片段。</p>
+<p>如图 1 所示，在问答任务中，我们把输入的问题与段落表示为打包后的单个序列，问题使用 A 嵌入、段落使用 B 嵌入。微调时我们只引入一个起始向量 <i>S</i> ∈ ℝ<sup>H</sup> 和一个结束向量 <i>E</i> ∈ ℝ<sup>H</sup>。词 <i>i</i> 是答案片段起点的概率由 <i>T</i><sub>i</sub> 与 <i>S</i> 的点积、再对段落中所有词做 softmax 计算得到：</p>
+<div class="eq"><div class="body"><i>P</i><sub>i</sub> = <span class="frac"><span class="n2">e<sup><i>S</i>·<i>T</i><sub>i</sub></sup></span><span class="d2">Σ<sub>j</sub> e<sup><i>S</i>·<i>T</i><sub>j</sub></sup></span></span></div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">变量说明：<b>T<sub>i</sub></b> 是段落中第 i 个 token 的最终隐藏向量；<b>S</b> 是微调时新引入的可学习「起点向量」；<b>S·T<sub>i</sub></b> 是二者的点积（一个标量得分）；分母对所有词 j 求和，因此 <b>P<sub>i</sub></b> 是「第 i 个词是答案起点」的归一化概率。答案片段终点用完全类似的公式（把 <i>S</i> 换成终点向量 <i>E</i>）。</p>
+<p>答案片段的终点用类似公式。从位置 <i>i</i> 到位置 <i>j</i> 的候选片段得分为 <i>S</i>·<i>T</i><sub>i</sub> + <i>E</i>·<i>T</i><sub>j</sub>，取 <i>j</i> ≥ <i>i</i> 中得分最高的片段作为预测。训练目标是正确的起点与终点位置的对数似然之和。我们用学习率 5e-5、批量大小 32 微调 3 个 epoch。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2"><b>系统</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="2"><b>Dev</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="2"><b>Test</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px">EM</td>
+<td style="border:1px solid var(--line);padding:5px 10px">F1</td>
+<td style="border:1px solid var(--line);padding:5px 10px">EM</td>
+<td style="border:1px solid var(--line);padding:5px 10px">F1</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="5"><b>排行榜前列系统（2018 年 12 月 10 日）</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Human</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">82.3</td><td style="border:1px solid var(--line);padding:5px 10px">91.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">#1 Ensemble - nlnet</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">86.0</td><td style="border:1px solid var(--line);padding:5px 10px">91.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">#2 Ensemble - QANet</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">84.5</td><td style="border:1px solid var(--line);padding:5px 10px">90.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="5"><b>已发表</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BiDAF+ELMo (Single)</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">85.6</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">85.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">R.M. Reader (Ensemble)</td><td style="border:1px solid var(--line);padding:5px 10px">81.2</td><td style="border:1px solid var(--line);padding:5px 10px">87.9</td><td style="border:1px solid var(--line);padding:5px 10px">82.3</td><td style="border:1px solid var(--line);padding:5px 10px">88.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="5"><b>本文（Ours）</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>BASE</sub> (Single)</td><td style="border:1px solid var(--line);padding:5px 10px">80.8</td><td style="border:1px solid var(--line);padding:5px 10px">88.5</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>LARGE</sub> (Single)</td><td style="border:1px solid var(--line);padding:5px 10px">84.1</td><td style="border:1px solid var(--line);padding:5px 10px">90.9</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>LARGE</sub> (Ensemble)</td><td style="border:1px solid var(--line);padding:5px 10px">85.8</td><td style="border:1px solid var(--line);padding:5px 10px">91.8</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>LARGE</sub> (Sgl.+TriviaQA)</td><td style="border:1px solid var(--line);padding:5px 10px">84.2</td><td style="border:1px solid var(--line);padding:5px 10px">91.1</td><td style="border:1px solid var(--line);padding:5px 10px">85.1</td><td style="border:1px solid var(--line);padding:5px 10px">91.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>LARGE</sub> (Ens.+TriviaQA)</td><td style="border:1px solid var(--line);padding:5px 10px">86.2</td><td style="border:1px solid var(--line);padding:5px 10px">92.2</td><td style="border:1px solid var(--line);padding:5px 10px">87.4</td><td style="border:1px solid var(--line);padding:5px 10px">93.2</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 2　SQuAD 1.1 结果。BERT 集成由 7 个使用不同预训练检查点与微调随机种子的系统组成。</p>
+
+<p>表 2 给出了排行榜前列条目以及已发表顶级系统的结果 (Seo et al., 2017; Clark and Gardner, 2018; Peters et al., 2018a; Hu et al., 2018)。SQuAD 排行榜上的最好结果没有最新的公开系统描述<span class="tn" data-tip="译者注：原文脚注 11，见本节末">11</span>，且其训练时被允许使用任意公开数据。因此我们在系统中使用了适度的数据增强：先在 TriviaQA (Joshi et al., 2017) 上微调，再在 SQuAD 上微调。</p>
+<p>我们表现最好的系统在集成设置下比排行榜最好系统高 +1.5 F1，单模型设置下高 +1.3 F1。事实上，我们的单个 BERT 模型在 F1 上超过了最好的集成系统。不使用 TriviaQA 微调数据时，我们只损失 0.1–0.4 F1，仍然以很大幅度超过所有现有系统<span class="tn" data-tip="译者注：原文脚注 12，见本节末">12</span>。</p>
+
+<h3 id="s43">4.3 SQuAD v2.0</h3>
+<p>SQuAD 2.0 任务扩展了 SQuAD 1.1 的问题定义，允许所给段落中不存在简短答案，使问题更贴近实际。</p>
+<p>我们用一个简单方法来把 SQuAD v1.1 的 BERT 模型扩展到该任务。我们把没有答案的问题视为答案片段起点与终点都在 [CLS] token 上。起点与终点位置的概率空间被扩展以包含 [CLS] token 的位置。预测时，我们把「无答案」片段的得分 <i>s</i><sub>null</sub> = <i>S</i>·<i>C</i> + <i>E</i>·<i>C</i> 与最好的非空片段得分 <i>s</i><sub>i,j</sub> = max<sub>j≥i</sub> <i>S</i>·<i>T</i><sub>i</sub> + <i>E</i>·<i>T</i><sub>j</sub> 进行比较。当 <i>s</i><sub>i,j</sub> &gt; <i>s</i><sub>null</sub> + τ 时我们预测一个非空答案，其中阈值 τ 在 Dev 集上选取以最大化 F1。该模型我们未使用 TriviaQA 数据。我们以学习率 5e-5、批量大小 48 微调 2 个 epoch。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2"><b>系统</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="2"><b>Dev</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="2"><b>Test</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px">EM</td>
+<td style="border:1px solid var(--line);padding:5px 10px">F1</td>
+<td style="border:1px solid var(--line);padding:5px 10px">EM</td>
+<td style="border:1px solid var(--line);padding:5px 10px">F1</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="5"><b>排行榜前列系统（2018 年 12 月 10 日）</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Human</td><td style="border:1px solid var(--line);padding:5px 10px">86.3</td><td style="border:1px solid var(--line);padding:5px 10px">89.0</td><td style="border:1px solid var(--line);padding:5px 10px">86.9</td><td style="border:1px solid var(--line);padding:5px 10px">89.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">#1 Single - MIR-MRC (F-Net)</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">74.8</td><td style="border:1px solid var(--line);padding:5px 10px">78.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">#2 Single - nlnet</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">74.2</td><td style="border:1px solid var(--line);padding:5px 10px">77.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="5"><b>已发表</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">unet (Ensemble)</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">71.4</td><td style="border:1px solid var(--line);padding:5px 10px">74.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">SLQA+ (Single)</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">71.4</td><td style="border:1px solid var(--line);padding:5px 10px">74.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="5"><b>本文（Ours）</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>LARGE</sub> (Single)</td><td style="border:1px solid var(--line);padding:5px 10px">78.7</td><td style="border:1px solid var(--line);padding:5px 10px">81.9</td><td style="border:1px solid var(--line);padding:5px 10px">80.0</td><td style="border:1px solid var(--line);padding:5px 10px">83.1</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 3　SQuAD 2.0 结果。我们排除了把 BERT 用作组件之一的条目。</p>
+
+<p>与先前排行榜条目与顶级已发表工作 (Sun et al., 2018; Wang et al., 2018b) 的比较见表 3，其中排除了把 BERT 作为组件之一的系统。我们观察到相对此前最好系统有 +5.1 F1 的提升。</p>
+
+<h3 id="s44">4.4 SWAG</h3>
+<p>对抗生成情境（SWAG）数据集包含 113k 个句子对补全样例，用于评估有据常识推断 (Zellers et al., 2018)。给定一个句子，任务是在四个选项中选出最合理的续写。</p>
+<p>在 SWAG 数据集上微调时，我们构造四个输入序列，每个序列由给定句子（句子 A）与一个可能的续写（句子 B）拼接而成。引入的唯一任务特定参数是一个向量，它与 [CLS] token 表示 <i>C</i> 的点积表示每个选项的得分，并用 softmax 层归一化。</p>
+<p>我们以学习率 2e-5、批量大小 16 微调模型 3 个 epoch。结果见表 4。BERT<sub>LARGE</sub> 比作者给出的基线 ESIM+ELMo 系统高 +27.1%，比 OpenAI GPT 高 8.3%。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>系统</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>Dev</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>Test</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ESIM+GloVe</td><td style="border:1px solid var(--line);padding:5px 10px">51.9</td><td style="border:1px solid var(--line);padding:5px 10px">52.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ESIM+ELMo</td><td style="border:1px solid var(--line);padding:5px 10px">59.1</td><td style="border:1px solid var(--line);padding:5px 10px">59.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">OpenAI GPT</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">78.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>BASE</sub></td><td style="border:1px solid var(--line);padding:5px 10px">81.6</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>LARGE</sub></td><td style="border:1px solid var(--line);padding:5px 10px">86.6</td><td style="border:1px solid var(--line);padding:5px 10px">86.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Human (expert)<sup>†</sup></td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">85.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Human (5 annotations)<sup>†</sup></td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">88.0</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 4　SWAG 的 Dev 与 Test 准确率。<sup>†</sup>人类表现是用 100 个样本测得的，如 SWAG 论文所述。</p>
+
+<div class="fn">
+<p><sup>8</sup> 见 https://gluebenchmark.com/faq 中的第 (10) 条。</p>
+<p><sup>9</sup> GLUE 数据集的发布中不包含 Test 标签，我们对 BERT<sub>BASE</sub> 与 BERT<sub>LARGE</sub> 各只向 GLUE 评测服务器提交了一次。</p>
+<p><sup>10</sup> https://gluebenchmark.com/leaderboard</p>
+<p><sup>11</sup> QANet 在 Yu et al. (2018) 中有描述，但该系统在论文发表后已有大幅改进。</p>
+<p><sup>12</sup> 我们使用的 TriviaQA 数据由 TriviaQA-Wiki 的段落构成，取文档中前 400 个 token，且其中至少包含一个所提供可能答案。</p>
+</div>
+
+<h2 id="s5">5 消融研究</h2>
+<p>本节我们对 BERT 的若干方面做消融实验，以更好地理解它们的相对重要性。更多消融研究见附录 C。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2"><b>任务</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="5"><b>Dev 集</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px">MNLI-m (Acc)</td>
+<td style="border:1px solid var(--line);padding:5px 10px">QNLI (Acc)</td>
+<td style="border:1px solid var(--line);padding:5px 10px">MRPC (Acc)</td>
+<td style="border:1px solid var(--line);padding:5px 10px">SST-2 (Acc)</td>
+<td style="border:1px solid var(--line);padding:5px 10px">SQuAD (F1)</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>BASE</sub></td><td style="border:1px solid var(--line);padding:5px 10px">84.4</td><td style="border:1px solid var(--line);padding:5px 10px">88.4</td><td style="border:1px solid var(--line);padding:5px 10px">86.7</td><td style="border:1px solid var(--line);padding:5px 10px">92.7</td><td style="border:1px solid var(--line);padding:5px 10px">88.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">No NSP</td><td style="border:1px solid var(--line);padding:5px 10px">83.9</td><td style="border:1px solid var(--line);padding:5px 10px">84.9</td><td style="border:1px solid var(--line);padding:5px 10px">86.5</td><td style="border:1px solid var(--line);padding:5px 10px">92.6</td><td style="border:1px solid var(--line);padding:5px 10px">87.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">LTR &amp; No NSP</td><td style="border:1px solid var(--line);padding:5px 10px">82.1</td><td style="border:1px solid var(--line);padding:5px 10px">84.3</td><td style="border:1px solid var(--line);padding:5px 10px">77.5</td><td style="border:1px solid var(--line);padding:5px 10px">92.1</td><td style="border:1px solid var(--line);padding:5px 10px">77.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">+ BiLSTM</td><td style="border:1px solid var(--line);padding:5px 10px">82.1</td><td style="border:1px solid var(--line);padding:5px 10px">84.1</td><td style="border:1px solid var(--line);padding:5px 10px">75.7</td><td style="border:1px solid var(--line);padding:5px 10px">91.6</td><td style="border:1px solid var(--line);padding:5px 10px">84.9</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 5　用 BERT<sub>BASE</sub> 架构对预训练任务做消融。「No NSP」是不使用下一句预测任务训练的。「LTR &amp; No NSP」像 OpenAI GPT 那样作为从左到右的 LM 训练、且不使用下一句预测。「+ BiLSTM」在微调时于 LTR + No NSP 模型之上加一个随机初始化的 BiLSTM。</p>
+
+<h3 id="s51">5.1 预训练任务的影响</h3>
+<p>我们通过用与 BERT<sub>BASE</sub> 完全相同的预训练数据、微调方案与超参数评估两个预训练目标，来证明 BERT 深层双向性的重要性：</p>
+<p><b>No NSP</b>：一个使用「掩蔽 LM」（MLM）但没有「下一句预测」（NSP）任务训练的双向模型。</p>
+<p><b>LTR &amp; No NSP</b>：一个只使用左侧上下文的模型，用标准的从左到右（LTR）LM 而不是 MLM 训练。只使用左侧这一约束在微调时也被施加，因为去掉它会引入预训练/微调不匹配，从而损害下游性能。此外，该模型在没有 NSP 任务的情况下预训练。它与 OpenAI GPT 直接可比，但我们使用了更大的训练数据集、我们的输入表示以及我们的微调方案。</p>
+<p>我们首先考察 NSP 任务带来的影响。在表 5 中，我们看到去掉 NSP 会显著损害 QNLI、MNLI 和 SQuAD 1.1 上的性能。接下来，我们通过比较「No NSP」与「LTR &amp; No NSP」来评估双向表示训练的影响。LTR 模型在所有任务上都比 MLM 模型差，在 MRPC 与 SQuAD 上下降尤为明显。</p>
+<p>对 SQuAD 而言，直观上很清楚：LTR 模型在 token 预测上表现会较差，因为 token 级的隐藏状态没有右侧上下文。为了诚实地尝试增强 LTR 系统，我们在其上又加了一个随机初始化的 BiLSTM。这确实显著改善了 SQuAD 的结果，但仍远差于预训练双向模型的结果。BiLSTM 反而损害了 GLUE 任务上的性能。</p>
+<p>我们认识到，也可以训练彼此独立的 LTR 与 RTL 模型，并把每个 token 表示为两个模型输出的拼接，就像 ELMo 那样。然而：(a) 这比单个双向模型贵一倍；(b) 对 QA 这类任务不直观，因为 RTL 模型无法以问题为条件来生成答案；(c) 它严格弱于深层双向模型，因为后者在每一层都能同时利用左右上下文。</p>
+
+<h3 id="s52">5.2 模型规模的影响</h3>
+<p>本节我们探讨模型规模对微调任务准确率的影响。我们训练了若干层数、隐藏单元数与注意力头数不同的 BERT 模型，其他方面沿用与前述相同的超参数与训练过程。</p>
+<p>选定 GLUE 任务上的结果见表 6。表中我们报告 5 次随机重启微调的 Dev 集平均准确率。可以看到，更大的模型在全部四个数据集上带来一致的准确率提升，即使 MRPC 只有 3,600 个有标注训练样例、且与预训练任务差别很大也是如此。也许同样令人惊讶的是，在相对既有文献已经相当大的模型之上，我们仍能取得如此显著的改进。例如 Vaswani et al. (2017) 中探索的最大 Transformer 是 (<i>L</i>=6, <i>H</i>=1024, <i>A</i>=16)，编码器有 100M 参数；而我们在文献中找到的最大 Transformer 是 (<i>L</i>=64, <i>H</i>=512, <i>A</i>=2)，有 235M 参数 (Al-Rfou et al., 2018)。相比之下，BERT<sub>BASE</sub> 有 110M 参数，BERT<sub>LARGE</sub> 有 340M 参数。</p>
+<p>人们早就知道，增大模型规模会在大规模任务（如机器翻译与语言建模）上带来持续改进——表 6 中留出训练数据的 LM 困惑度也说明了这一点。然而我们相信，这是第一项令人信服地证明「扩展到极端模型规模也能在极小规模任务上带来大幅改进」的工作，前提是模型已被充分预训练。Peters et al. (2018b) 在把预训练 bi-LM 规模从两层增加到四层时，对下游任务的影响给出了混合的结果；Melamud et al. (2016) 顺带提到把隐藏维度从 200 增到 600 有帮助，但继续增到 1,000 没有带来进一步改进。这两项先前工作都使用基于特征的方法——我们推测，当模型直接在下游任务上微调、并且只使用极少量随机初始化的额外参数时，即使下游任务数据非常少，任务特定模型也能从更大、表达力更强的预训练表示中获益。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="4"><b>超参数</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="3"><b>Dev 集准确率</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px">#L</td>
+<td style="border:1px solid var(--line);padding:5px 10px">#H</td>
+<td style="border:1px solid var(--line);padding:5px 10px">#A</td>
+<td style="border:1px solid var(--line);padding:5px 10px">LM (ppl)</td>
+<td style="border:1px solid var(--line);padding:5px 10px">MNLI-m</td>
+<td style="border:1px solid var(--line);padding:5px 10px">MRPC</td>
+<td style="border:1px solid var(--line);padding:5px 10px">SST-2</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">768</td><td style="border:1px solid var(--line);padding:5px 10px">12</td><td style="border:1px solid var(--line);padding:5px 10px">5.84</td><td style="border:1px solid var(--line);padding:5px 10px">77.9</td><td style="border:1px solid var(--line);padding:5px 10px">79.8</td><td style="border:1px solid var(--line);padding:5px 10px">88.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">6</td><td style="border:1px solid var(--line);padding:5px 10px">768</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">5.24</td><td style="border:1px solid var(--line);padding:5px 10px">80.6</td><td style="border:1px solid var(--line);padding:5px 10px">82.2</td><td style="border:1px solid var(--line);padding:5px 10px">90.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">6</td><td style="border:1px solid var(--line);padding:5px 10px">768</td><td style="border:1px solid var(--line);padding:5px 10px">12</td><td style="border:1px solid var(--line);padding:5px 10px">4.68</td><td style="border:1px solid var(--line);padding:5px 10px">81.9</td><td style="border:1px solid var(--line);padding:5px 10px">84.8</td><td style="border:1px solid var(--line);padding:5px 10px">91.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">12</td><td style="border:1px solid var(--line);padding:5px 10px">768</td><td style="border:1px solid var(--line);padding:5px 10px">12</td><td style="border:1px solid var(--line);padding:5px 10px">3.99</td><td style="border:1px solid var(--line);padding:5px 10px">84.4</td><td style="border:1px solid var(--line);padding:5px 10px">86.7</td><td style="border:1px solid var(--line);padding:5px 10px">92.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">12</td><td style="border:1px solid var(--line);padding:5px 10px">1024</td><td style="border:1px solid var(--line);padding:5px 10px">16</td><td style="border:1px solid var(--line);padding:5px 10px">3.54</td><td style="border:1px solid var(--line);padding:5px 10px">85.7</td><td style="border:1px solid var(--line);padding:5px 10px">86.9</td><td style="border:1px solid var(--line);padding:5px 10px">93.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">24</td><td style="border:1px solid var(--line);padding:5px 10px">1024</td><td style="border:1px solid var(--line);padding:5px 10px">16</td><td style="border:1px solid var(--line);padding:5px 10px">3.23</td><td style="border:1px solid var(--line);padding:5px 10px">86.6</td><td style="border:1px solid var(--line);padding:5px 10px">87.8</td><td style="border:1px solid var(--line);padding:5px 10px">93.7</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 6　对 BERT 模型规模的消融。#L = 层数；#H = 隐藏层大小；#A = 注意力头数。「LM (ppl)」是留出训练数据的掩蔽 LM 困惑度。</p>
+
+<h3 id="s53">5.3 基于特征方法的 BERT</h3>
+<p>到目前为止给出的所有 BERT 结果都使用微调方法：在预训练模型上加一个简单的分类层，并在下游任务上联合微调所有参数。然而，基于特征的方法——即从预训练模型中提取固定特征——具有某些优势。第一，并非所有任务都能方便地用 Transformer 编码器架构表示，因此需要额外添加任务特定模型架构。第二，一次性预先计算训练数据的昂贵表示、然后在其上用更便宜的模型做大量实验，有可观的算力优势。</p>
+<p>本节我们通过把 BERT 用于 CoNLL-2003 命名实体识别（NER）任务 (Tjong Kim Sang and De Meulder, 2003) 来比较两种方法。在 BERT 的输入中，我们使用保留大小写的 WordPiece 模型，并包含数据能提供的最大文档上下文。按标准做法，我们把它表述为标注任务，但输出不使用 CRF 层。我们用第一个子 token 的表示作为 token 级分类器在 NER 标签集上的输入。</p>
+<p>为对微调方法做消融，我们应用基于特征的方法：从一层或多层中提取激活，而不微调 BERT 的任何参数。这些上下文嵌入被用作随机初始化的两层 768 维 BiLSTM 的输入，之后接分类层。</p>
+<p>结果见表 7。BERT<sub>LARGE</sub> 的表现与当时最好的方法相当。表现最好的方法把预训练 Transformer 顶部四个隐藏层的 token 表示拼接起来，只比微调整个模型低 0.3 F1。这表明 BERT 对微调与基于特征两种方法都有效。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>系统</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>Dev F1</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>Test F1</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ELMo (Peters et al., 2018a)</td><td style="border:1px solid var(--line);padding:5px 10px">95.7</td><td style="border:1px solid var(--line);padding:5px 10px">92.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">CVT (Clark et al., 2018)</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">92.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">CSE (Akbik et al., 2018)</td><td style="border:1px solid var(--line);padding:5px 10px">-</td><td style="border:1px solid var(--line);padding:5px 10px">93.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="3"><b>微调方法（Fine-tuning approach）</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>LARGE</sub></td><td style="border:1px solid var(--line);padding:5px 10px">96.6</td><td style="border:1px solid var(--line);padding:5px 10px">92.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">BERT<sub>BASE</sub></td><td style="border:1px solid var(--line);padding:5px 10px">96.4</td><td style="border:1px solid var(--line);padding:5px 10px">92.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="3"><b>基于特征的方法（BERT<sub>BASE</sub>）</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Embeddings</td><td style="border:1px solid var(--line);padding:5px 10px">91.0</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Second-to-Last Hidden</td><td style="border:1px solid var(--line);padding:5px 10px">95.6</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Last Hidden</td><td style="border:1px solid var(--line);padding:5px 10px">94.9</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Weighted Sum Last Four Hidden</td><td style="border:1px solid var(--line);padding:5px 10px">95.9</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Concat Last Four Hidden</td><td style="border:1px solid var(--line);padding:5px 10px">96.1</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Weighted Sum All 12 Layers</td><td style="border:1px solid var(--line);padding:5px 10px">95.5</td><td style="border:1px solid var(--line);padding:5px 10px">-</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 7　CoNLL-2003 命名实体识别结果。超参数用 Dev 集选择。报告的 Dev 与 Test 分数是用这些超参数做 5 次随机重启的平均。</p>
+
+<h2 id="s6">6 结论</h2>
+<p>近期因语言模型迁移学习而取得的经验性改进表明，丰富的无监督预训练是许多语言理解系统不可分割的一部分。特别地，这些结果使低资源任务也能从深层单向架构中获益。我们的主要贡献是进一步把这些发现推广到深层双向架构，使同一个预训练模型能够成功应对广泛的一类 NLP 任务。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按要求，参考文献整节保留英文原文，未作翻译。</p>
+<div class="refs"><ol>
+<li>Alan Akbik, Duncan Blythe, and Roland Vollgraf. 2018. Contextual string embeddings for sequence labeling. In Proceedings of the 27th International Conference on Computational Linguistics, pages 1638–1649.</li>
+<li>Rami Al-Rfou, Dokook Choe, Noah Constant, Mandy Guo, and Llion Jones. 2018. Character-level language modeling with deeper self-attention. arXiv preprint arXiv:1808.04444.</li>
+<li>Rie Kubota Ando and Tong Zhang. 2005. A framework for learning predictive structures from multiple tasks and unlabeled data. Journal of Machine Learning Research, 6(Nov):1817–1853.</li>
+<li>Luisa Bentivogli, Bernardo Magnini, Ido Dagan, Hoa Trang Dang, and Danilo Giampiccolo. 2009. The fifth PASCAL recognizing textual entailment challenge. In TAC. NIST.</li>
+<li>John Blitzer, Ryan McDonald, and Fernando Pereira. 2006. Domain adaptation with structural correspondence learning. In Proceedings of the 2006 conference on empirical methods in natural language processing, pages 120–128. Association for Computational Linguistics.</li>
+<li>Samuel R. Bowman, Gabor Angeli, Christopher Potts, and Christopher D. Manning. 2015. A large annotated corpus for learning natural language inference. In EMNLP. Association for Computational Linguistics.</li>
+<li>Peter F Brown, Peter V Desouza, Robert L Mercer, Vincent J Della Pietra, and Jenifer C Lai. 1992. Class-based n-gram models of natural language. Computational linguistics, 18(4):467–479.</li>
+<li>Daniel Cer, Mona Diab, Eneko Agirre, Inigo Lopez-Gazpio, and Lucia Specia. 2017. Semeval-2017 task 1: Semantic textual similarity multilingual and crosslingual focused evaluation. In Proceedings of the 11th International Workshop on Semantic Evaluation (SemEval-2017), pages 1–14, Vancouver, Canada. Association for Computational Linguistics.</li>
+<li>Ciprian Chelba, Tomas Mikolov, Mike Schuster, Qi Ge, Thorsten Brants, Phillipp Koehn, and Tony Robinson. 2013. One billion word benchmark for measuring progress in statistical language modeling. arXiv preprint arXiv:1312.3005.</li>
+<li>Z. Chen, H. Zhang, X. Zhang, and L. Zhao. 2018. Quora question pairs.</li>
+<li>Christopher Clark and Matt Gardner. 2018. Simple and effective multi-paragraph reading comprehension. In ACL.</li>
+<li>Kevin Clark, Minh-Thang Luong, Christopher D Manning, and Quoc Le. 2018. Semi-supervised sequence modeling with cross-view training. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pages 1914–1925.</li>
+<li>Ronan Collobert and Jason Weston. 2008. A unified architecture for natural language processing: Deep neural networks with multitask learning. In Proceedings of the 25th international conference on Machine learning, pages 160–167. ACM.</li>
+<li>Alexis Conneau, Douwe Kiela, Holger Schwenk, Loïc Barrault, and Antoine Bordes. 2017. Supervised learning of universal sentence representations from natural language inference data. In Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing, pages 670–680, Copenhagen, Denmark. Association for Computational Linguistics.</li>
+<li>Andrew M Dai and Quoc V Le. 2015. Semi-supervised sequence learning. In Advances in neural information processing systems, pages 3079–3087.</li>
+<li>J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei. 2009. ImageNet: A Large-Scale Hierarchical Image Database. In CVPR09.</li>
+<li>William B Dolan and Chris Brockett. 2005. Automatically constructing a corpus of sentential paraphrases. In Proceedings of the Third International Workshop on Paraphrasing (IWP2005).</li>
+<li>William Fedus, Ian Goodfellow, and Andrew M Dai. 2018. Maskgan: Better text generation via filling in the _. arXiv preprint arXiv:1801.07736.</li>
+<li>Dan Hendrycks and Kevin Gimpel. 2016. Bridging nonlinearities and stochastic regularizers with gaussian error linear units. CoRR, abs/1606.08415.</li>
+<li>Felix Hill, Kyunghyun Cho, and Anna Korhonen. 2016. Learning distributed representations of sentences from unlabelled data. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies. Association for Computational Linguistics.</li>
+<li>Jeremy Howard and Sebastian Ruder. 2018. Universal language model fine-tuning for text classification. In ACL. Association for Computational Linguistics.</li>
+<li>Minghao Hu, Yuxing Peng, Zhen Huang, Xipeng Qiu, Furu Wei, and Ming Zhou. 2018. Reinforced mnemonic reader for machine reading comprehension. In IJCAI.</li>
+<li>Yacine Jernite Samuel R Bowman and David Sontag. 2017. Discourse-based objectives for fast unsupervised sentence representation learning. CoRR, abs/1705.00557.</li>
+<li>Mandar Joshi, Eunsol Choi, Daniel S Weld, and Luke Zettlemoyer. 2017. Triviaqa: A large scale distantly supervised challenge dataset for reading comprehension. In ACL.</li>
+<li>Ryan Kiros, Yukun Zhu, Ruslan R Salakhutdinov, Richard Zemel, Raquel Urtasun, Antonio Torralba, and Sanja Fidler. 2015. Skip-thought vectors. In Advances in neural information processing systems, pages 3294–3302.</li>
+<li>Quoc Le and Tomas Mikolov. 2014. Distributed representations of sentences and documents. In International Conference on Machine Learning, pages 1188–1196.</li>
+<li>Hector J Levesque, Ernest Davis, and Leora Morgenstern. 2011. The winograd schema challenge. In AAAI spring symposium: Logical formalizations of commonsense reasoning, volume 46, page 47.</li>
+<li>Lajanugen Logeswaran and Honglak Lee. 2018. An efficient framework for learning sentence representations. In International Conference on Learning Representations.</li>
+<li>Bryan McCann, James Bradbury, Caiming Xiong, and Richard Socher. 2017. Learned in translation: Contextualized word vectors. In NIPS.</li>
+<li>Oren Melamud, Jacob Goldberger, and Ido Dagan. 2016. context2vec: Learning generic context embedding with bidirectional LSTM. In CoNLL.</li>
+<li>Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg S Corrado, and Jeff Dean. 2013. Distributed representations of words and phrases and their compositionality. In Advances in Neural Information Processing Systems 26, pages 3111–3119. Curran Associates, Inc.</li>
+<li>Andriy Mnih and Geoffrey E Hinton. 2009. A scalable hierarchical distributed language model. In D. Koller, D. Schuurmans, Y. Bengio, and L. Bottou, editors, Advances in Neural Information Processing Systems 21, pages 1081–1088. Curran Associates, Inc.</li>
+<li>Ankur P Parikh, Oscar Täckström, Dipanjan Das, and Jakob Uszkoreit. 2016. A decomposable attention model for natural language inference. In EMNLP.</li>
+<li>Jeffrey Pennington, Richard Socher, and Christopher D. Manning. 2014. Glove: Global vectors for word representation. In Empirical Methods in Natural Language Processing (EMNLP), pages 1532–1543.</li>
+<li>Matthew Peters, Waleed Ammar, Chandra Bhagavatula, and Russell Power. 2017. Semi-supervised sequence tagging with bidirectional language models. In ACL.</li>
+<li>Matthew Peters, Mark Neumann, Mohit Iyyer, Matt Gardner, Christopher Clark, Kenton Lee, and Luke Zettlemoyer. 2018a. Deep contextualized word representations. In NAACL.</li>
+<li>Matthew Peters, Mark Neumann, Luke Zettlemoyer, and Wen-tau Yih. 2018b. Dissecting contextual word embeddings: Architecture and representation. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing, pages 1499–1509.</li>
+<li>Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever. 2018. Improving language understanding with unsupervised learning. Technical report, OpenAI.</li>
+<li>Pranav Rajpurkar, Jian Zhang, Konstantin Lopyrev, and Percy Liang. 2016. Squad: 100,000+ questions for machine comprehension of text. In Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing, pages 2383–2392.</li>
+<li>Minjoon Seo, Aniruddha Kembhavi, Ali Farhadi, and Hannaneh Hajishirzi. 2017. Bidirectional attention flow for machine comprehension. In ICLR.</li>
+<li>Richard Socher, Alex Perelygin, Jean Wu, Jason Chuang, Christopher D Manning, Andrew Ng, and Christopher Potts. 2013. Recursive deep models for semantic compositionality over a sentiment treebank. In Proceedings of the 2013 conference on empirical methods in natural language processing, pages 1631–1642.</li>
+<li>Fu Sun, Linyang Li, Xipeng Qiu, and Yang Liu. 2018. U-net: Machine reading comprehension with unanswerable questions. arXiv preprint 1810.06638.</li>
+<li>Wilson L Taylor. 1953. Cloze procedure: A new tool for measuring readability. Journalism Bulletin, 30(4):415–433.</li>
+<li>Erik F Tjong Kim Sang and Fien De Meulder. 2003. Introduction to the conll-2003 shared task: Language-independent named entity recognition. In CoNLL.</li>
+<li>Joseph Turian, Lev Ratinov, and Yoshua Bengio. 2010. Word representations: A simple and general method for semi-supervised learning. In Proceedings of the 48th Annual Meeting of the Association for Computational Linguistics, ACL '10, pages 384–394.</li>
+<li>Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Lukasz Kaiser, and Illia Polosukhin. 2017. Attention is all you need. In Advances in Neural Information Processing Systems, pages 6000–6010.</li>
+<li>Pascal Vincent, Hugo Larochelle, Yoshua Bengio, and Pierre-Antoine Manzagol. 2008. Extracting and composing robust features with denoising autoencoders. In Proceedings of the 25th international conference on Machine learning, pages 1096–1103. ACM.</li>
+<li>Alex Wang, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel Bowman. 2018a. Glue: A multi-task benchmark and analysis platform for natural language understanding. In Proceedings of the 2018 EMNLP Workshop BlackboxNLP: Analyzing and Interpreting Neural Networks for NLP, pages 353–355.</li>
+<li>Wei Wang, Ming Yan, and Chen Wu. 2018b. Multigranularity hierarchical attention fusion networks for reading comprehension and question answering. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers). Association for Computational Linguistics.</li>
+<li>Alex Warstadt, Amanpreet Singh, and Samuel R Bowman. 2018. Neural network acceptability judgments. arXiv preprint arXiv:1805.12471.</li>
+<li>Adina Williams, Nikita Nangia, and Samuel R Bowman. 2018. A broad-coverage challenge corpus for sentence understanding through inference. In NAACL.</li>
+<li>Yonghui Wu, Mike Schuster, Zhifeng Chen, Quoc V Le, Mohammad Norouzi, Wolfgang Macherey, Maxim Krikun, Yuan Cao, Qin Gao, Klaus Macherey, et al. 2016. Google's neural machine translation system: Bridging the gap between human and machine translation. arXiv preprint arXiv:1609.08144.</li>
+<li>Jason Yosinski, Jeff Clune, Yoshua Bengio, and Hod Lipson. 2014. How transferable are features in deep neural networks? In Advances in neural information processing systems, pages 3320–3328.</li>
+<li>Adams Wei Yu, David Dohan, Minh-Thang Luong, Rui Zhao, Kai Chen, Mohammad Norouzi, and Quoc V Le. 2018. QANet: Combining local convolution with global self-attention for reading comprehension. In ICLR.</li>
+<li>Rowan Zellers, Yonatan Bisk, Roy Schwartz, and Yejin Choi. 2018. Swag: A large-scale adversarial dataset for grounded commonsense inference. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing (EMNLP).</li>
+<li>Yukun Zhu, Ryan Kiros, Rich Zemel, Ruslan Salakhutdinov, Raquel Urtasun, Antonio Torralba, and Sanja Fidler. 2015. Aligning books and movies: Towards story-like visual explanations by watching movies and reading books. In Proceedings of the IEEE international conference on computer vision, pages 19–27.</li>
+</ol></div>
+
+<h2 id="appx">附录：BERT 的更多细节</h2>
+<p>我们把附录组织为三节：</p>
+<ul>
+<li>BERT 的额外实现细节见<a href="#appa">附录 A</a>；</li>
+<li>实验的额外细节见<a href="#appb">附录 B</a>；</li>
+<li>额外的消融研究见<a href="#appc">附录 C</a>。</li>
+</ul>
+<p>我们给出 BERT 的额外消融研究，包括：</p>
+<ul>
+<li>训练步数的影响；以及</li>
+<li>不同掩蔽过程的消融。</li>
+</ul>
+
+<h2 id="appa">A BERT 的额外细节</h2>
+<h3 id="appa1">A.1 预训练任务示例</h3>
+<p>下面给出预训练任务的例子。</p>
+<p><b>掩蔽 LM 与掩蔽过程</b>　假设无标注句子是 <code>my dog is hairy</code>，在随机掩蔽过程中我们选中了第 4 个 token（对应 hairy），我们的掩蔽过程可进一步说明为</p>
+<ul>
+<li><b>80%</b> 的时间：用 [MASK] token 替换该词，例如 <code>my dog is hairy → my dog is [MASK]</code></li>
+<li><b>10%</b> 的时间：用一个随机词替换该词，例如 <code>my dog is hairy → my dog is apple</code></li>
+<li><b>10%</b> 的时间：保持该词不变，例如 <code>my dog is hairy → my dog is hairy</code>。这样做的目的是让表示偏向实际观察到的词。</li>
+</ul>
+<p>这一过程的好处是：Transformer 编码器不知道它会被要求预测哪些词，也不知道哪些词被随机词替换过，因此它被迫为每个输入 token 保持一个分布式的上下文表示。此外，由于随机替换只发生在全部 token 的 1.5% 上（即 15% 的 10%），这似乎不会损害模型的语言理解能力。我们在 C.2 节评估这一过程的影响。</p>
+<p>与标准语言模型训练相比，掩蔽 LM 在每个批次中只对 15% 的 token 做预测，这意味着模型可能需要更多预训练步数才能收敛。我们在 C.1 节表明，MLM 的收敛确实略慢于从左到右模型（后者预测每个 token），但 MLM 模型在经验上的改进远远超过增加的训练成本。</p>
+
+<figure id="fig3"><img src="images/fig3.png" alt="Differences in pre-training model architectures">
+<figcaption><span class="lab">图 3</span>预训练模型架构的差异。BERT 使用双向 Transformer。OpenAI GPT 使用从左到右的 Transformer。ELMo 使用独立训练的从左到右与从右到左 LSTM 的拼接，为下游任务生成特征。三者之中，只有 BERT 的表示在每一层都同时以左右上下文为条件。除架构差异之外，BERT 与 OpenAI GPT 是微调方法，而 ELMo 是基于特征的方法。</figcaption></figure>
+
+<p><b>下一句预测</b>　下一句预测任务可用以下示例说明。</p>
+<div class="alg"><div class="cap">下一句预测（NSP）示例</div>
+<pre style="margin:0;white-space:pre-wrap;font-size:13.5px;line-height:1.9">Input  = [CLS] the man went to [MASK] store [SEP]
+         he bought a gallon [MASK] milk [SEP]
+Label  = IsNext
+
+Input  = [CLS] the man [MASK] to the store [SEP]
+         penguin [MASK] are flight ##less birds [SEP]
+Label  = NotNext</pre></div>
+
+<h3 id="appa2">A.2 预训练过程</h3>
+<p>为生成每个训练输入序列，我们从语料中采样两段文本，称之为「句子」，尽管它们通常比单个句子长得多（也可能更短）。第一个句子接受 A 嵌入，第二个接受 B 嵌入。50% 的时间 B 是紧随 A 的真实下一句，50% 的时间它是随机句子，这是为「下一句预测」任务服务的。采样时要求两者合并长度 ≤ 512 个 token。LM 掩蔽在 WordPiece 分词之后施加，掩蔽率统一为 15%，对不完整的词片段不做特殊考虑。</p>
+<p>我们用批量大小 256 个序列（256 序列 × 512 token = 128,000 token/批）训练 1,000,000 步，约相当于在 33 亿词的语料上训练 40 个 epoch。我们使用 Adam，学习率 1e-4，β<sub>1</sub> = 0.9，β<sub>2</sub> = 0.999，L2 权重衰减 0.01，前 10,000 步做学习率预热，然后线性衰减学习率。我们在所有层上使用 0.1 的 dropout 概率。按照 OpenAI GPT 的做法，我们使用 gelu 激活 (Hendrycks and Gimpel, 2016) 而不是标准 relu。训练损失是掩蔽 LM 似然均值与下一句预测似然均值之和。</p>
+<p>BERT<sub>BASE</sub> 的训练在 4 块 Pod 配置的 Cloud TPU（共 16 个 TPU 芯片）上进行<span class="tn" data-tip="译者注：原文脚注 13，见本节末">13</span>。BERT<sub>LARGE</sub> 的训练在 16 块 Cloud TPU（共 64 个 TPU 芯片）上进行。每次预训练需要 4 天完成。</p>
+<p>较长的序列会不成比例地昂贵，因为注意力对序列长度是二次的。为加速我们实验中的预训练，我们在 90% 的步数上用序列长度 128 预训练模型。然后，我们用剩余的 10% 步数在长度为 512 的序列上训练，以学习位置嵌入。</p>
+<div class="fn">
+<p><sup>13</sup> https://cloudplatform.googleblog.com/2018/06/Cloud-TPU-now-offers-preemptible-pricing-and-global-availability.html</p>
+</div>
+
+<h3 id="appa3">A.3 微调过程</h3>
+<p>微调时，除批量大小、学习率与训练 epoch 数之外，大多数模型超参数与预训练相同。dropout 概率始终保持 0.1。最优超参数取值是任务特定的，但我们发现以下取值范围在所有任务上都表现良好：</p>
+<ul>
+<li>批量大小：16、32</li>
+<li>学习率（Adam）：5e-5、3e-5、2e-5</li>
+<li>epoch 数：2、3、4</li>
+</ul>
+<p>我们还观察到，大数据集（例如 10 万以上有标注训练样例）对超参数选择远不如小数据集敏感。微调通常非常快，因此对上述参数做穷举搜索、并选择在开发集上表现最好的模型是合理的。</p>
+
+<h3 id="appa4">A.4 BERT、ELMo 与 OpenAI GPT 的比较</h3>
+<p>这里我们研究几种近期流行的表示学习模型之间的差异，包括 ELMo、OpenAI GPT 与 BERT。模型架构之间的比较在视觉上见图 3。注意除架构差异之外，BERT 与 OpenAI GPT 是微调方法，而 ELMo 是基于特征的方法。</p>
+<p>与 BERT 最可比的现有预训练方法是 OpenAI GPT，它在大规模文本语料上训练一个从左到右的 Transformer LM。事实上，BERT 中的许多设计决策都是有意做得尽量接近 GPT，以便二者的比较尽量少受干扰。本工作的核心论点是：3.1 节所给出的双向性以及两个预训练任务解释了大部分经验性改进。但我们也注意到 BERT 与 GPT 的训练方式还有若干其他差异：</p>
+<ul>
+<li>GPT 在 BooksCorpus（8 亿词）上训练；BERT 在 BooksCorpus（8 亿词）与 Wikipedia（25 亿词）上训练。</li>
+<li>GPT 使用的句子分隔符（[SEP]）与分类 token（[CLS]）只在微调时才引入；BERT 在预训练中就学习 [SEP]、[CLS] 以及句子 A/B 嵌入。</li>
+<li>GPT 用批量大小 32,000 词训练了 1M 步；BERT 用批量大小 128,000 词训练了 1M 步。</li>
+<li>GPT 在所有微调实验中使用相同的学习率 5e-5；BERT 选择在开发集上表现最好的任务特定微调学习率。</li>
+</ul>
+<p>为隔离这些差异的影响，我们在 5.1 节做了消融实验，表明大部分改进实际上来自两个预训练任务以及它们所带来的双向性。</p>
+
+<h3 id="appa5">A.5 不同任务的微调示意</h3>
+<p>在不同任务上微调 BERT 的示意见图 4。我们的任务特定模型由一个额外的输出层与 BERT 组合而成，因此需要从零学习的参数极少。这些任务中，(a) 与 (b) 是序列级任务，而 (c) 与 (d) 是 token 级任务。图中 <i>E</i> 表示输入嵌入，<i>T</i><sub>i</sub> 表示第 <i>i</i> 个 token 的上下文表示，[CLS] 是用于分类输出的特殊符号，[SEP] 是用于分隔非连续 token 序列的特殊符号。</p>
+
+<figure id="fig4"><img src="images/fig4.png" alt="Illustrations of Fine-tuning BERT on Different Tasks">
+<figcaption><span class="lab">图 4</span>在不同任务上微调 BERT 的示意。</figcaption></figure>
+
+<div class="hint" style="margin-top:-6px">图 4 中的任务分组（按原文文字所列）：<br>
+(a) 句子对分类任务：MNLI、QQP、QNLI、STS-B、MRPC、RTE、SWAG<br>
+(b) 单句分类任务：SST-2、CoLA<br>
+(d) 单句标注任务：CoNLL-2003 NER<br>
+<span class="tn" data-tip="译者注：源 PDF 的解析文本中未出现 (c) 组的文字行，其余分组请以图 4 本身为准">译注</span></div>
+
+<h2 id="appb">B 详细实验设置</h2>
+<h3 id="appb1">B.1 GLUE 基准实验的详细描述</h3>
+<p>我们在表 1 中的 GLUE 结果来自 https://gluebenchmark.com/leaderboard 与 https://blog.openai.com/language-unsupervised。GLUE 基准包含以下数据集，其描述最初汇总于 Wang et al. (2018a)：</p>
+<p><b>MNLI</b>　多体裁自然语言推断（Multi-Genre Natural Language Inference）是一个大规模、众包的蕴含分类任务 (Williams et al., 2018)。给定一对句子，目标是预测第二个句子相对第一个句子是蕴含、矛盾还是中立。</p>
+<p><b>QQP</b>　Quora 问题对（Quora Question Pairs）是一个二分类任务，目标是判断 Quora 上提出的两个问题在语义上是否等价 (Chen et al., 2018)。</p>
+<p><b>QNLI</b>　问题自然语言推断（Question Natural Language Inference）是斯坦福问答数据集 (Rajpurkar et al., 2016) 的一个版本，已被转换为二分类任务 (Wang et al., 2018a)。正例是确实包含正确答案的（问题，句子）对，负例是来自同一段落但不包含答案的（问题，句子）对。</p>
+<p><b>SST-2</b>　斯坦福情感树库（Stanford Sentiment Treebank）是一个二分类单句分类任务，句子取自电影评论，并有人工标注的情感极向 (Socher et al., 2013)。</p>
+<p><b>CoLA</b>　语言可接受性语料库（Corpus of Linguistic Acceptability）是一个二分类单句分类任务，目标是预测一个英语句子在语言学上是否「可接受」 (Warstadt et al., 2018)。</p>
+<p><b>STS-B</b>　语义文本相似度基准（Semantic Textual Similarity Benchmark）是取自新闻标题及其他来源的句子对集合 (Cer et al., 2017)。它们被标注了 1 到 5 的分数，表示两个句子在语义上的相似程度。</p>
+<p><b>MRPC</b>　微软研究释义语料库（Microsoft Research Paraphrase Corpus）由从在线新闻来源自动抽取的句子对组成，并有人工标注判断句对中的两句是否语义等价 (Dolan and Brockett, 2005)。</p>
+<p><b>RTE</b>　文本蕴含识别（Recognizing Textual Entailment）是一个与 MNLI 类似的二分类蕴含任务，但训练数据少得多 (Bentivogli et al., 2009)<span class="tn" data-tip="译者注：原文脚注 14，见本节末">14</span>。</p>
+<p><b>WNLI</b>　Winograd NLI 是一个小的自然语言推断数据集 (Levesque et al., 2011)。GLUE 网页指出该数据集的构造存在问题<span class="tn" data-tip="译者注：原文脚注 15，见本节末">15</span>，而每个提交到 GLUE 的训练系统表现都差于「预测多数类」的 65.1 基线准确率。因此为对 OpenAI GPT 公平，我们排除了该集合。对我们的 GLUE 提交，我们始终预测多数类。</p>
+<div class="fn">
+<p><sup>14</sup> 注意本文只报告单任务微调的结果。多任务微调方法有可能把性能推得更高。例如我们确实观察到，与 MNLI 一起做多任务训练后，RTE 上有大幅改进。</p>
+<p><sup>15</sup> https://gluebenchmark.com/faq</p>
+</div>
+
+<h2 id="appc">C 额外的消融研究</h2>
+<h3 id="appc1">C.1 训练步数的影响</h3>
+<p>图 5 给出从一个已预训练 <i>k</i> 步的检查点出发微调后，MNLI 的 Dev 准确率。这让我们能回答以下问题：</p>
+<ol>
+<li><b>问题</b>：BERT 是否真的需要如此大量的预训练（128,000 词/批 × 1,000,000 步）才能达到较高的微调准确率？<br><b>回答</b>：需要。与 500k 步相比，BERT<sub>BASE</sub> 在 1M 步上训练时，MNLI 准确率额外提升近 1.0%。</li>
+<li><b>问题</b>：由于每个批次只预测 15% 的词而不是每个词，MLM 预训练是否比 LTR 预训练收敛更慢？<br><b>回答</b>：MLM 模型确实比 LTR 模型收敛略慢。但就绝对准确率而言，MLM 模型几乎立即开始超过 LTR 模型。</li>
+</ol>
+
+<figure id="fig5"><img src="images/fig5.png" alt="Ablation over number of training steps">
+<figcaption><span class="lab">图 5</span>对训练步数的消融。图中显示从已预训练 <i>k</i> 步的模型参数出发微调后的 MNLI 准确率。横轴是 <i>k</i> 的取值。</figcaption></figure>
+
+<h3 id="appc2">C.2 不同掩蔽过程的消融</h3>
+<p>在 3.1 节中我们提到，用掩蔽语言模型（MLM）目标预训练时，BERT 对目标 token 的掩蔽采用了一种混合策略。下面是一项消融研究，评估不同掩蔽策略的效果。</p>
+<p>注意掩蔽策略的目的是减小预训练与微调之间的不匹配，因为 [MASK] 符号在微调阶段从不出现。我们报告 MNLI 与 NER 的 Dev 结果。对 NER，我们同时报告微调与基于特征两种方法，因为我们预期这种不匹配在基于特征的方法中会被放大，因为模型没有机会调整表示。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="3"><b>掩蔽率</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="3"><b>Dev 集结果</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px">MASK</td>
+<td style="border:1px solid var(--line);padding:5px 10px">SAME</td>
+<td style="border:1px solid var(--line);padding:5px 10px">RND</td>
+<td style="border:1px solid var(--line);padding:5px 10px">MNLI 微调</td>
+<td style="border:1px solid var(--line);padding:5px 10px">NER 微调</td>
+<td style="border:1px solid var(--line);padding:5px 10px">基于特征</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">80%</td><td style="border:1px solid var(--line);padding:5px 10px">10%</td><td style="border:1px solid var(--line);padding:5px 10px">10%</td><td style="border:1px solid var(--line);padding:5px 10px">84.2</td><td style="border:1px solid var(--line);padding:5px 10px">95.4</td><td style="border:1px solid var(--line);padding:5px 10px">94.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">100%</td><td style="border:1px solid var(--line);padding:5px 10px">0%</td><td style="border:1px solid var(--line);padding:5px 10px">0%</td><td style="border:1px solid var(--line);padding:5px 10px">84.3</td><td style="border:1px solid var(--line);padding:5px 10px">94.9</td><td style="border:1px solid var(--line);padding:5px 10px">94.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">80%</td><td style="border:1px solid var(--line);padding:5px 10px">0%</td><td style="border:1px solid var(--line);padding:5px 10px">20%</td><td style="border:1px solid var(--line);padding:5px 10px">84.1</td><td style="border:1px solid var(--line);padding:5px 10px">95.2</td><td style="border:1px solid var(--line);padding:5px 10px">94.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">80%</td><td style="border:1px solid var(--line);padding:5px 10px">20%</td><td style="border:1px solid var(--line);padding:5px 10px">0%</td><td style="border:1px solid var(--line);padding:5px 10px">84.4</td><td style="border:1px solid var(--line);padding:5px 10px">95.2</td><td style="border:1px solid var(--line);padding:5px 10px">94.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">0%</td><td style="border:1px solid var(--line);padding:5px 10px">20%</td><td style="border:1px solid var(--line);padding:5px 10px">80%</td><td style="border:1px solid var(--line);padding:5px 10px">83.7</td><td style="border:1px solid var(--line);padding:5px 10px">94.8</td><td style="border:1px solid var(--line);padding:5px 10px">94.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">0%</td><td style="border:1px solid var(--line);padding:5px 10px">0%</td><td style="border:1px solid var(--line);padding:5px 10px">100%</td><td style="border:1px solid var(--line);padding:5px 10px">83.6</td><td style="border:1px solid var(--line);padding:5px 10px">94.9</td><td style="border:1px solid var(--line);padding:5px 10px">94.6</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 8　不同掩蔽策略的消融。</p>
+
+<p>结果见表 8。表中 MASK 表示我们用 [MASK] 符号替换目标 token 用于 MLM；SAME 表示保持目标 token 不变；RND 表示用另一个随机 token 替换目标 token。</p>
+<p>表左半部分的数字表示 MLM 预训练时所用具体策略的概率（BERT 使用 80%、10%、10%）。右半部分给出 Dev 结果。对基于特征的方法，我们把 BERT 最后 4 层拼接起来作为特征，5.3 节表明这是最好的做法。</p>
+<p>从表中可以看出，微调对不同掩蔽策略的鲁棒性出人意料地强。然而如预期那样，把基于特征的方法用于 NER 时，只用 MASK 策略会带来问题。有趣的是，只用 RND 策略的表现也远差于我们的策略。</p>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　BERT 的整体预训练与微调流程（2.2 节）</li>
+<li><a href="#fig2">图 2</a>　BERT 的输入表示：token、片段与位置嵌入之和（3 节）</li>
+<li><a href="#fig3">图 3</a>　预训练模型架构的差异：BERT / OpenAI GPT / ELMo（附录 A.4）</li>
+<li><a href="#fig4">图 4</a>　在不同任务上微调 BERT 的示意（附录 A.5）</li>
+<li><a href="#fig5">图 5</a>　对训练步数的消融：预训练 k 步后微调的 MNLI 准确率（附录 C.1）</li>
+</ol>
+<p style="margin-top:10px">表 1 GLUE 测试结果（4.1 节）、表 2 SQuAD 1.1（4.2 节）、表 3 SQuAD 2.0（4.3 节）、表 4 SWAG（4.4 节）、表 5 预训练任务消融（5 节）、表 6 模型规模消融（5.2 节）、表 7 CoNLL-2003 NER（5.3 节）、表 8 掩蔽策略消融（附录 C.2）已在正文中直接排出。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译；原文脚注按位置保留并译出。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

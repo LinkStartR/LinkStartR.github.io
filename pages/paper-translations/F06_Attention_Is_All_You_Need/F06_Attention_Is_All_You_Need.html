@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>注意力就是你所需要的一切 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">注意力就是你所需要的一切</span><span>Vaswani 等，2017（arXiv 版 2023）· 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 背景</a>
+<a href="#s3">3 模型架构</a>
+<a class="sub" href="#s31">3.1 编码器与解码器堆栈</a>
+<a class="sub" href="#s32">3.2 注意力</a>
+<a class="sub" href="#s321">3.2.1 缩放点积注意力</a>
+<a class="sub" href="#s322">3.2.2 多头注意力</a>
+<a class="sub" href="#s323">3.2.3 注意力在本模型中的三种用法</a>
+<a class="sub" href="#s33">3.3 逐位置前馈网络</a>
+<a class="sub" href="#s34">3.4 嵌入与 Softmax</a>
+<a class="sub" href="#s35">3.5 位置编码</a>
+<a href="#s4">4 为什么用自注意力</a>
+<a href="#s5">5 训练</a>
+<a class="sub" href="#s51">5.1 训练数据与分批</a>
+<a class="sub" href="#s52">5.2 硬件与时间安排</a>
+<a class="sub" href="#s53">5.3 优化器</a>
+<a class="sub" href="#s54">5.4 正则化</a>
+<a href="#s6">6 结果</a>
+<a class="sub" href="#s61">6.1 机器翻译</a>
+<a class="sub" href="#s62">6.2 模型变体</a>
+<a class="sub" href="#s63">6.3 英语成分句法分析</a>
+<a href="#s7">7 结论</a>
+<hr>
+<a href="#refs">参考文献</a>
+<a href="#appx">附录：注意力可视化</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 注意力就是你所需要的一切 | Vaswani 等，2017（arXiv 版 2023）· 中文翻译-->
+<h1 class="doc">注意力就是你所需要的一切<span class="en">Attention Is All You Need</span></h1>
+<p class="meta">Ashish Vaswani<sup>∗</sup> · Noam Shazeer<sup>∗</sup> · Niki Parmar<sup>∗</sup> · Jakob Uszkoreit<sup>∗</sup> · Llion Jones<sup>∗</sup> · Aidan N. Gomez<sup>∗†</sup> · Łukasz Kaiser<sup>∗</sup> · Illia Polosukhin<sup>∗</sup><br>
+<span style="font-size:12.5px">Google Brain · Google Research · 多伦多大学（University of Toronto）&nbsp;&nbsp;|&nbsp;&nbsp;<sup>∗</sup> 等贡献 &nbsp;<sup>†</sup> 工作完成于 Google Brain 实习期间 &nbsp;<sup>‡</sup> 工作完成于 Google Research 期间</span><br>
+arXiv:1706.03762 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>占据主导地位的<span class="term" data-tip="sequence transduction：把输入序列映射成输出序列的任务，机器翻译是典型例子">序列转导</span>模型都基于复杂的<span class="term" data-tip="recurrent neural network：带循环连接、按时间步依次处理序列的神经网络">循环</span>或<span class="term" data-tip="convolutional neural network：用卷积核在局部窗口上滑动提取特征的神经网络">卷积</span>神经网络，并且包含一个<span class="term" data-tip="encoder：把输入序列编码成一串连续表示的模块">编码器</span>和一个<span class="term" data-tip="decoder：根据编码器输出逐个生成输出符号的模块">解码器</span>。性能最好的模型还会通过<span class="term" data-tip="attention mechanism：让模型在生成某个位置时动态地「看」输入中其他位置并按权重加权求和">注意力机制</span>把编码器与解码器连接起来。我们提出一种新的简单网络架构——<span class="term" data-tip="Transformer：完全由注意力构成的序列转导架构，不含循环与卷积">Transformer</span>，它完全基于注意力机制，彻底舍弃了循环与卷积。在两个机器翻译任务上的实验表明，这类模型在质量上更优，同时更易于并行化，训练所需时间也显著更少。我们的模型在 WMT 2014 英德翻译任务上取得 28.4 BLEU，超过此前的最好结果（<b>包括集成模型</b>）2 BLEU 以上。在 WMT 2014 英法翻译任务上，我们的模型在 8 个 GPU 上训练 3.5 天后，取得了 41.8 的<span class="term" data-tip="single-model state-of-the-art：在只用单个模型（不做集成）的情况下达到当时公开的最好成绩">单模型最新最好</span>（state-of-the-art）BLEU 分数，而训练开销只是文献中最好模型的很小一部分。我们通过把 Transformer 成功应用于训练数据充足和有限两种情况下的英语<span class="term" data-tip="constituency parsing：成分句法分析，把句子解析成嵌套的短语结构树">成分句法分析</span>，表明它能很好地泛化到其他任务。</p>
+</div>
+<p class="hint">本文正文、图表与参考文献均来自源 PDF 解析结果。专业术语、模型名、数据集名与人名按要求保留原文；术语上的金色虚线表示可悬停（触屏可点按）查看中文解释。参考文献整节保留英文原文不译。</p>
+
+<div class="fn">
+<p><sup>∗</sup> <b>贡献相同</b>（Equal contribution）。作者排序为随机顺序。Jakob 提议用自注意力取代 RNN，并启动了对该想法的评估工作。Ashish 与 Illia 设计并实现了最初的 Transformer 模型，并在本工作的各个方面起到了关键作用。Noam 提出了缩放点积注意力、多头注意力以及无参数的位置表示，并且是几乎参与每一个细节的另一位作者。Niki 在最初的代码库与 tensor2tensor 中设计、实现、调优并评估了无数模型变体。Llion 也试验了新的模型变体，负责最初的代码库以及高效推理与可视化。Lukasz 与 Aidan 花费了无数个漫长的日子设计 tensor2tensor 的各个部分并加以实现，用它替换了先前的代码库，大幅改善了结果并极大地加速了我们的研究。</p>
+<p><sup>†</sup> 工作完成于就职 Google Brain 期间。<sup>‡</sup> 工作完成于就职 Google Research 期间。</p>
+</div>
+
+<h2 id="s1">1 引言</h2>
+<p><span class="term" data-tip="recurrent neural network：按时间步依次处理序列、把上一步状态传给下一步的网络">循环神经网络</span>，尤其是<span class="term" data-tip="long short-term memory（LSTM）：用门控机制缓解梯度消失、能记住较长依赖的循环网络">长短期记忆</span> [13] 和门控循环 [7] 神经网络，已被牢固地确立为序列建模与转导问题（如语言建模和机器翻译）中的最新最好方法 [35, 2, 5]。此后，大量工作持续推动循环语言模型与编码器—解码器架构的边界 [38, 24, 15]。</p>
+<p>循环模型通常沿输入与输出序列的符号位置来分解计算。把位置对齐到计算时间的步，它们生成一个隐藏状态序列 <i>h</i><sub>t</sub>，作为前一隐藏状态 <i>h</i><sub>t−1</sub> 与位置 t 处输入的函数。这种内在的序列性使得<b>训练样本内部</b>无法并行化，而这一点在序列较长时变得至关重要，因为内存限制会约束跨样本的批处理规模。近期工作通过<span class="term" data-tip="factorization tricks：把大矩阵分解成小矩阵相乘等技巧，以减少计算量">分解技巧</span> [21] 和<span class="term" data-tip="conditional computation：根据输入只激活网络的一部分，从而减少实际计算量">条件计算</span> [32] 在计算效率上取得显著改进，后者同时改善了模型性能。然而，顺序计算这一根本限制依然存在。</p>
+<p><span class="term" data-tip="attention mechanism：对一组「值」按与查询的相关程度加权求和，从而让模型动态聚焦到不同位置">注意力机制</span>已成为各种任务中富有竞争力的序列建模与转导模型不可或缺的一部分，它使模型能够对依赖关系建模而不必考虑这些位置在输入或输出序列中的距离 [2, 19]。然而，除少数情况 [27] 之外，此类注意力机制都是与循环网络结合使用的。</p>
+<p>在本工作中，我们提出 <b>Transformer</b>：一种摒弃循环、完全依靠注意力机制来刻画输入与输出之间全局依赖的模型架构。Transformer 允许显著更多的并行化，并且在 8 个 P100 GPU 上仅训练十二小时即可在翻译质量上达到新的最新最好水平。</p>
+
+<h2 id="s2">2 背景</h2>
+<p>减少顺序计算这一目标，同样是 Extended Neural GPU [16]、ByteNet [18] 和 ConvS2S [9] 的基础：它们都以卷积神经网络为基本构件，为所有输入与输出位置并行地计算隐藏表示。在这些模型中，把两个任意输入或输出位置的信号关联起来所需的操作数会随位置间距离增长——对 ConvS2S 是线性增长，对 ByteNet 是对数增长。这使得学习相距较远位置之间的依赖更加困难 [12]。在 Transformer 中，这一数量被减少到<b>常数级</b>，代价是因对注意力加权位置取平均而降低了有效分辨率；我们用 3.2 节所述的多头注意力（Multi-Head Attention）来抵消这一效应。</p>
+<p><span class="term" data-tip="self-attention：把同一序列内部不同位置相互关联的注意力，又称 intra-attention">自注意力</span>（self-attention），有时也称内部注意力（intra-attention），是一种把单个序列的不同位置相互关联以计算该序列表示的注意力机制。自注意力已被成功用于多种任务，包括阅读理解、抽象式摘要、文本蕴含，以及学习任务无关的句子表示 [4, 27, 28, 22]。</p>
+<p><span class="term" data-tip="end-to-end memory networks：用可微的记忆模块反复检索、可用端到端方式训练的问答模型">端到端记忆网络</span>基于循环注意力机制而非序列对齐的循环结构，已被证明在简单语言问答与语言建模任务上表现良好 [34]。</p>
+<p>然而据我们所知，Transformer 是第一个<b>完全</b>依靠自注意力来计算其输入与输出表示、而不使用序列对齐 RNN 或卷积的转导模型。在随后的小节中，我们将描述 Transformer，说明采用自注意力的动机，并讨论它相对 [17, 18] 与 [9] 等模型的优势。</p>
+
+<h2 id="s3">3 模型架构</h2>
+<p>大多数有竞争力的神经序列转导模型都采用<span class="term" data-tip="encoder-decoder：编码器把输入压成一组表示，解码器据此生成输出">编码器—解码器</span>结构 [5, 2, 35]。这里，编码器把输入的符号表示序列 (<i>x</i><sub>1</sub>, …, <i>x</i><sub>n</sub>) 映射为连续表示序列 <b>z</b> = (<i>z</i><sub>1</sub>, …, <i>z</i><sub>n</sub>)。给定 <b>z</b>，解码器随后逐个元素地生成由符号构成的输出序列 (<i>y</i><sub>1</sub>, …, <i>y</i><sub>m</sub>)。每一步模型都是<span class="term" data-tip="auto-regressive：生成下一个符号时把自己已生成的符号当作输入，逐步推进">自回归</span>的 [10]，在生成下一个符号时把此前已生成的符号作为额外输入。</p>
+
+<figure id="fig1"><img src="images/fig1.png" alt="The Transformer - model architecture">
+<figcaption><span class="lab">图 1</span>Transformer —— 模型架构。</figcaption></figure>
+
+<p>Transformer 沿用这一总体架构，对编码器和解码器都使用堆叠的自注意力层与逐位置全连接层，分别如图 1 的左右两半所示。</p>
+
+<h3 id="s31">3.1 编码器与解码器堆栈</h3>
+<p><b>编码器（Encoder）</b>：编码器由 <i>N</i> = 6 个完全相同的层堆叠而成。每层包含两个子层。第一个是<span class="term" data-tip="multi-head self-attention：并行做多组自注意力，每组关注不同的表示子空间">多头自注意力机制</span>，第二个是简单的、逐位置的全连接前馈网络。我们对这两个子层各采用一次<span class="term" data-tip="residual connection：把子层输入直接加到输出上，便于梯度回传、训练更深的网络">残差连接</span> [11]，随后接层归一化 [1]。也就是说，每个子层的输出为 LayerNorm(x + Sublayer(x))，其中 Sublayer(x) 是该子层自身实现的函数。为便于这些残差连接，模型中所有子层以及嵌入层都产生维度为 <i>d</i><sub>model</sub> = 512 的输出。</p>
+<p><b>解码器（Decoder）</b>：解码器同样由 <i>N</i> = 6 个完全相同的层堆叠而成。除编码器层中的两个子层外，解码器还插入第三个子层，它对编码器堆栈的输出执行多头注意力。与编码器类似，我们对每个子层采用残差连接，随后接层归一化。我们还修改了解码器堆栈中的自注意力子层，以防止某个位置「关注」（attend）其后续位置。这种<span class="term" data-tip="masking：把不该被看到的连接权重置为 −∞，softmax 后即为 0">掩蔽</span>（masking），结合「输出嵌入被偏移一个位置」这一事实，保证了位置 <i>i</i> 的预测只能依赖于位置小于 <i>i</i> 的已知输出。</p>
+
+<h3 id="s32">3.2 注意力</h3>
+<p>注意力函数可以描述为：把一个<span class="term" data-tip="query：当前要计算输出的位置给出的「提问」向量">查询</span>（query）和一组<span class="term" data-tip="key-value：键用于与查询比对算权重，值是被加权求和的内容">键—值对</span>（key-value pair）映射为一个输出，其中查询、键、值和输出都是向量。输出是<b>值的加权和</b>，而赋给每个值的权重由查询与对应键的<span class="term" data-tip="compatibility function：衡量查询与键有多「匹配」的函数，其输出经 softmax 变成权重">相容性函数</span>计算得到。</p>
+
+<figure id="fig2"><img src="images/fig2.png" alt="Scaled Dot-Product Attention and Multi-Head Attention">
+<figcaption><span class="lab">图 2</span>（左）缩放点积注意力。（右）多头注意力由若干并行运行的注意力层构成。</figcaption></figure>
+
+<h3 id="s321">3.2.1 缩放点积注意力</h3>
+<p>我们把自己这种特殊的注意力称为「缩放点积注意力」（Scaled Dot-Product Attention，图 2）。其输入由维度为 <i>d</i><sub>k</sub> 的查询和键，以及维度为 <i>d</i><sub>v</sub> 的值组成。我们计算查询与<b>所有</b>键的点积，把每个点积除以 √<i>d</i><sub>k</sub>，再施加 softmax 函数，从而得到在值上的权重。</p>
+<p>在实践中，我们同时在<b>一组</b>查询上计算注意力函数，把它们打包成矩阵 <i>Q</i>。键和值也分别打包成矩阵 <i>K</i> 和 <i>V</i>。输出的矩阵计算如下：</p>
+<div class="eq"><div class="body">Attention(Q, K, V) = softmax(<span class="frac"><span class="n2">QK<sup>⊤</sup></span><span class="d2">√<span style="text-decoration:overline">d<sub>k</sub></span></span></span>) V</div><div class="no">(1)</div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">式 (1) 变量说明：<b>Q</b> 为查询矩阵（每行一个查询向量，共 n 行）；<b>K</b> 为键矩阵（每行一个键向量）；<b>V</b> 为值矩阵（每行一个值向量）；<b>QK<sup>⊤</sup></b> 的第 (i, j) 个元素是第 i 个查询与第 j 个键的点积，衡量二者有多匹配；除以 <b>√d<sub>k</sub></b> 是缩放，抵消维度变大导致的点积幅值膨胀；<b>softmax</b> 沿每一行归一化，使权重非负且和为 1；最后用它加权求和 <b>V</b> 的各行，得到每个查询对应的输出向量。输出维度为 <i>d</i><sub>v</sub>。</p>
+<p>两种最常用的注意力函数是<span class="term" data-tip="additive attention：用一个小前馈网络计算查询与键的相容性，如 Bahdanau 注意力">加性注意力</span> [2] 与点积（乘性）注意力。除缩放因子 1/√<i>d</i><sub>k</sub> 之外，点积注意力与我们的算法完全相同。加性注意力用一个带单隐层的前馈网络计算相容性函数。尽管两者在理论复杂度上相近，但在实践中点积注意力要快得多、也更省空间，因为它可以用高度优化的矩阵乘法代码实现。</p>
+<p>对于较小的 <i>d</i><sub>k</sub>，两种机制表现相近；而对于较大的 <i>d</i><sub>k</sub>，不加缩放的加性注意力反而优于点积注意力 [3]。我们猜想，当 <i>d</i><sub>k</sub> 较大时点积的幅值会变得很大，从而把 softmax 函数推入梯度极小的区域<span class="tn" data-tip="译者注：原文此处为上标脚注 4，脚注全文见本节末">4</span>。为抵消这一效应，我们把点积按 1/√<i>d</i><sub>k</sub> 缩放。</p>
+<div class="fn">
+<p><sup>4</sup> 为说明点积为何会变大，假设 <i>q</i> 与 <i>k</i> 的各分量是相互独立、均值为 0、方差为 1 的随机变量。那么它们的点积 <i>q</i> · <i>k</i> = Σ<sub>i=1</sub><sup>d<sub>k</sub></sup> <i>q</i><sub>i</sub><i>k</i><sub>i</sub> 的均值为 0、方差为 <i>d</i><sub>k</sub>。</p>
+</div>
+
+<h3 id="s322">3.2.2 多头注意力</h3>
+<p>与用 <i>d</i><sub>model</sub> 维的键、值和查询执行单次注意力函数不同，我们发现把查询、键和值分别用 <i>h</i> 个不同的、可学习的线性投影投影到 <i>d</i><sub>k</sub>、<i>d</i><sub>k</sub> 和 <i>d</i><sub>v</sub> 维是有益的。然后在这些投影后的查询、键和值上<b>并行</b>地执行注意力函数，得到 <i>d</i><sub>v</sub> 维的输出值。它们被拼接起来并再一次投影，得到最终的值，如图 2 所示。</p>
+<p>多头注意力允许模型在不同位置<b>联合关注来自不同表示子空间</b>的信息。只有单个注意力头时，取平均会抑制这一点。</p>
+<div class="eq"><div class="body">MultiHead(Q, K, V) = Concat(head<sub>1</sub>, …, head<sub>h</sub>) W<sup>O</sup><br>其中 head<sub>i</sub> = Attention(Q W<sub>i</sub><sup>Q</sup>, K W<sub>i</sub><sup>K</sup>, V W<sub>i</sub><sup>V</sup>)</div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">变量说明：<b>head<sub>i</sub></b> 是第 i 个「头」的输出；<b>W<sub>i</sub><sup>Q</sup> ∈ ℝ<sup>d<sub>model</sub>×d<sub>k</sub></sup></b>、<b>W<sub>i</sub><sup>K</sup> ∈ ℝ<sup>d<sub>model</sub>×d<sub>k</sub></sup></b>、<b>W<sub>i</sub><sup>V</sup> ∈ ℝ<sup>d<sub>model</sub>×d<sub>v</sub></sup></b> 是第 i 个头各自的投影参数矩阵（可学习）；<b>W<sup>O</sup> ∈ ℝ<sup>h d<sub>v</sub>×d<sub>model</sub></sup></b> 把拼接后的结果投影回 <i>d</i><sub>model</sub> 维；<b>Concat</b> 表示把各头的输出沿特征维拼接。</p>
+<p>在本工作中我们采用 <i>h</i> = 8 个并行注意力层（即「头」）。对每个头我们取 <i>d</i><sub>k</sub> = <i>d</i><sub>v</sub> = <i>d</i><sub>model</sub>/<i>h</i> = 64。由于每个头的维度降低，总计算成本与全维度的单头注意力相近。</p>
+
+<h3 id="s323">3.2.3 注意力在本模型中的三种用法</h3>
+<p>Transformer 以三种不同方式使用多头注意力：</p>
+<ul>
+<li>在「编码器—解码器注意力」层中，查询来自前一个解码器层，而记忆（memory）的键和值来自编码器的输出。这使解码器中的每个位置都能关注输入序列中的<b>所有</b>位置。这模仿了 [38, 2, 9] 等序列到序列模型中典型的编码器—解码器注意力机制。</li>
+<li>编码器包含自注意力层。在自注意力层中，所有的键、值和查询都来自同一个地方，在这里即编码器中前一层的输出。编码器中的每个位置都能关注编码器前一层的所有位置。</li>
+<li>类似地，解码器中的自注意力层允许解码器中的每个位置关注解码器中<b>直到并包括该位置</b>的所有位置。我们需要阻止解码器中的信息向左流动，以保持自回归性质。我们在缩放点积注意力内部实现这一点：把 softmax 输入中所有对应「非法连接」的值掩蔽掉（置为 −∞）。参见图 2。</li>
+</ul>
+
+<h3 id="s33">3.3 逐位置前馈网络</h3>
+<p>除注意力子层之外，我们编码器和解码器中的每一层都包含一个全连接前馈网络，它对每个位置分别且相同地施加。它由两次线性变换，以及夹在中间的 ReLU 激活组成。</p>
+<div class="eq"><div class="body">FFN(x) = max(0, xW<sub>1</sub> + b<sub>1</sub>) W<sub>2</sub> + b<sub>2</sub></div><div class="no">(2)</div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">变量说明：<b>x</b> 是某个位置上的输入向量（维度 d<sub>model</sub> = 512）；<b>W<sub>1</sub></b>、<b>b<sub>1</sub></b> 是第一层线性变换的权重与偏置，把 512 维映射到内层的 d<sub>ff</sub> = 2048 维；<b>max(0, ·)</b> 即 ReLU 非线性；<b>W<sub>2</sub></b>、<b>b<sub>2</sub></b> 是第二层线性变换，把 2048 维映射回 512 维。</p>
+<p>虽然在不同位置之间这些线性变换相同，但不同层使用的参数不同。另一种描述方式是：这是两个卷积核大小为 1 的卷积。输入与输出的维度是 <i>d</i><sub>model</sub> = 512，内层维度是 <i>d</i><sub>ff</sub> = 2048。</p>
+
+<h3 id="s34">3.4 嵌入与 Softmax</h3>
+<p>与其他序列转导模型类似，我们用可学习的嵌入把输入 token 与输出 token 转换为维度为 <i>d</i><sub>model</sub> 的向量。我们还使用通常的可学习线性变换和 softmax 函数，把解码器输出转换为对下一个 token 的预测概率。在我们的模型中，两个嵌入层与 softmax 之前的线性变换共享同一个权重矩阵，与 [30] 类似。在嵌入层中，我们把这些权重乘以 √<i>d</i><sub>model</sub>。</p>
+
+<p style="margin-top:26px"><b>表 1</b>　不同层类型的最大路径长度、每层复杂度与最少顺序操作数。<i>n</i> 是序列长度，<i>d</i> 是表示维度，<i>k</i> 是卷积核大小，<i>r</i> 是受限自注意力中邻域的大小。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:6px 12px"><b>层类型</b></td>
+<td style="border:1px solid var(--line);padding:6px 12px"><b>每层复杂度</b></td>
+<td style="border:1px solid var(--line);padding:6px 12px"><b>顺序操作数</b></td>
+<td style="border:1px solid var(--line);padding:6px 12px"><b>最大路径长度</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:6px 12px">自注意力（Self-Attention）</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(<i>n</i><sup>2</sup> · <i>d</i>)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(1)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(1)</td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:6px 12px">循环（Recurrent）</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(<i>n</i> · <i>d</i><sup>2</sup>)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(<i>n</i>)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(<i>n</i>)</td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:6px 12px">卷积（Convolutional）</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(<i>k</i> · <i>n</i> · <i>d</i><sup>2</sup>)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(1)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(log<sub>k</sub>(<i>n</i>))</td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:6px 12px">自注意力（受限）</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(<i>r</i> · <i>n</i> · <i>d</i>)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(1)</td>
+<td style="border:1px solid var(--line);padding:6px 12px"><i>O</i>(<i>n</i>/<i>r</i>)</td>
+</tr>
+</table></div>
+
+<h3 id="s35">3.5 位置编码</h3>
+<p>由于我们的模型既不含循环也不含卷积，为了让模型能够利用序列的顺序，我们必须注入关于 token 在序列中相对或绝对位置的信息。为此，我们在编码器与解码器堆栈底部的输入嵌入上加上「<span class="term" data-tip="positional encoding：把「第几个位置」这一信息编码成与词嵌入同维的向量并相加，让模型知道词的顺序">位置编码</span>」（positional encoding）。位置编码与嵌入具有相同的维度 <i>d</i><sub>model</sub>，以便二者可以相加。位置编码有多种选择，包括可学习的与固定的 [9]。</p>
+<p>在本工作中，我们使用不同频率的正弦与余弦函数：</p>
+<div class="eq"><div class="body">PE<sub>(pos, 2i)</sub> = sin(pos / 10000<sup>2i/d<sub>model</sub></sup>)<br>PE<sub>(pos, 2i+1)</sub> = cos(pos / 10000<sup>2i/d<sub>model</sub></sup>)</div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">变量说明：<b>pos</b> 是 token 在序列中的位置（第几个词）；<b>i</b> 是维度下标（0 ≤ i &lt; d<sub>model</sub>/2），<b>2i</b> 与 <b>2i+1</b> 分别指编码向量的偶数维与奇数维——即偶数维用正弦、奇数维用余弦；<b>10000<sup>2i/d_model</sup></b> 是频率的底数，随维度 i 增大而变大，因此不同维度对应不同波长的正弦曲线。</p>
+<p>其中 pos 是位置，i 是维度。也就是说，位置编码的每个维度都对应一条正弦曲线。其波长构成从 2π 到 10000·2π 的等比数列。我们选择这个函数，是因为我们假设它能让模型很容易地学会按相对位置来关注：对任意固定偏移 k，PE<sub>pos+k</sub> 都可以表示为 PE<sub>pos</sub> 的线性函数。</p>
+<p>我们也试验过改用可学习的位置嵌入 [9]，发现两种版本产生的结果几乎相同（见表 3 第 (E) 行）。我们选择正弦版本，因为它可能允许模型外推到比训练时遇到的更长的序列长度。</p>
+
+<h2 id="s4">4 为什么用自注意力</h2>
+<p>在本节中，我们把自注意力层的若干方面与常用于「把一个变长符号表示序列 (<i>x</i><sub>1</sub>, …, <i>x</i><sub>n</sub>) 映射为另一个等长序列 (<i>z</i><sub>1</sub>, …, <i>z</i><sub>n</sub>)」（其中 <i>x</i><sub>i</sub>, <i>z</i><sub>i</sub> ∈ ℝ<sup>d</sup>）的循环层和卷积层进行比较，例如典型序列转导编码器或解码器中的隐藏层。为论证我们使用自注意力的动机，我们考虑三个目标。</p>
+<p>其一是每层的总计算复杂度。其二是可并行化的计算量，用所需的最少顺序操作数来衡量。</p>
+<p>第三是网络中长距离依赖之间的路径长度。学习长距离依赖是许多序列转导任务中的关键挑战。影响学习此类依赖能力的一个关键因素，是前向与后向信号在网络中必须穿越的路径长度。输入与输出序列中任意位置组合之间的这些路径越短，学习长距离依赖就越容易 [12]。因此我们还比较了由不同层类型构成的网络中任意两个输入、输出位置之间的最大路径长度。</p>
+<p>如表 1 所示，自注意力层用<b>常数个</b>顺序执行的操作连接所有位置，而循环层需要 <i>O</i>(<i>n</i>) 个顺序操作。在计算复杂度方面，当序列长度 <i>n</i> 小于表示维度 <i>d</i> 时，自注意力层比循环层更快；而在机器翻译中当时最好模型所用的句子表示（如 <span class="term" data-tip="word-piece：把罕见词切成常见子词单元（如「##ing」）的表示方式">word-piece</span> [38] 与 <span class="term" data-tip="byte-pair encoding：按出现频率反复合并最高频字节/字符对，得到子词词表">byte-pair</span> [31] 表示）大多数情况下正是如此。为改善涉及极长序列的任务的计算性能，可以把自注意力限制为只考虑输入序列中以相应输出位置为中心、大小为 <i>r</i> 的邻域。这会把最大路径长度增加到 <i>O</i>(<i>n</i>/<i>r</i>)。我们计划在未来的工作中进一步研究这一做法。</p>
+<p>核宽 <i>k</i> &lt; <i>n</i> 的单层卷积不能连接所有输入与输出位置对。要做到这一点，在连续卷积核的情况下需要堆叠 <i>O</i>(<i>n</i>/<i>k</i>) 个卷积层，在<span class="term" data-tip="dilated convolutions：卷积核之间留有空隙，使感受野指数式扩大">膨胀卷积</span> [18] 的情况下需要 <i>O</i>(log<sub>k</sub>(<i>n</i>)) 层，这就增加了网络中任意两个位置之间最长路径的长度。卷积层一般比循环层更昂贵，代价因子为 <i>k</i>。不过，<span class="term" data-tip="separable convolutions：把标准卷积分解为逐深度卷积与逐点卷积，大幅减少计算量">可分离卷积</span> [6] 大幅降低了复杂度，降至 <i>O</i>(<i>k</i> · <i>n</i> · <i>d</i> + <i>n</i> · <i>d</i><sup>2</sup>)。然而即使 <i>k</i> = <i>n</i>，可分离卷积的复杂度也等于「一个自注意力层加一个逐位置前馈层」的组合，也就是我们模型采用的做法。</p>
+<p>作为附带的好处，自注意力还可能带来更可解释的模型。我们检查了模型中的注意力分布，并在附录中给出并讨论了若干例子。不仅各个注意力头明显学会了执行不同的任务，许多头似乎还表现出与句子的句法和语义结构有关的行为。</p>
+
+<h2 id="s5">5 训练</h2>
+<p>本节描述我们模型的训练方案。</p>
+
+<h3 id="s51">5.1 训练数据与分批</h3>
+<p>我们在标准的 WMT 2014 英德数据集上训练，它由约 450 万个句子对组成。句子使用 <span class="term" data-tip="byte-pair encoding：反复合并最高频的相邻符号对来构建子词词表">byte-pair encoding</span> [3] 编码，共享的源语言—目标语言词表约有 37000 个 token。对于英法，我们使用规模显著更大的 WMT 2014 英法数据集，由 3600 万个句子组成，并把 token 切分成 32000 个 word-piece 词表 [38]。句子对按近似序列长度分批。每个训练批次包含一组句子对，其中约有 25000 个源语言 token 和 25000 个目标语言 token。</p>
+
+<h3 id="s52">5.2 硬件与时间安排</h3>
+<p>我们在同一台机器上用 8 块 NVIDIA P100 GPU 训练模型。对使用本文所述超参数的 base 模型，每个训练步约需 0.4 秒。base 模型共训练 100,000 步，即 12 小时。对 big 模型（见表 3 的最后一行），每步用时 1.0 秒。big 模型训练了 300,000 步（3.5 天）。</p>
+
+<h3 id="s53">5.3 优化器</h3>
+<p>我们使用 Adam 优化器 [20]，参数为 β<sub>1</sub> = 0.9、β<sub>2</sub> = 0.98、ε = 10<sup>−9</sup>。我们在训练过程中按下面的公式改变学习率：</p>
+<div class="eq"><div class="body">lrate = d<sub>model</sub><sup>−0.5</sup> · min(step_num<sup>−0.5</sup>, step_num · warmup_steps<sup>−1.5</sup>)</div><div class="no">(3)</div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">变量说明：<b>lrate</b> 是当前学习率；<b>d<sub>model</sub></b> 是模型维度（base 为 512），它只是一个整体缩放常数；<b>step_num</b> 是已训练的步数；<b>warmup_steps</b> 是预热步数（取 4000）；<b>min(·, ·)</b> 取两项中较小者——在 step_num 很小时第二项更小（学习率随步数线性上升），之后第一项更小（学习率按步数的平方根反比下降）。</p>
+<p>这相当于在前 warmup_steps 个训练步内线性地增大学习率，此后按步数的平方根反比减小。我们取 warmup_steps = 4000。</p>
+
+<h3 id="s54">5.4 正则化</h3>
+<p>我们在训练中使用三种正则化：</p>
+<p><b>残差 Dropout</b>　我们对每个子层的输出施加 dropout [33]，施加位置是在它被加到子层输入并归一化<b>之前</b>。此外，我们对编码器和解码器堆栈中嵌入与位置编码之和也施加 dropout。对 base 模型，我们采用比率 <i>P</i><sub>drop</sub> = 0.1。</p>
+<p><b>标签平滑</b>　训练中我们采用值为 ε<sub>ls</sub> = 0.1 的标签平滑 [36]。这会损害困惑度，因为模型学会变得更不确定，但提高了准确率和 BLEU 分数。</p>
+
+<p style="margin-top:26px"><b>表 2</b>　在 newstest2014 英德与英法测试集上，Transformer 以很小一部分训练开销取得了此前最好模型更高的 BLEU 分数。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px" rowspan="2"><b>模型</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="2"><b>BLEU</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="2"><b>训练开销（FLOPs）</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px">EN-DE</td>
+<td style="border:1px solid var(--line);padding:5px 9px">EN-FR</td>
+<td style="border:1px solid var(--line);padding:5px 9px">EN-DE</td>
+<td style="border:1px solid var(--line);padding:5px 9px">EN-FR</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">ByteNet [18]</td><td style="border:1px solid var(--line);padding:5px 9px">23.75</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Deep-Att + PosUnk [39]</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">39.2</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">1.0 · 10<sup>20</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GNMT + RL [38]</td><td style="border:1px solid var(--line);padding:5px 9px">24.6</td><td style="border:1px solid var(--line);padding:5px 9px">39.92</td><td style="border:1px solid var(--line);padding:5px 9px">2.3 · 10<sup>19</sup></td><td style="border:1px solid var(--line);padding:5px 9px">1.4 · 10<sup>20</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">ConvS2S [9]</td><td style="border:1px solid var(--line);padding:5px 9px">25.16</td><td style="border:1px solid var(--line);padding:5px 9px">40.46</td><td style="border:1px solid var(--line);padding:5px 9px">9.6 · 10<sup>18</sup></td><td style="border:1px solid var(--line);padding:5px 9px">1.5 · 10<sup>20</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">MoE [32]</td><td style="border:1px solid var(--line);padding:5px 9px">26.03</td><td style="border:1px solid var(--line);padding:5px 9px">40.56</td><td style="border:1px solid var(--line);padding:5px 9px">2.0 · 10<sup>19</sup></td><td style="border:1px solid var(--line);padding:5px 9px">1.2 · 10<sup>20</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Deep-Att + PosUnk Ensemble [39]</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">40.4</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">8.0 · 10<sup>20</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GNMT + RL Ensemble [38]</td><td style="border:1px solid var(--line);padding:5px 9px">26.30</td><td style="border:1px solid var(--line);padding:5px 9px">41.16</td><td style="border:1px solid var(--line);padding:5px 9px">1.8 · 10<sup>20</sup></td><td style="border:1px solid var(--line);padding:5px 9px">1.1 · 10<sup>21</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">ConvS2S Ensemble [9]</td><td style="border:1px solid var(--line);padding:5px 9px">26.36</td><td style="border:1px solid var(--line);padding:5px 9px">41.29</td><td style="border:1px solid var(--line);padding:5px 9px">7.7 · 10<sup>19</sup></td><td style="border:1px solid var(--line);padding:5px 9px">1.2 · 10<sup>21</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px"><b>Transformer（base 模型）</b></td><td style="border:1px solid var(--line);padding:5px 9px">27.3</td><td style="border:1px solid var(--line);padding:5px 9px">38.1</td><td style="border:1px solid var(--line);padding:5px 9px" colspan="2">3.3 · 10<sup>18</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px"><b>Transformer（big）</b></td><td style="border:1px solid var(--line);padding:5px 9px">28.4</td><td style="border:1px solid var(--line);padding:5px 9px">41.8</td><td style="border:1px solid var(--line);padding:5px 9px" colspan="2">2.3 · 10<sup>19</sup></td></tr>
+</table></div>
+
+<h2 id="s6">6 结果</h2>
+<h3 id="s61">6.1 机器翻译</h3>
+<p>在 WMT 2014 英德翻译任务上，big transformer 模型（表 2 中的 Transformer (big)）比此前报告的最好模型（<b>包括集成模型</b>）高出 2.0 BLEU 以上，取得了 28.4 的新最新最好 BLEU 分数。该模型的配置列于表 3 最后一行。训练在 8 块 P100 GPU 上耗时 3.5 天。即使我们的 base 模型也超过了此前发表的所有模型与集成模型，而训练开销只是任何一个有竞争力模型的很小一部分。</p>
+<p>在 WMT 2014 英法翻译任务上，我们的 big 模型取得 41.0 的 BLEU 分数，超过此前发表的所有单模型，训练开销不到此前最好模型的 1/4。训练用于英法的 Transformer (big) 模型使用的 dropout 率为 <i>P</i><sub>drop</sub> = 0.1，而不是 0.3。</p>
+<p>对 base 模型，我们使用对最后 5 个检查点取平均得到的单个模型，这些检查点每 10 分钟保存一次。对 big 模型，我们对最后 20 个检查点取平均。我们使用<span class="term" data-tip="beam search：解码时每步保留概率最高的若干条候选序列，最后选整体得分最高的">束搜索</span>，束宽为 4，长度惩罚 α = 0.6 [38]。这些超参数是在开发集上实验后选定的。我们把推理时的最大输出长度设为输入长度 + 50，但在可能时提前终止 [38]。</p>
+<p>表 2 总结了我们的结果，并把我们的翻译质量与训练开销同文献中其他模型架构进行比较。我们按「训练时间 × 所用 GPU 数 × 每块 GPU 持续单精度浮点能力的估计值」来估计训练一个模型所用的浮点运算次数<span class="tn" data-tip="译者注：原文此处为上标脚注 5，脚注全文见本节末">5</span>。</p>
+<div class="fn">
+<p><sup>5</sup> 对 K80、K40、M40 和 P100，我们分别采用 2.8、3.7、6.0 和 9.5 TFLOPS 的数值。</p>
+</div>
+
+<h3 id="s62">6.2 模型变体</h3>
+<p>为评估 Transformer 各组件的重要性，我们以不同方式改变 base 模型，在开发集 newstest2013 上测量英德翻译性能的变化。我们使用上一节所述的束搜索，但不做检查点平均。结果列于表 3。</p>
+
+<p style="margin-top:26px"><b>表 3</b>　Transformer 架构的变体。未列出的数值与 base 模型相同。所有指标都在英德翻译开发集 newstest2013 上。所列困惑度是按 wordpiece 计的（对应我们的 byte-pair 编码），不应与按词计的困惑度相比。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:4px 7px"></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><i>N</i></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><i>d</i><sub>model</sub></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><i>d</i><sub>ff</sub></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><i>h</i></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><i>d</i><sub>k</sub></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><i>d</i><sub>v</sub></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><i>P</i><sub>drop</sub></td>
+<td style="border:1px solid var(--line);padding:4px 7px">ε<sub>ls</sub></td>
+<td style="border:1px solid var(--line);padding:4px 7px">训练步数</td>
+<td style="border:1px solid var(--line);padding:4px 7px">PPL（dev）</td>
+<td style="border:1px solid var(--line);padding:4px 7px">BLEU（dev）</td>
+<td style="border:1px solid var(--line);padding:4px 7px">参数量 ×10<sup>6</sup></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">base</td><td style="border:1px solid var(--line);padding:4px 7px">6</td><td style="border:1px solid var(--line);padding:4px 7px">512</td><td style="border:1px solid var(--line);padding:4px 7px">2048</td><td style="border:1px solid var(--line);padding:4px 7px">8</td><td style="border:1px solid var(--line);padding:4px 7px">64</td><td style="border:1px solid var(--line);padding:4px 7px">64</td><td style="border:1px solid var(--line);padding:4px 7px">0.1</td><td style="border:1px solid var(--line);padding:4px 7px">0.1</td><td style="border:1px solid var(--line);padding:4px 7px">100K</td><td style="border:1px solid var(--line);padding:4px 7px">4.92</td><td style="border:1px solid var(--line);padding:4px 7px">25.8</td><td style="border:1px solid var(--line);padding:4px 7px">65</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px" rowspan="4">(A)</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">1</td><td style="border:1px solid var(--line);padding:4px 7px">512</td><td style="border:1px solid var(--line);padding:4px 7px">512</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.29</td><td style="border:1px solid var(--line);padding:4px 7px">24.9</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4</td><td style="border:1px solid var(--line);padding:4px 7px">128</td><td style="border:1px solid var(--line);padding:4px 7px">128</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.00</td><td style="border:1px solid var(--line);padding:4px 7px">25.5</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">16</td><td style="border:1px solid var(--line);padding:4px 7px">32</td><td style="border:1px solid var(--line);padding:4px 7px">32</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4.91</td><td style="border:1px solid var(--line);padding:4px 7px">25.8</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">32</td><td style="border:1px solid var(--line);padding:4px 7px">16</td><td style="border:1px solid var(--line);padding:4px 7px">16</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.01</td><td style="border:1px solid var(--line);padding:4px 7px">25.4</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px" rowspan="2">(B)</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">16</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.16</td><td style="border:1px solid var(--line);padding:4px 7px">25.1</td><td style="border:1px solid var(--line);padding:4px 7px">58</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">32</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.01</td><td style="border:1px solid var(--line);padding:4px 7px">25.4</td><td style="border:1px solid var(--line);padding:4px 7px">60</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px" rowspan="7">(C)</td><td style="border:1px solid var(--line);padding:4px 7px">2</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">6.11</td><td style="border:1px solid var(--line);padding:4px 7px">23.7</td><td style="border:1px solid var(--line);padding:4px 7px">36</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">4</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.19</td><td style="border:1px solid var(--line);padding:4px 7px">25.3</td><td style="border:1px solid var(--line);padding:4px 7px">50</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">8</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4.88</td><td style="border:1px solid var(--line);padding:4px 7px">25.5</td><td style="border:1px solid var(--line);padding:4px 7px">80</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">256</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">32</td><td style="border:1px solid var(--line);padding:4px 7px">32</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.75</td><td style="border:1px solid var(--line);padding:4px 7px">24.5</td><td style="border:1px solid var(--line);padding:4px 7px">28</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">1024</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">128</td><td style="border:1px solid var(--line);padding:4px 7px">128</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4.66</td><td style="border:1px solid var(--line);padding:4px 7px">26.0</td><td style="border:1px solid var(--line);padding:4px 7px">168</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">1024</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.12</td><td style="border:1px solid var(--line);padding:4px 7px">25.4</td><td style="border:1px solid var(--line);padding:4px 7px">53</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4096</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4.75</td><td style="border:1px solid var(--line);padding:4px 7px">26.2</td><td style="border:1px solid var(--line);padding:4px 7px">90</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px" rowspan="4">(D)</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">0.0</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.77</td><td style="border:1px solid var(--line);padding:4px 7px">24.6</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">0.2</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4.95</td><td style="border:1px solid var(--line);padding:4px 7px">25.5</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">0.0</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">4.67</td><td style="border:1px solid var(--line);padding:4px 7px">25.3</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">0.2</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">5.47</td><td style="border:1px solid var(--line);padding:4px 7px">25.7</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">(E)</td><td style="border:1px solid var(--line);padding:4px 7px" colspan="8">用位置嵌入替代正弦编码（positional embedding instead of sinusoids）</td><td style="border:1px solid var(--line);padding:4px 7px">4.92</td><td style="border:1px solid var(--line);padding:4px 7px">25.7</td><td style="border:1px solid var(--line);padding:4px 7px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">big</td><td style="border:1px solid var(--line);padding:4px 7px">6</td><td style="border:1px solid var(--line);padding:4px 7px">1024</td><td style="border:1px solid var(--line);padding:4px 7px">4096</td><td style="border:1px solid var(--line);padding:4px 7px">16</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">0.3</td><td style="border:1px solid var(--line);padding:4px 7px"></td><td style="border:1px solid var(--line);padding:4px 7px">300K</td><td style="border:1px solid var(--line);padding:4px 7px">4.33</td><td style="border:1px solid var(--line);padding:4px 7px">26.4</td><td style="border:1px solid var(--line);padding:4px 7px">213</td></tr>
+</table></div>
+
+<p>在表 3 的 (A) 行中，我们改变注意力头的数量以及注意力的键、值维度，同时如 3.2.2 节所述保持计算量不变。单头注意力比最佳设置差 0.9 BLEU，而头数过多时质量也会下降。</p>
+<p>在表 3 的 (B) 行中，我们观察到减小注意力键的维度 <i>d</i><sub>k</sub> 会损害模型质量。这表明确定相容性并不容易，采用比点积更精细的相容性函数可能是有益的。我们还在 (C) 和 (D) 行中观察到，如预期那样，更大的模型更好，而 dropout 对避免过拟合非常有帮助。在 (E) 行中我们把正弦位置编码替换为可学习的位置嵌入 [9]，观察到结果与 base 模型几乎相同。</p>
+
+<h3 id="s63">6.3 英语成分句法分析</h3>
+<p>为评估 Transformer 能否泛化到其他任务，我们在英语成分句法分析上做了实验。该任务具有特定的挑战：输出受很强的结构约束，而且明显长于输入。此外，RNN 序列到序列模型在小数据情形下未能达到当时的最好结果 [37]。</p>
+<p>我们在 Penn Treebank [25] 的华尔街日报（WSJ）部分训练了一个 4 层的 transformer，<i>d</i><sub>model</sub> = 1024，约有 40K 个训练句子。我们还在半监督设置下训练它，使用来自 [37] 的更大的 high-confidence 与 BerkleyParser 语料，约 1700 万句。仅 WSJ 设置我们用 16K token 的词表，半监督设置用 32K token 的词表。</p>
+<p>我们只做了少量实验来在第 22 节开发集上选择 dropout（注意力与残差两种，见 5.4 节）、学习率和束宽，其他所有参数与英德 base 翻译模型保持不变。推理时我们把最大输出长度增大到输入长度 + 300。对仅 WSJ 和半监督两种设置，我们都使用束宽 21 和 α = 0.3。</p>
+
+<p style="margin-top:26px"><b>表 4</b>　Transformer 能很好地泛化到英语成分句法分析（结果在 WSJ 第 23 节上）。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>解析器</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>训练方式</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>WSJ 23 F1</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Vinyals &amp; Kaiser 等（2014）[37]</td><td style="border:1px solid var(--line);padding:5px 10px">仅 WSJ，判别式</td><td style="border:1px solid var(--line);padding:5px 10px">88.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Petrov 等（2006）[29]</td><td style="border:1px solid var(--line);padding:5px 10px">仅 WSJ，判别式</td><td style="border:1px solid var(--line);padding:5px 10px">90.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Zhu 等（2013）[40]</td><td style="border:1px solid var(--line);padding:5px 10px">仅 WSJ，判别式</td><td style="border:1px solid var(--line);padding:5px 10px">90.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Dyer 等（2016）[8]</td><td style="border:1px solid var(--line);padding:5px 10px">仅 WSJ，判别式</td><td style="border:1px solid var(--line);padding:5px 10px">91.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px"><b>Transformer（4 层）</b></td><td style="border:1px solid var(--line);padding:5px 10px">仅 WSJ，判别式</td><td style="border:1px solid var(--line);padding:5px 10px">91.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Zhu 等（2013）[40]</td><td style="border:1px solid var(--line);padding:5px 10px">半监督</td><td style="border:1px solid var(--line);padding:5px 10px">91.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Huang &amp; Harper（2009）[14]</td><td style="border:1px solid var(--line);padding:5px 10px">半监督</td><td style="border:1px solid var(--line);padding:5px 10px">91.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">McClosky 等（2006）[26]</td><td style="border:1px solid var(--line);padding:5px 10px">半监督</td><td style="border:1px solid var(--line);padding:5px 10px">92.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Vinyals &amp; Kaiser 等（2014）[37]</td><td style="border:1px solid var(--line);padding:5px 10px">半监督</td><td style="border:1px solid var(--line);padding:5px 10px">92.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px"><b>Transformer（4 层）</b></td><td style="border:1px solid var(--line);padding:5px 10px">半监督</td><td style="border:1px solid var(--line);padding:5px 10px">92.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Luong 等（2015）[23]</td><td style="border:1px solid var(--line);padding:5px 10px">多任务</td><td style="border:1px solid var(--line);padding:5px 10px">93.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Dyer 等（2016）[8]</td><td style="border:1px solid var(--line);padding:5px 10px">生成式</td><td style="border:1px solid var(--line);padding:5px 10px">93.3</td></tr>
+</table></div>
+
+<p>表 4 的结果表明，尽管没有针对任务做专门调参，我们的模型表现得出奇地好，除 Recurrent Neural Network Grammar [8] 之外，优于此前报告的所有模型。</p>
+<p>与 RNN 序列到序列模型 [37] 相比，即使只在 40K 句的 WSJ 训练集上训练，Transformer 也超过了 Berkeley-Parser [29]。</p>
+
+<h2 id="s7">7 结论</h2>
+<p>在本工作中，我们提出了 Transformer——第一个完全基于注意力的序列转导模型，用多头自注意力取代了编码器—解码器架构中最常用的循环层。</p>
+<p>对翻译任务而言，Transformer 的训练速度可以显著快于基于循环层或卷积层的架构。在 WMT 2014 英德和 WMT 2014 英法两个翻译任务上，我们都取得了新的最新最好成绩。在前一个任务上，我们最好的模型甚至超过了此前报告的所有集成模型。</p>
+<p>我们对基于注意力的模型的未来感到兴奋，并计划把它们应用到其他任务上。我们计划把 Transformer 扩展到输入与输出模态不限于文本的问题，并研究局部、受限的注意力机制，以便高效处理图像、音频和视频这类大输入与大输出。让生成过程更少依赖顺序，也是我们的另一个研究目标。</p>
+<p>我们用于训练和评估模型的代码可在 https://github.com/tensorflow/tensor2tensor 获取。</p>
+<p><b>致谢</b>　我们感谢 Nal Kalchbrenner 与 Stephan Gouws 提出的富有启发的评论、修正与灵感。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按要求，参考文献整节保留英文原文，未作翻译。</p>
+<div class="refs"><ol>
+<li>Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hinton. Layer normalization. arXiv preprint arXiv:1607.06450, 2016.</li>
+<li>Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio. Neural machine translation by jointly learning to align and translate. CoRR, abs/1409.0473, 2014.</li>
+<li>Denny Britz, Anna Goldie, Minh-Thang Luong, and Quoc V. Le. Massive exploration of neural machine translation architectures. CoRR, abs/1703.03906, 2017.</li>
+<li>Jianpeng Cheng, Li Dong, and Mirella Lapata. Long short-term memory-networks for machine reading. arXiv preprint arXiv:1601.06733, 2016.</li>
+<li>Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Fethi Bougares, Holger Schwenk, and Yoshua Bengio. Learning phrase representations using rnn encoder-decoder for statistical machine translation. CoRR, abs/1406.1078, 2014.</li>
+<li>Francois Chollet. Xception: Deep learning with depthwise separable convolutions. arXiv preprint arXiv:1610.02357, 2016.</li>
+<li>Junyoung Chung, Çaglar Gülçehre, Kyunghyun Cho, and Yoshua Bengio. Empirical evaluation of gated recurrent neural networks on sequence modeling. CoRR, abs/1412.3555, 2014.</li>
+<li>Chris Dyer, Adhiguna Kuncoro, Miguel Ballesteros, and Noah A. Smith. Recurrent neural network grammars. In Proc. of NAACL, 2016.</li>
+<li>Jonas Gehring, Michael Auli, David Grangier, Denis Yarats, and Yann N. Dauphin. Convolutional sequence to sequence learning. arXiv preprint arXiv:1705.03122v2, 2017.</li>
+<li>Alex Graves. Generating sequences with recurrent neural networks. arXiv preprint arXiv:1308.0850, 2013.</li>
+<li>Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pages 770–778, 2016.</li>
+<li>Sepp Hochreiter, Yoshua Bengio, Paolo Frasconi, and Jürgen Schmidhuber. Gradient flow in recurrent nets: the difficulty of learning long-term dependencies, 2001.</li>
+<li>Sepp Hochreiter and Jürgen Schmidhuber. Long short-term memory. Neural computation, 9(8):1735–1780, 1997.</li>
+<li>Zhongqiang Huang and Mary Harper. Self-training PCFG grammars with latent annotations across languages. In Proceedings of the 2009 Conference on Empirical Methods in Natural Language Processing, pages 832–841. ACL, August 2009.</li>
+<li>Rafal Jozefowicz, Oriol Vinyals, Mike Schuster, Noam Shazeer, and Yonghui Wu. Exploring the limits of language modeling. arXiv preprint arXiv:1602.02410, 2016.</li>
+<li>Łukasz Kaiser and Samy Bengio. Can active memory replace attention? In Advances in Neural Information Processing Systems, (NIPS), 2016.</li>
+<li>Łukasz Kaiser and Ilya Sutskever. Neural GPUs learn algorithms. In International Conference on Learning Representations (ICLR), 2016.</li>
+<li>Nal Kalchbrenner, Lasse Espeholt, Karen Simonyan, Aaron van den Oord, Alex Graves, and Koray Kavukcuoglu. Neural machine translation in linear time. arXiv preprint arXiv:1610.10099v2, 2017.</li>
+<li>Yoon Kim, Carl Denton, Luong Hoang, and Alexander M. Rush. Structured attention networks. In International Conference on Learning Representations, 2017.</li>
+<li>Diederik Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In ICLR, 2015.</li>
+<li>Oleksii Kuchaiev and Boris Ginsburg. Factorization tricks for LSTM networks. arXiv preprint arXiv:1703.10722, 2017.</li>
+<li>Zhouhan Lin, Minwei Feng, Cicero Nogueira dos Santos, Mo Yu, Bing Xiang, Bowen Zhou, and Yoshua Bengio. A structured self-attentive sentence embedding. arXiv preprint arXiv:1703.03130, 2017.</li>
+<li>Minh-Thang Luong, Quoc V. Le, Ilya Sutskever, Oriol Vinyals, and Lukasz Kaiser. Multi-task sequence to sequence learning. arXiv preprint arXiv:1511.06114, 2015.</li>
+<li>Minh-Thang Luong, Hieu Pham, and Christopher D Manning. Effective approaches to attentionbased neural machine translation. arXiv preprint arXiv:1508.04025, 2015.</li>
+<li>Mitchell P Marcus, Mary Ann Marcinkiewicz, and Beatrice Santorini. Building a large annotated corpus of english: The penn treebank. Computational linguistics, 19(2):313–330, 1993.</li>
+<li>David McClosky, Eugene Charniak, and Mark Johnson. Effective self-training for parsing. In Proceedings of the Human Language Technology Conference of the NAACL, Main Conference, pages 152–159. ACL, June 2006.</li>
+<li>Ankur Parikh, Oscar Täckström, Dipanjan Das, and Jakob Uszkoreit. A decomposable attention model. In Empirical Methods in Natural Language Processing, 2016.</li>
+<li>Romain Paulus, Caiming Xiong, and Richard Socher. A deep reinforced model for abstractive summarization. arXiv preprint arXiv:1705.04304, 2017.</li>
+<li>Slav Petrov, Leon Barrett, Romain Thibaux, and Dan Klein. Learning accurate, compact, and interpretable tree annotation. In Proceedings of the 21st International Conference on Computational Linguistics and 44th Annual Meeting of the ACL, pages 433–440. ACL, July 2006.</li>
+<li>Ofir Press and Lior Wolf. Using the output embedding to improve language models. arXiv preprint arXiv:1608.05859, 2016.</li>
+<li>Rico Sennrich, Barry Haddow, and Alexandra Birch. Neural machine translation of rare words with subword units. arXiv preprint arXiv:1508.07909, 2015.</li>
+<li>Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz, Andy Davis, Quoc Le, Geoffrey Hinton, and Jeff Dean. Outrageously large neural networks: The sparsely-gated mixture-of-experts layer. arXiv preprint arXiv:1701.06538, 2017.</li>
+<li>Nitish Srivastava, Geoffrey E Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan Salakhutdinov. Dropout: a simple way to prevent neural networks from overfitting. Journal of Machine Learning Research, 15(1):1929–1958, 2014.</li>
+<li>Sainbayar Sukhbaatar, Arthur Szlam, Jason Weston, and Rob Fergus. End-to-end memory networks. In C. Cortes, N. D. Lawrence, D. D. Lee, M. Sugiyama, and R. Garnett, editors, Advances in Neural Information Processing Systems 28, pages 2440–2448. Curran Associates, Inc., 2015.</li>
+<li>Ilya Sutskever, Oriol Vinyals, and Quoc VV Le. Sequence to sequence learning with neural networks. In Advances in Neural Information Processing Systems, pages 3104–3112, 2014.</li>
+<li>Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jonathon Shlens, and Zbigniew Wojna. Rethinking the inception architecture for computer vision. CoRR, abs/1512.00567, 2015.</li>
+<li>Vinyals &amp; Kaiser, Koo, Petrov, Sutskever, and Hinton. Grammar as a foreign language. In Advances in Neural Information Processing Systems, 2015.</li>
+<li>Yonghui Wu, Mike Schuster, Zhifeng Chen, Quoc V Le, Mohammad Norouzi, Wolfgang Macherey, Maxim Krikun, Yuan Cao, Qin Gao, Klaus Macherey, et al. Google's neural machine translation system: Bridging the gap between human and machine translation. arXiv preprint arXiv:1609.08144, 2016.</li>
+<li>Jie Zhou, Ying Cao, Xuguang Wang, Peng Li, and Wei Xu. Deep recurrent models with fast-forward connections for neural machine translation. CoRR, abs/1606.04199, 2016.</li>
+<li>Muhua Zhu, Yue Zhang, Wenliang Chen, Min Zhang, and Jingbo Zhu. Fast and accurate shift-reduce constituent parsing. In Proceedings of the 51st Annual Meeting of the ACL (Volume 1: Long Papers), pages 434–443. ACL, August 2013.</li>
+</ol></div>
+
+<h2 id="appx">附录：注意力可视化</h2>
+<p>以下三张图取自原文末尾的「Attention Visualizations」部分。图本身使用从源 PDF 裁取的原始插图，未重绘；彩色对比度需在彩色显示下查看。</p>
+
+<figure id="fig3"><img src="images/fig3.png" alt="Attention visualizations figure 3">
+<figcaption><span class="lab">图 3</span>注意力机制跟随长距离依赖的一个例子，取自 6 层中第 5 层的编码器自注意力。许多注意力头关注动词「making」的一个距离较远的依赖，补全短语「making...more difficult」。此处只展示词「making」的注意力。不同颜色代表不同的注意力头。最好在彩色下查看。</figcaption></figure>
+
+<figure id="fig4"><img src="images/fig4.png" alt="Attention visualizations figure 4">
+<figcaption><span class="lab">图 4</span>两个注意力头（同样在 6 层中的第 5 层），看起来参与了指代消解（anaphora resolution）。上：注意力头 5 的完整注意力。下：仅从词「its」出发、针对注意力头 5 与 6 的孤立注意力。注意该词上的注意力非常尖锐。</figcaption></figure>
+
+<figure id="fig5"><img src="images/fig5.png" alt="Attention visualizations figure 5">
+<figcaption><span class="lab">图 5</span>许多注意力头表现出似乎与句子结构有关的行为。我们在上面给出两个这样的例子，分别来自 6 层中第 5 层编码器自注意力的两个不同的头。这些头显然学会了执行不同的任务。</figcaption></figure>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　Transformer —— 模型架构</li>
+<li><a href="#fig2">图 2</a>　（左）缩放点积注意力；（右）多头注意力由若干并行运行的注意力层构成</li>
+<li><a href="#fig3">图 3</a>　编码器第 5 层自注意力跟随长距离依赖的例子（词「making」）</li>
+<li><a href="#fig4">图 4</a>　第 5 层中两个似乎参与指代消解的注意力头</li>
+<li><a href="#fig5">图 5</a>　表现出与句子结构有关行为的两个注意力头</li>
+</ol>
+<p style="margin-top:10px">表 1 不同层类型的复杂度与路径长度（3.4 节）、表 2 与之前模型的 BLEU 与训练开销对比（5.4 节）、表 3 架构变体（6.2 节）、表 4 英语成分句法分析结果（6.3 节）已在正文中直接排出。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译；原文脚注按位置保留并译出。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

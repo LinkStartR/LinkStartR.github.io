@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>把模仿学习与结构化预测归约为无遗憾在线学习 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">模仿学习归约到无遗憾在线学习</span><span>Ross 等，2011 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 预备知识</a>
+<a class="sub" href="#s2-1">2.1 模仿学习的监督式做法</a>
+<a class="sub" href="#s2-2">2.2 前向训练</a>
+<a class="sub" href="#s2-3">2.3 随机混合迭代学习（SMILe）</a>
+<a href="#s3">3 数据集聚合（DAGGER）</a>
+<a href="#s4">4 理论分析</a>
+<a class="sub" href="#s4-1">4.1 在线学习</a>
+<a class="sub" href="#s4-2">4.2 无遗憾算法的保证</a>
+<a href="#s5">5 实验</a>
+<a class="sub" href="#s5-1">5.1 Super Tux Kart</a>
+<a class="sub" href="#s5-2">5.2 Super Mario Bros.</a>
+<a class="sub" href="#s5-3">5.3 手写识别</a>
+<a href="#s6">6 未来工作</a>
+<a href="#s7">致谢</a>
+<hr>
+<a href="#refs">参考文献</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 模仿学习归约到无遗憾在线学习 | Ross 等，2011 · 中文翻译-->
+<h1 class="doc">把模仿学习与结构化预测归约为无遗憾在线学习<span class="en">A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning</span></h1>
+<p class="meta">Stéphane Ross · Geoffrey J. Gordon · J. Andrew Bagnell（Carnegie Mellon University）<br>
+AISTATS 2011（第 14 届国际人工智能与统计会议，Fort Lauderdale, FL, USA）· arXiv:1011.0686v3 [cs.LG] 16 Mar 2011 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>像<span class="term" data-tip="imitation learning：用专家演示数据学习控制器/策略，使其模仿专家行为">模仿学习</span>这样「未来观测依赖先前预测（动作）」的序列预测问题，违反了统计学习中常见的<span class="term" data-tip="i.i.d.：独立同分布假设，即每个样本彼此独立且来自同一分布">i.i.d. 假设</span>。这在理论上——也常常在实践上——导致性能很差。近来一些方法（Daumé III et al., 2009; Ross and Bagnell, 2010）在此设定下给出了更强的保证，但仍不太令人满意：它们训练的是<span class="term" data-tip="non-stationary policy：不同时间步使用不同策略（例如每个时刻一个分类器）">非平稳</span>或<span class="term" data-tip="stochastic policy：动作按概率分布随机选取的策略">随机</span>策略，并且需要大量迭代。本文提出一种新的迭代算法，它训练一个<span class="term" data-tip="stationary deterministic policy：不随时间改变、且对同一状态总是给出同一动作的策略">平稳确定性策略</span>，并可以看作在线学习设定下的<span class="term" data-tip="no-regret：在 N 轮后，平均损失与「事后最优单一策略」的平均损失之差趋于 0">无遗憾</span>算法。我们证明，任何这样的无遗憾算法，配合额外的归约假设，必然能找到在该序列式设定下由它自己引出的观测分布上表现良好的策略。我们在两个具有挑战性的模仿学习问题以及一个基准序列标注问题上展示了这一新方法优于先前方法。</p>
+</div>
+<p class="hint">正文、图表与参考文献均来自源 PDF 解析结果。专业术语、模型名、人名按要求保留原文；术语上的金色虚线表示可悬停（触屏可点按）查看中文解释。参考文献整节保留英文原文不译。原文用 <i>ε</i> 表示误差率、用 ℓ 表示替代损失（surrogate loss），译文保留这两个符号。</p>
+
+<h2 id="s1">1 引言</h2>
+<p>序列预测问题在实践中很常见。例如，多数机器人系统必须能根据随时间逐步揭示的一串观测，预测/做出一个动作序列。在标准控制方法失效的复杂机器人系统中，我们常常只能求助于学习一个能做出这类预测的控制器。模仿学习技术——用良好行为的专家演示来学习控制器——已被证明在实践中非常有用，并在多种应用中达到了当时最优的性能（Schaal, 1999; Abbeel and Ng, 2004; Ratliff et al., 2006; Silver et al., 2008; Argall et al., 2009; Chernova and Veloso, 2009; Ross and Bagnell, 2010）。模仿学习的一个典型做法是训练一个分类器或回归器，在「已遇观测（输入）与专家所做动作（输出）」的训练数据上预测专家的行为。然而，由于在执行学到的策略时，学习器的预测会影响未来的输入观测/状态，这违反了大多数统计学习方法所依赖的关键 i.i.d. 假设。</p>
+<p>忽视这一问题会在理论与实践上都导致糟糕表现（Ross and Bagnell, 2010）。特别地，一个在专家所遇状态/观测分布上以概率 <i>ε</i> 犯错的分类器，在它自己引出的状态分布下、在 <i>T</i> 步期望中可能犯多达 <i>T</i><sup>2</sup><i>ε</i> 个错误（Ross and Bagnell, 2010）。直观上这是因为：学习器一旦犯错，就可能遇到与专家演示下完全不同的观测，从而造成错误累积。</p>
+<p>近来的方法（Ross and Bagnell, 2010）通过训练若干轮、并让学习器影响「提供专家演示的输入状态」（借助在系统中执行自己的控制）来保证期望错误数在任务时长 <i>T</i> 与误差 <i>ε</i> 上线性（或近似线性）。其中一种方法（Ross and Bagnell, 2010）通过为序列中每个时间步各训练一个策略（从第一步开始）来学习一个非平稳策略。遗憾的是，当 <i>T</i> 很大或定义不清时这并不实用。另一种称为 SMILe（Ross and Bagnell, 2010）的方法类似 SEARN（Daumé III et al., 2009）与 CPI（Kakade and Langford, 2002），通过在每轮训练中向混合中新增一个策略，训练一个平稳随机策略（若干策略的有限混合）。然而这在实践应用中可能并不令人满意：混合中的某些策略比其他策略差，学到的控制器可能不稳定。</p>
+<p>我们提出一种新的模仿学习元算法，它学习一个平稳确定性策略，并保证在该策略引出的状态分布下表现良好（错误/代价数随 <i>T</i> 与分类代价 <i>ε</i> 线性增长）。我们采用<span class="term" data-tip="reduction：把一个学习问题归约为另一个（通常更成熟的）学习问题，从而复用已有算法与理论">归约</span>式方法（Beygelzimer et al., 2005），从而能够复用现有的监督学习算法。我们的方法实现简单，除监督学习子程序之外没有自由参数，所需迭代数随问题的有效时长近似线性增长。它天然同时处理连续与离散预测。我们的方法与无遗憾在线学习算法（Cesa-Bianchi et al., 2004; Hazan et al., 2006; Kakade and Shalev-Shwartz, 2008）（特别是 Follow-The-Leader）密切相关，但在我们的设定下更好地利用了专家。此外我们表明，任何无遗憾学习器都可以按某种特定方式使用，以学到一个具有类似保证的策略。</p>
+<p>我们先建立记号与设定，讨论相关工作，然后给出 DAGGER（<b>DA</b>taset A<b>GG</b>r<b>E</b>gation，数据集聚合）方法。我们用无遗憾分析加归约分析（Beygelzimer et al., 2005）来分析该方法。除归约分析之外，我们还用 online-to-batch 技术（Cesa-Bianchi et al., 2004）考察该方法的样本复杂度。我们展示 DAGGER 可扩展，并在实践中于两个具有挑战性的模仿学习问题上优于先前方法：1）在 3D 赛车游戏（Super Tux Kart）中学习开车的转向；2）在给定输入图像特征与人类专家（以及近优规划器）对应动作的情况下学习玩 Super Mario Bros.。仿照 Daumé III et al. (2009) 把结构化预测视为退化的模仿学习问题的做法，我们把 DAGGER 应用于 OCR（Taskar et al., 2003）基准预测问题，仅用单遍贪心预测就取得了与当时最优方法（Taskar et al., 2003; Ratliff et al., 2007; Daumé III et al., 2009）相当的结果。</p>
+
+<h2 id="s2">2 预备知识</h2>
+<p>我们首先引入与本设定相关的记号。记 Π 为学习器所考虑的策略类，<i>T</i> 为任务时长。对任意策略 <i>π</i>，令 <i>d</i><sub><i>π</i></sub><sup><i>t</i></sup> 表示当学习器从时间步 1 到 <i>t</i> − 1 执行策略 <i>π</i> 时、时刻 <i>t</i> 的状态分布。此外记 <i>d</i><sub><i>π</i></sub> = <span class="frac"><span class="n2">1</span><span class="d2"><i>T</i></span></span><span class="sum"><span class="t"><i>T</i></span><span class="o">∑</span><span class="b"><i>t</i>=1</span></span><i>d</i><sub><i>π</i></sub><sup><i>t</i></sup> 为跟随策略 <i>π</i> 走 <i>T</i> 步时状态的平均分布。给定状态 <i>s</i>，记 <i>C</i>(<i>s</i>, <i>a</i>) 为在所考虑任务中于状态 <i>s</i> 执行动作 <i>a</i> 的期望即时代价，并记 <i>C</i><sub><i>π</i></sub>(<i>s</i>) = 𝔼<sub><i>a</i>∼<i>π</i>(<i>s</i>)</sub>[<i>C</i>(<i>s</i>, <i>a</i>)] 为 <i>π</i> 在 <i>s</i> 处的期望即时代价。我们假定 <i>C</i> 有界于 [0, 1]。执行策略 <i>π</i> 共 <i>T</i> 步的总代价（即 cost-to-go，剩余代价）记为 <i>J</i>(<i>π</i>) = <span class="sum"><span class="t"><i>T</i></span><span class="o">∑</span><span class="b"><i>t</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i></sub><sup><i>t</i></sup></sub>[<i>C</i><sub><i>π</i></sub>(<i>s</i>)] = <i>T</i> 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i></sub></sub>[<i>C</i><sub><i>π</i></sub>(<i>s</i>)]。</p>
+<p>在模仿学习中，我们未必知道或观测到特定任务的真实代价 <i>C</i>(<i>s</i>, <i>a</i>)。相反，我们观测专家演示，并试图基于 <i>π</i> 模仿专家策略 <i>π</i><sup>*</sup> 的程度，对任意代价函数 <i>C</i> 给出 <i>J</i>(<i>π</i>) 的界。记 ℓ 为我们最小化的、观测到的<span class="term" data-tip="surrogate loss：我们不直接最小化真实任务代价，而最小化一个可观测的替代损失（如与专家动作不一致的 0-1 损失）">替代损失</span>函数，它代替 <i>C</i>。例如 ℓ(<i>s</i>, <i>π</i>) 可以是 <i>π</i> 在状态 <i>s</i> 处相对 <i>π</i><sup>*</sup> 的期望 0-1 损失，或 <i>π</i> 相对 <i>π</i><sup>*</sup> 在 <i>s</i> 处的平方/合页损失。重要的是，在许多情形下 <i>C</i> 与 ℓ 可以是同一个函数——例如当我们关心的是优化学习器预测专家所选动作的能力时。</p>
+<p>我们的目标是找到策略 <i>π̂</i>，使它在自己引出的状态分布下的观测替代损失最小，即：</p>
+<div class="eq"><div class="body"><i>π̂</i> = arg min<sub><i>π</i>∈Π</sub> 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i></sub></sub>[ℓ(<i>s</i>, <i>π</i>)]</div><div class="no">(1)</div></div>
+<p>由于系统动力学既未知又复杂，我们无法计算 <i>d</i><sub><i>π</i></sub>，只能在系统中执行 <i>π</i> 来采样它。因此，由于输入分布依赖于策略 <i>π</i> 本身，这是一个非 i.i.d. 的监督学习问题。策略与由此产生的分布之间的相互作用使优化变得困难：即使损失 ℓ(<i>s</i>, ·) 对所有状态 <i>s</i> 都是关于 <i>π</i> 的凸函数，目标也仍然非凸。下面我们简要回顾先前方法及其保证。</p>
+
+<h3 id="s2-1">2.1 模仿学习的监督式做法</h3>
+<p>模仿学习的传统做法忽略分布的变化，直接在专家所遇状态分布 <i>d</i><sub><i>π</i><sup>*</sup></sub> 下训练一个表现良好的策略 <i>π</i>。这可以用任何标准监督学习算法实现。它求得的策略是 <i>π̂</i><sub>sup</sub>：</p>
+<div class="eq"><div class="body"><i>π̂</i><sub>sup</sub> = arg min<sub><i>π</i>∈Π</sub> 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sup>*</sup></sub></sub>[ℓ(<i>s</i>, <i>π</i>)]</div><div class="no">(2)</div></div>
+<p>假定 ℓ(<i>s</i>, <i>π</i>) 是 0-1 损失（或 0-1 损失的上界），则对任何有界于 [0, 1] 的任务代价函数 <i>C</i> 有如下性能保证：</p>
+<div class="thm"><p><b>定理 2.1</b>（Ross and Bagnell, 2010）　设 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sup>*</sup></sub></sub>[ℓ(<i>s</i>, <i>π</i>)] = <i>ε</i>，则 <i>J</i>(<i>π</i>) ≤ <i>J</i>(<i>π</i><sup>*</sup>) + <i>T</i><sup>2</sup><i>ε</i>。</p></div>
+<p><b>证明.</b> 由 Ross and Bagnell (2010) 的结果可得，因为 <i>ε</i> 是 <i>π</i> 在 <i>d</i><sub><i>π</i><sup>*</sup></sub> 上 0-1 损失的上界。∎</p>
+<p>注意这个界是紧的，即存在这样的问题：在 <i>d</i><sub><i>π</i><sup>*</sup></sub> 上 0-1 损失为 <i>ε</i> 的策略 <i>π</i> 会带来随 <i>T</i> 二次增长的额外代价。Kääriäinen (2006) 在序列预测设定下展示了这一点<sup class="tn" data-tip="原文脚注 1：在他们的例子中，在「以上一个正确输出为输入预测序列中下一个输出」这一训练方式下，误差率为 ε 可能导致期望错误数呈指数增长。">1</sup>，而 Ross and Bagnell (2010) 给出了一个模仿学习例子，其中 <i>J</i>(<i>π̂</i><sub>sup</sub>) = (1 − <i>εT</i>)<i>J</i>(<i>π</i><sup>*</sup>) + <i>T</i><sup>2</sup><i>ε</i>。因此传统监督学习做法由于 <i>T</i> 的二次增长而性能保证很差。我们更希望方法能保证随 <i>T</i> 与 <i>ε</i> 线性或近似线性增长。下面两种来自 Ross and Bagnell (2010) 的方法在某些类模仿学习问题上做到了这一点，包括所有替代损失 ℓ 上界 <i>C</i> 的情形。</p>
+
+<h3 id="s2-2">2.2 前向训练</h3>
+<p>Ross and Bagnell (2010) 提出的前向训练算法迭代 <i>T</i> 轮，训练一个非平稳策略（每个时间步 <i>t</i> 一个策略 <i>π</i><sub><i>t</i></sub>）：在第 <i>t</i> 轮，<i>π</i><sub><i>t</i></sub> 被训练为在「由已训练好的策略 <i>π</i><sub>1</sub>, <i>π</i><sub>2</sub>, …, <i>π</i><sub><i>t</i>−1</sub> 在时刻 <i>t</i> 引出的状态分布」上模仿 <i>π</i><sup>*</sup>。这样 <i>π</i><sub><i>t</i></sub> 就在它执行时实际将遇到的状态分布上训练。因此前向算法保证：在学到的策略所引出的状态分布下的期望损失与训练时的平均损失一致，从而改善性能。</p>
+<p>我们在此给出一个比 Ross and Bagnell (2010) 稍更一般的定理，它对任何能在自己状态分布下保证 <i>ε</i> 替代损失的策略 <i>π</i> 都成立。这将有助于界定我们在第 3 节提出的新方法的性能。</p>
+<p>记 <i>Q</i><sub><i>t</i></sub><sup><i>π</i>&#8242;</sup>(<i>s</i>, <i>π</i>) 为在初始状态 <i>s</i> 执行 <i>π</i>、随后跟随策略 <i>π</i>&#8242; 的 <i>t</i> 步代价，并假定 ℓ(<i>s</i>, <i>π</i>) 是 0-1 损失（或 0-1 损失的上界），则对任何有界于 [0, 1] 的任务代价函数 <i>C</i> 有下述性能保证：</p>
+<div class="thm"><p><b>定理 2.2</b>　设 <i>π</i> 满足 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i></sub></sub>[ℓ(<i>s</i>, <i>π</i>)] = <i>ε</i>，且对所有动作 <i>a</i>、<i>t</i> ∈ {1, 2, …, <i>T</i>} 以及 <i>d</i><sub><i>π</i></sub><sup><i>t</i></sup>(<i>s</i>) &gt; 0 都有 <i>Q</i><sub><i>T</i>−<i>t</i>+1</sub><sup><i>π</i><sup>*</sup></sup>(<i>s</i>, <i>a</i>) − <i>Q</i><sub><i>T</i>−<i>t</i>+1</sub><sup><i>π</i><sup>*</sup></sup>(<i>s</i>, <i>π</i><sup>*</sup>) ≤ <i>u</i>，则 <i>J</i>(<i>π</i>) ≤ <i>J</i>(<i>π</i><sup>*</sup>) + <i>uT</i> <i>ε</i>。</p></div>
+<p><b>证明.</b> 我们沿用与 Ross and Bagnell (2010) 类似的证明。给定策略 <i>π</i>，考虑策略 <i>π</i><sub>1:<i>t</i></sub>：它在前 <i>t</i> 步执行 <i>π</i>，随后执行专家 <i>π</i><sup>*</sup>。于是</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:6%"><i>J</i>(<i>π</i>) = <i>J</i>(<i>π</i><sup>*</sup>) + <span class="sum"><span class="t"><i>T</i>−1</span><span class="o">∑</span><span class="b"><i>t</i>=0</span></span>[<i>J</i>(<i>π</i><sub>1:<i>T</i>−<i>t</i></sub>) − <i>J</i>(<i>π</i><sub>1:<i>T</i>−<i>t</i>−1</sub>)]<br>
+= <i>J</i>(<i>π</i><sup>*</sup>) + <span class="sum"><span class="t"><i>T</i></span><span class="o">∑</span><span class="b"><i>t</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i></sub><sup><i>t</i></sup></sub>[<i>Q</i><sub><i>T</i>−<i>t</i>+1</sub><sup><i>π</i><sup>*</sup></sup>(<i>s</i>, <i>π</i>) − <i>Q</i><sub><i>T</i>−<i>t</i>+1</sub><sup><i>π</i><sup>*</sup></sup>(<i>s</i>, <i>π</i><sup>*</sup>)] ≤ <i>J</i>(<i>π</i><sup>*</sup>) + <i>u</i><span class="sum"><span class="t"><i>T</i></span><span class="o">∑</span><span class="b"><i>t</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i></sub><sup><i>t</i></sup></sub>[ℓ(<i>s</i>, <i>π</i>)] = <i>J</i>(<i>π</i><sup>*</sup>) + <i>uT</i> <i>ε</i></div></div>
+<p>该不等式来自「ℓ(<i>s</i>, <i>π</i>) 上界 0-1 损失」这一事实，从而界定了 <i>π</i> 与 <i>π</i><sup>*</sup> 在 <i>s</i> 处选出不同动作的概率；当二者选不同动作时，cost-to-go 的增加 ≤ <i>u</i>。∎</p>
+<p>在最坏情况下 <i>u</i> 可能是 <i>O</i>(<i>T</i>)，此时前向算法相对传统监督学习做法没有任何改进。但在许多情形下 <i>u</i> 是 <i>O</i>(1) 或关于 <i>T</i> 次线性，前向算法就能带来更好性能。例如若 <i>C</i> 是相对专家的 0-1 损失，则 <i>u</i> ≤ 1。此外，如果 <i>π</i><sup>*</sup> 能从 <i>π</i> 所犯错误中恢复——意即在少数几步内 <i>π</i><sup>*</sup> 就回到与「一开始就执行 <i>π</i><sup>*</sup>」相近的状态分布——则 <i>u</i> 会是 <i>O</i>(1)。<sup class="tn" data-tip="原文脚注 2：例如在马尔可夫决策过程（MDP）中，当系统动力学与策略定义的马尔可夫链快速混合时就是这种情况。">2</sup>前向算法的一个缺点是：当 <i>T</i> 很大（或未定义）时它不实用，因为必须顺序训练 <i>T</i> 个不同策略，且不能在这 <i>T</i> 轮完成前停止。因此它无法应用于大多数真实场景。</p>
+
+<h3 id="s2-3">2.3 随机混合迭代学习（SMILe）</h3>
+<p>Ross and Bagnell (2010) 提出的 SMILe 缓解了这一问题：它采用类似 SEARN（Daumé III et al., 2009）的做法，在若干轮中训练一个随机平稳策略，因此在 <i>T</i> 很大或未定义时可以实际应用。SMILe 初始用一个总是查询并执行专家动作选择的策略 <i>π</i><sub>0</sub>。在第 <i>n</i> 轮，训练策略 <i>π̂</i><sub><i>n</i></sub> 使其在 <i>π</i><sub><i>n</i>−1</sub> 引出的轨迹分布下模仿专家，然后更新 <i>π</i><sub><i>n</i></sub> = <i>π</i><sub><i>n</i>−1</sub> + <i>α</i>(1 − <i>α</i>)<sup><i>n</i>−1</sup>(<i>π̂</i><sub><i>n</i></sub> − <i>π</i><sub>0</sub>)。该更新可解释为：在任意步以概率 <i>α</i>(1 − <i>α</i>)<sup><i>n</i>−1</sup> 执行策略 <i>π̂</i><sub><i>n</i></sub>，并移除相同概率的「执行所查询专家动作」。在第 <i>n</i> 轮，<i>π</i><sub><i>n</i></sub> 是 <i>n</i> 个策略的混合，使用所查询专家动作的概率为 (1 − <i>α</i>)<sup><i>n</i></sup>。我们可以在任意第 <i>N</i> 轮停止算法，返回重新归一化后的策略 <i>π̃</i><sub><i>N</i></sub> = <span class="frac"><span class="n2"><i>π</i><sub><i>N</i></sub> − (1 − <i>α</i>)<sup><i>N</i></sup><i>π</i><sub>0</sub></span><span class="d2">1 − (1 − <i>α</i>)<sup><i>N</i></sup></span></span>，它不再查询专家。Ross and Bagnell (2010) 表明，对某类问题，取 <i>α</i> 为 <i>O</i>(1/<i>T</i><sup>2</sup>)、<i>N</i> 为 <i>O</i>(<i>T</i><sup>2</sup> log <i>T</i>) 可保证关于 <i>T</i> 与 <i>ε</i> 的近似线性遗憾。</p>
+
+<h2 id="s3">3 数据集聚合（DAGGER）</h2>
+<p>我们现在介绍 DAGGER（Dataset Aggregation，数据集聚合），一个迭代算法，它训练确定性策略，并在该策略引出的状态分布下取得良好的性能保证。</p>
+<p>在最简形式下，算法如下进行。第一轮，它用专家策略收集一批轨迹数据集 <i>D</i>，并训练策略 <i>π̂</i><sub>2</sub> 使其在这些轨迹上最像专家。然后在第 <i>n</i> 轮，它用 <i>π̂</i><sub><i>n</i></sub> 收集更多轨迹，并把这些轨迹加入数据集 <i>D</i>。下一个策略 <i>π̂</i><sub><i>n</i>+1</sub> 是在整个数据集 <i>D</i> 上最像专家的策略。</p>
+
+<div class="alg"><div class="cap">算法 3.1　DAGGER<span class="en">（Dataset Aggregation）</span></div>
+<ol>
+<li>初始化 <i>D</i> ← ∅。</li>
+<li>把 <i>π̂</i><sub>1</sub> 初始化为 Π 中任意策略。</li>
+<li><b>for</b> <i>i</i> = 1 <b>to</b> <i>N</i> <b>do</b></li>
+<li>&nbsp;&nbsp;令 <i>π</i><sub><i>i</i></sub> = <i>β</i><sub><i>i</i></sub><i>π</i><sup>*</sup> + (1 − <i>β</i><sub><i>i</i></sub>)<i>π̂</i><sub><i>i</i></sub>。</li>
+<li>&nbsp;&nbsp;用 <i>π</i><sub><i>i</i></sub> 采样 <i>T</i> 步轨迹。</li>
+<li>&nbsp;&nbsp;得到数据集 <i>D</i><sub><i>i</i></sub> = {(<i>s</i>, <i>π</i><sup>*</sup>(<i>s</i>))}：<i>π</i><sub><i>i</i></sub> 访问到的状态，以及专家给出的动作。</li>
+<li>&nbsp;&nbsp;聚合数据集：<i>D</i> ← <i>D</i> ∪ <i>D</i><sub><i>i</i></sub>。</li>
+<li>&nbsp;&nbsp;在 <i>D</i> 上训练分类器 <i>π̂</i><sub><i>i</i>+1</sub>。</li>
+<li><b>end for</b></li>
+<li>返回在验证集上最好的 <i>π̂</i><sub><i>i</i></sub>。</li>
+</ol></div>
+
+<p>换句话说，DAGGER 在每轮于当前策略下收集一个数据集，并在所有已收集数据集的聚合上训练下一个策略。该算法背后的直觉是：随着迭代进行，我们基于以往经验（训练轮次）不断扩充「学到的策略在执行时很可能遇到」的输入集合。该算法也可以解释为<span class="term" data-tip="Follow-The-Leader：在线学习中每轮直接选择「到目前为止全部数据上最优」的策略">Follow-The-Leader</span> 算法：在第 <i>n</i> 轮我们事后（即在迄今为止所有轮次所见轨迹之上）挑选最佳策略 <i>π̂</i><sub><i>n</i>+1</sub>。</p>
+<p>为了更好地利用模仿学习设定中专家在场这一条件，我们可选地允许算法在第 <i>i</i> 轮使用修改后的策略 <i>π</i><sub><i>i</i></sub> = <i>β</i><sub><i>i</i></sub><i>π</i><sup>*</sup> + (1 − <i>β</i><sub><i>i</i></sub>)<i>π̂</i><sub><i>i</i></sub>，在收集下一个数据集时以一定比例的时间查询专家来选择控制量。这在实践中常常是可取的：最初几个策略数据点相对很少，可能犯更多错误，并造访那些随策略改进而变得无关的状态。</p>
+<p>我们通常取 <i>β</i><sub>1</sub> = 1，这样在从专家行为获取数据之前不必指定初始策略 <i>π̂</i><sub>1</sub>。接着我们可以取 <i>β</i><sub><i>i</i></sub> = <i>p</i><sup><i>i</i>−1</sup>，使使用专家的概率像 SMILe 与 SEARN 那样指数衰减。下面我们表明，唯一的要求是序列 {<i>β</i><sub><i>i</i></sub>} 满足当 <i>N</i> → ∞ 时 <i>β̄</i><sub><i>N</i></sub> = <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span><i>β</i><sub><i>i</i></sub> → 0。上面描述的简单、无参数版本正是 <i>β</i><sub><i>i</i></sub> = <b>I</b>(<i>i</i> = 1) 这一特例（<b>I</b> 为指示函数），它在实践中往往表现最好（见第 5 节）。一般的 DAGGER 算法详见算法 3.1。我们下一节分析的主要结果是对 DAGGER 的下述保证。记 <i>π</i><sub>1:<i>N</i></sub> 表示策略序列 <i>π</i><sub>1</sub>, <i>π</i><sub>2</sub>, …, <i>π</i><sub><i>N</i></sub>。假定 ℓ 在 Π 上强凸且有界。假设对某个与 <i>T</i> 无关的常数 <i>α</i>，对所有 <i>i</i> 有 <i>β</i><sub><i>i</i></sub> ≤ (1 − <i>α</i>)<sup><i>i</i>−1</sup>。令 <i>ε</i><sub><i>N</i></sub> = min<sub><i>π</i>∈Π</sub> <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub></sub>[ℓ(<i>s</i>, <i>π</i>)] 为事后最佳策略的真实损失。则在无限样本情形（每轮有无限条采样轨迹）下有：</p>
+<div class="thm"><p><b>定理 3.1</b>　对 DAGGER，若 <i>N</i> 为 <i>Õ</i>(<i>T</i>)，则存在策略 <i>π̂</i> ∈ <i>π̂</i><sub>1:<i>N</i></sub> 使得 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i>)] ≤ <i>ε</i><sub><i>N</i></sub> + <i>O</i>(1/<i>T</i>)。</p></div>
+<p>特别地，该结论对策略 <i>π̂</i> = arg min<sub><i>π</i>∈<i>π̂</i><sub>1:<i>N</i></sub></sub> 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i></sub></sub>[ℓ(<i>s</i>, <i>π</i>)] 成立。<sup class="tn" data-tip="原文脚注 3：不必找到序列中「在其自身分布下损失最小」的最优策略；对「离策略评估」下的那个策略，同样的保证也成立。">3</sup>如果任务代价函数 <i>C</i> 就等于（或被上界于）替代损失 ℓ，则该界直接告诉我们 <i>J</i>(<i>π̂</i>) ≤ <i>T</i><i>ε</i><sub><i>N</i></sub> + <i>O</i>(1)。对任意任务代价函数 <i>C</i>，若 ℓ 是相对 <i>π</i><sup>*</sup> 的 0-1 损失上界，则把该结果与定理 2.2 结合可得：</p>
+<div class="thm"><p><b>定理 3.2</b>　对 DAGGER，若 <i>N</i> 为 <i>Õ</i>(<i>uT</i>)，则存在策略 <i>π̂</i> ∈ <i>π̂</i><sub>1:<i>N</i></sub> 使得 <i>J</i>(<i>π̂</i>) ≤ <i>J</i>(<i>π</i><sup>*</sup>) + <i>uT</i> <i>ε</i><sub><i>N</i></sub> + <i>O</i>(1)。</p></div>
+<p><b>有限样本结果。</b>在有限样本情形，假设我们在每轮 <i>i</i> 用 <i>π</i><sub><i>i</i></sub> 采样 <i>m</i> 条轨迹，记该数据集为 <i>D</i><sub><i>i</i></sub>。令 <i>ε̂</i><sub><i>N</i></sub> = min<sub><i>π</i>∈Π</sub> <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>D</i><sub><i>i</i></sub></sub>[ℓ(<i>s</i>, <i>π</i>)] 为最佳策略在采样轨迹上的训练损失，则用 Azuma-Hoeffding 不等式可得下述保证：</p>
+<div class="thm"><p><b>定理 3.3</b>　对 DAGGER，若 <i>N</i> 为 <i>O</i>(<i>T</i><sup>2</sup> log(1/<i>δ</i>)) 且 <i>m</i> 为 <i>O</i>(1)，则以至少 1 − <i>δ</i> 的概率存在策略 <i>π̂</i> ∈ <i>π̂</i><sub>1:<i>N</i></sub> 使得 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i>)] ≤ <i>ε̂</i><sub><i>N</i></sub> + <i>O</i>(1/<i>T</i>)。</p></div>
+<p>利用损失函数强凸性的更精细分析（Kakade and Tewari, 2009）可能给出更紧的泛化界，只需 <i>N</i> 为 <i>Õ</i>(<i>T</i> log(1/<i>δ</i>)) 量级。类似地：</p>
+<div class="thm"><p><b>定理 3.4</b>　对 DAGGER，若 <i>N</i> 为 <i>O</i>(<i>u</i><sup>2</sup><i>T</i><sup>2</sup> log(1/<i>δ</i>)) 且 <i>m</i> 为 <i>O</i>(1)，则以至少 1 − <i>δ</i> 的概率存在策略 <i>π̂</i> ∈ <i>π̂</i><sub>1:<i>N</i></sub> 使得 <i>J</i>(<i>π̂</i>) ≤ <i>J</i>(<i>π</i><sup>*</sup>) + <i>uT</i> <i>ε̂</i><sub><i>N</i></sub> + <i>O</i>(1)。</p></div>
+
+<h2 id="s4">4 理论分析</h2>
+<p>DAGGER 的理论分析只依赖底层 Follow-The-Leader 算法在强凸损失上的无遗憾性质（Kakade and Tewari, 2009），该算法选出策略序列 <i>π̂</i><sub>1:<i>N</i></sub>。因此，所给出的结果对我们应用于模仿学习设定的任何其他无遗憾在线学习算法同样成立。特别地，我们可以把这里的结果视为「把模仿学习归约为无遗憾在线学习」，其中我们把单一策略下的小批量轨迹当作一个在线学习样本。我们首先简要回顾在线学习与无遗憾的概念，供本分析使用。</p>
+
+<h3 id="s4-1">4.1 在线学习</h3>
+<p>在在线学习中，算法需在第 <i>n</i> 轮给出策略 <i>π</i><sub><i>n</i></sub>，它招致损失 ℓ<sub><i>n</i></sub>(<i>π</i><sub><i>n</i></sub>)。观测到该损失后，算法可为下一轮给出不同的策略 <i>π</i><sub><i>n</i>+1</sub>，它将招致损失 ℓ<sub><i>n</i>+1</sub>(<i>π</i><sub><i>n</i>+1</sub>)。损失函数 ℓ<sub><i>n</i>+1</sub> 可能以未知甚至对抗的方式随时间变化。无遗憾算法是指产生策略序列 <i>π</i><sub>1</sub>, <i>π</i><sub>2</sub>, …, <i>π</i><sub><i>N</i></sub>，使得相对事后最佳策略的平均遗憾在 <i>N</i> → ∞ 时趋于 0：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>ℓ<sub><i>i</i></sub>(<i>π</i><sub><i>i</i></sub>) − min<sub><i>π</i>∈Π</sub> <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>ℓ<sub><i>i</i></sub>(<i>π</i>) ≤ <i>γ</i><sub><i>N</i></sub></div><div class="no">(3)</div></div>
+<p>其中 lim<sub><i>N</i>→∞</sub> <i>γ</i><sub><i>N</i></sub> = 0。许多无遗憾算法保证 <i>γ</i><sub><i>N</i></sub> 为 <i>Õ</i>(1/<i>N</i>)（例如当 ℓ 强凸时）（Hazan et al., 2006; Kakade and Shalev-Shwartz, 2008; Kakade and Tewari, 2009）。</p>
+
+<h3 id="s4-2">4.2 无遗憾算法的保证</h3>
+<p>现在我们说明，无遗憾算法可以用来在我们的模仿学习设定中找到一个在自身状态分布下具有良好性能保证的策略。为此，我们必须把损失函数选为「当前由在线算法所选策略的状态分布下的损失」：ℓ<sub><i>i</i></sub>(<i>π</i>) = 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub></sub>[ℓ(<i>s</i>, <i>π</i>)]。</p>
+<p>为分析 DAGGER，我们需要界定 <i>π̂</i><sub><i>i</i></sub> 与仍在查询专家的 <i>π</i><sub><i>i</i></sub> 所遇状态分布之间的全变差距离。下述引理有用：</p>
+<div class="thm"><p><b>引理 4.1</b>　‖<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub> − <i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub>‖<sub>1</sub> ≤ 2<i>T</i><i>β</i><sub><i>i</i></sub>。</p></div>
+<p><b>证明.</b> 设 <i>d</i> 为「以 <i>π</i><sub><i>i</i></sub> 在 <i>T</i> 步内至少查询一次 <i>π</i><sup>*</sup> 为条件」的 <i>T</i> 步状态分布。由于 <i>π</i><sub><i>i</i></sub> 在 <i>T</i> 步内始终执行 <i>π̂</i><sub><i>i</i></sub> 的概率为 (1 − <i>β</i><sub><i>i</i></sub>)<sup><i>T</i></sup>，我们有 <i>d</i><sub><i>π</i><sub><i>i</i></sub></sub> = (1 − <i>β</i><sub><i>i</i></sub>)<sup><i>T</i></sup><i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub> + (1 − (1 − <i>β</i><sub><i>i</i></sub>)<sup><i>T</i></sup>)<i>d</i>。因此</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%">‖<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub> − <i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub>‖<sub>1</sub> = (1 − (1 − <i>β</i><sub><i>i</i></sub>)<sup><i>T</i></sup>)‖<i>d</i> − <i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub>‖<sub>1</sub> ≤ 2(1 − (1 − <i>β</i><sub><i>i</i></sub>)<sup><i>T</i></sup>) ≤ 2<i>T</i><i>β</i><sub><i>i</i></sub></div></div>
+<p>最后一个不等式来自「对任意 <i>β</i> ∈ [0, 1] 有 (1 − <i>β</i>)<sup><i>T</i></sup> ≥ 1 − <i>βT</i>」。∎</p>
+<p>这只有在 <i>β</i><sub><i>i</i></sub> ≤ <span class="frac"><span class="n2">1</span><span class="d2"><i>T</i></span></span> 时才优于平凡界 ‖<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub> − <i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub>‖<sub>1</sub> ≤ 2。假定 <i>β</i><sub><i>i</i></sub> 非增，并定义 <i>n</i><sub><i>β</i></sub> 为满足 <i>β</i><sub><i>n</i></sub> &gt; <span class="frac"><span class="n2">1</span><span class="d2"><i>T</i></span></span> 的最大 <i>n</i> ≤ <i>N</i>。令 <i>ε</i><sub><i>N</i></sub> = min<sub><i>π</i>∈Π</sub> <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub></sub>[ℓ(<i>s</i>, <i>π</i>)] 为 <i>N</i> 轮后事后最佳策略的损失，并令 ℓ<sub>max</sub> 为损失的上界，即对所有满足 <i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub>(<i>s</i>) &gt; 0 的策略 <i>π̂</i><sub><i>i</i></sub> 与状态 <i>s</i> 有 ℓ<sub><i>i</i></sub>(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>) ≤ ℓ<sub>max</sub>。我们有：</p>
+<div class="thm"><p><b>定理 4.1</b>　对 DAGGER，存在策略 <i>π̂</i> ∈ <i>π̂</i><sub>1:<i>N</i></sub> 使得 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i>)] ≤ <i>ε</i><sub><i>N</i></sub> + <i>γ</i><sub><i>N</i></sub> + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>]，其中 <i>γ</i><sub><i>N</i></sub> 是 <i>π̂</i><sub>1:<i>N</i></sub> 的平均遗憾。</p></div>
+<p><b>证明.</b> 上一引理蕴含 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub></sub>(ℓ<sub><i>i</i></sub>(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>)) ≤ 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub></sub>(ℓ<sub><i>i</i></sub>(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>)) + 2ℓ<sub>max</sub>min(1, <i>T</i><i>β</i><sub><i>i</i></sub>)。于是：</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:6%">min<sub><i>π̂</i>∈<i>π̂</i><sub>1:<i>N</i></sub></sub> 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i>)] ≤ <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub></sub>(ℓ(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>))<br>
+≤ <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>[𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub></sub>(ℓ(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>)) + 2ℓ<sub>max</sub>min(1, <i>T</i><i>β</i><sub><i>i</i></sub>)]<br>
+≤ <i>γ</i><sub><i>N</i></sub> + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>] + min<sub><i>π</i>∈Π</sub><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>ℓ<sub><i>i</i></sub>(<i>π</i>) = <i>γ</i><sub><i>N</i></sub> + <i>ε</i><sub><i>N</i></sub> + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>]</div></div>
+<p>在一个「误差可降低」假设下——即对任何输入分布都存在策略 <i>π</i> ∈ Π 取得替代损失 <i>ε</i>——这意味着只要 <i>β̄</i><sub><i>N</i></sub> → 0，我们就能在极限意义下保证找到一个在自身状态分布下取得 <i>ε</i> 替代损失的策略 <i>π̂</i>。例如若取 <i>β</i><sub><i>i</i></sub> 形如 (1 − <i>α</i>)<sup><i>i</i>−1</sup>，则 <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>] ≤ <span class="frac"><span class="n2">1</span><span class="d2"><i>Nα</i></span></span>[log <i>T</i> + 1]，当 <i>N</i> 为 <i>Õ</i>(<i>T</i>) 时这一额外罚项可忽略。由于要让 <i>γ</i><sub><i>N</i></sub> 可忽略我们至少需要 <i>Õ</i>(<i>T</i>) 轮迭代，DAGGER 所需迭代数与任何无遗憾算法相当。注意这并不像（Beygelzimer et al., 2005; Ross and Bagnell, 2010; Daumé III et al., 2009）所考虑的通用误差或遗憾归约那样强：我们要求一个无遗憾方法或强凸替代损失函数，这是一个更强（虽然常见）的假设。</p>
+<p><b>有限样本情形：</b>上述结果在「在线学习算法观测到无限样本损失」（即当前策略 <i>π</i><sub><i>i</i></sub> 引出的真实轨迹分布上的损失）时成立。然而在实践中，算法在每轮只能观测到少量轨迹样本上的损失。我们希望把序列中最佳策略在自身分布下的真实损失，界定为「在有限轨迹样本上的遗憾」的函数。</p>
+<p>在每轮 <i>i</i>，我们假定算法用 <i>π</i><sub><i>i</i></sub> 采样 <i>m</i> 条轨迹，然后观测损失 ℓ<sub><i>i</i></sub>(<i>π</i>) = 𝔼<sub><i>s</i>∼<i>D</i><sub><i>i</i></sub></sub>(ℓ(<i>s</i>, <i>π</i>))，其中 <i>D</i><sub><i>i</i></sub> 是这 <i>m</i> 条轨迹的数据集。在线学习器保证 <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>D</i><sub><i>i</i></sub></sub>(ℓ(<i>s</i>, <i>π</i><sub><i>i</i></sub>)) − min<sub><i>π</i>∈Π</sub> <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>D</i><sub><i>i</i></sub></sub>(ℓ(<i>s</i>, <i>π</i>)) ≤ <i>γ</i><sub><i>N</i></sub>。令 <i>ε̂</i><sub><i>N</i></sub> = min<sub><i>π</i>∈Π</sub> <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>D</i><sub><i>i</i></sub></sub>[ℓ(<i>s</i>, <i>π</i>)] 为事后最佳策略的训练损失。仿照 Cesa-Bianchi et al. (2004) 的类似分析，我们得到：</p>
+<div class="thm"><p><b>定理 4.2</b>　对 DAGGER，以至少 1 − <i>δ</i> 的概率存在策略 <i>π̂</i> ∈ <i>π̂</i><sub>1:<i>N</i></sub> 使得 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i>)] ≤ <i>ε̂</i><sub><i>N</i></sub> + <i>γ</i><sub><i>N</i></sub> + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>] + ℓ<sub>max</sub>√(<span class="frac"><span class="n2">2 log(1/<i>δ</i>)</span><span class="d2"><i>mN</i></span></span>)，其中 <i>γ</i><sub><i>N</i></sub> 是 <i>π̂</i><sub>1:<i>N</i></sub> 的平均遗憾。</p></div>
+<p><b>证明.</b> 令 <i>Y</i><sub><i>ij</i></sub> 为「<i>π̂</i><sub><i>i</i></sub> 在状态分布 <i>d</i><sub><i>π</i><sub><i>i</i></sub></sub> 下每步期望损失」与「<i>π̂</i><sub><i>i</i></sub> 在第 <i>i</i> 轮 <i>π</i><sub><i>i</i></sub> 的第 <i>j</i> 条样本轨迹下每步平均损失」之差。所有 <i>i</i> ∈ {1, 2, …, <i>N</i>} 与 <i>j</i> ∈ {1, 2, …, <i>m</i>} 上的随机变量 <i>Y</i><sub><i>ij</i></sub> 均值为零、有界于 [−ℓ<sub>max</sub>, ℓ<sub>max</sub>]，并构成一个鞅（按顺序 <i>Y</i><sub>11</sub>, <i>Y</i><sub>12</sub>, …, <i>Y</i><sub>1<i>m</i></sub>, <i>Y</i><sub>21</sub>, …, <i>Y</i><sub><i>Nm</i></sub>）。由 Azuma-Hoeffding 不等式，以至少 1 − <i>δ</i> 的概率有 <span class="frac"><span class="n2">1</span><span class="d2"><i>mN</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span><span class="sum"><span class="t"><i>m</i></span><span class="o">∑</span><span class="b"><i>j</i>=1</span></span><i>Y</i><sub><i>ij</i></sub> ≤ ℓ<sub>max</sub>√(<span class="frac"><span class="n2">2 log(1/<i>δ</i>)</span><span class="d2"><i>mN</i></span></span>)。因此以至少 1 − <i>δ</i> 的概率可得：</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:6%">min<sub><i>π̂</i>∈<i>π̂</i><sub>1:<i>N</i></sub></sub> 𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i>)] ≤ <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π̂</i><sub><i>i</i></sub></sub></sub>[ℓ(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>)]<br>
+≤ <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>d</i><sub><i>π</i><sub><i>i</i></sub></sub></sub>[ℓ(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>)] + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>]<br>
+= <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>D</i><sub><i>i</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>)] + <span class="frac"><span class="n2">1</span><span class="d2"><i>mN</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span><span class="sum"><span class="t"><i>m</i></span><span class="o">∑</span><span class="b"><i>j</i>=1</span></span><i>Y</i><sub><i>ij</i></sub> + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>]<br>
+≤ <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span>𝔼<sub><i>s</i>∼<i>D</i><sub><i>i</i></sub></sub>[ℓ(<i>s</i>, <i>π̂</i><sub><i>i</i></sub>)] + ℓ<sub>max</sub>√(<span class="frac"><span class="n2">2 log(1/<i>δ</i>)</span><span class="d2"><i>mN</i></span></span>) + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>]<br>
+≤ <i>ε̂</i><sub><i>N</i></sub> + <i>γ</i><sub><i>N</i></sub> + ℓ<sub>max</sub>√(<span class="frac"><span class="n2">2 log(1/<i>δ</i>)</span><span class="d2"><i>mN</i></span></span>) + <span class="frac"><span class="n2">2ℓ<sub>max</sub></span><span class="d2"><i>N</i></span></span>[<i>n</i><sub><i>β</i></sub> + <i>T</i><span class="sum"><span class="t"><i>N</i></span><span class="o">∑</span><span class="b"><i>i</i>=<i>n</i><sub><i>β</i></sub>+1</span></span><i>β</i><sub><i>i</i></sub>]</div></div>
+<p>Azuma-Hoeffding 不等式的使用表明，要使泛化误差为 <i>O</i>(1/<i>T</i>) 并在 <i>T</i> 步上可忽略，我们需要 <i>Nm</i> 为 <i>O</i>(<i>T</i><sup>2</sup> log(1/<i>δ</i>)) 量级。像（Kakade and Tewari, 2009）那样利用 ℓ 的强凸性，可能得到更紧的界，只需 <i>O</i>(<i>T</i> log(<i>T</i>/<i>δ</i>)) 条轨迹。</p>
+
+<h2 id="s5">5 实验</h2>
+<p>为展示 DAGGER 的有效性与可扩展性，我们把它应用于两个具有挑战性的模仿学习问题以及一个序列标注任务（手写识别）。</p>
+
+<h3 id="s5-1">5.1 Super Tux Kart</h3>
+<p>Super Tux Kart 是一款类似流行游戏 Mario Kart 的 3D 赛车游戏。我们的目标是训练计算机在特定赛道上、以固定速度行驶时控制卡丁车的转向，输入为当前游戏图像特征（见图 1）。我们用一个人工专家为每张观测到的游戏图像提供正确转向（[−1, 1] 内的模拟摇杆值）演示。对所有方法，我们使用一个线性控制器作为基学习器，它基于图像特征向量<sup class="tn" data-tip="原文脚注 4：特征 x：800×600 图像缩放到 25×19 后每个像素的 LAB 颜色值；输出为转向量 ŷ = w^T x + b，其中 w、b 最小化岭回归目标 −Σ_i (w^T x_i + b − y_i)^2 + λ w^T w，λ = 10^−3。">4</sup>以 5 Hz 更新转向。</p>
+
+<figure id="fig1"><img src="images/fig1.png" alt="Image from Super Tux Kart's Star Track">
+<figcaption><span class="lab">图 1</span>Super Tux Kart 的 Star Track 赛道截图。</figcaption></figure>
+
+<p>我们在名为 Star Track 的赛道上比较性能。由于该赛道悬浮在空间中，卡丁车随时可能掉出赛道（发生时会把它重置于赛道中心）。我们以每圈平均掉落次数衡量性能。对 SMILe 与 DAGGER，每轮使用 1 圈训练（约 1000 个数据点），两个方法都跑 20 轮。对 SMILe 我们按 Ross and Bagnell (2010) 取参数 <i>α</i> = 0.1；对 DAGGER 取参数 <i>β</i><sub><i>i</i></sub> = <b>I</b>(<i>i</i> = 1)，<b>I</b> 为指示函数。图 2 展示了各方法在第 1、5、10、15、20 轮后每圈平均掉落次数的 95% 置信区间，横轴为累计收集的训练数据总量。我们首先注意到，基线监督式做法（始终在专家轨迹下训练）随着数据增多性能并不改善。这是因为大多数训练圈都极为相似，无法帮助学习器学会从自己的错误中恢复。用 SMILe 我们得到了一些改进，但 20 轮后的策略平均每圈仍掉落约两次。这在一定程度上源于策略的随机性——它有时会做出糟糕的动作选择。对 DAGGER，我们在 15 轮训练后得到了从不掉落赛道的策略；即便只训练 5 轮，所得策略也几乎从不出界，明显优于 SMILe 与基线监督式做法。此外 DAGGER 得到的策略更平滑，定性看起来也优于 SMILe 得到的策略。YouTube 上有一段视频（Ross, 2010a）对各方法行为做了定性对比。</p>
+
+<figure id="fig2"><img src="images/fig2.png" alt="Average falls per lap vs training data">
+<figcaption><span class="lab">图 2</span>每圈平均掉落次数随训练数据量的变化。</figcaption></figure>
+
+<h3 id="s5-2">5.2 Super Mario Bros.</h3>
+<p>Super Mario Bros. 是一款平台类电子游戏，角色 Mario 必须在被敌人击中、掉进坑洞或时间耗尽之前穿过每一关。我们使用近期 Mario Bros. AI 竞赛（Togelius and Karakovskiy, 2009）中的模拟器，它可以随机生成难度不同的关卡（更难的坑洞与更多种类的敌人）。我们的目标是训练计算机基于当前游戏图像特征（见图 3）来玩这个游戏。此场景中的专家是一个近优规划算法，它能完全获取游戏内部状态，并能精确模拟未来动作的后果。一个动作由 4 个二元变量组成，指示我们应该按下 {左, 右, 跳, 加速} 中的哪个按钮子集。</p>
+
+<figure id="fig3"><img src="images/fig3.png" alt="Captured image from Super Mario Bros.">
+<figcaption><span class="lab">图 3</span>Super Mario Bros. 的游戏画面截图。</figcaption></figure>
+
+<p>对所有方法，我们使用 4 个独立的线性 SVM 作为基学习器，它们基于图像特征向量<sup class="tn" data-tip="原文脚注 5：输入特征 x：每帧图像以 Mario 为中心划成 22×22 个格子；每个格子用 14 个二元特征描述（敌人的类型、位置与方向等）；输出为 4 个二元动作 ŷ_k = I(w_k^T x + b_k > 0)，其中 w_k、b_k 最小化带 L2 正则的合页损失，λ = 10^−4。">5</sup>以 5 Hz 更新这 4 个二元动作。</p>
+<p>我们在随机生成、难度为 1、时限 60 秒的关卡上，以「Mario 在死亡、超时或通关之前平均前进的距离」衡量性能。每关的总距离不同，平均约在 4200–4300，因此性能大致在 [0, 4300] 间变化。难度 1 的关卡对普通人类玩家相当容易，但包含了大多数类型的敌人与坑洞，只是数量和密度比更高难度关卡少。我们把 DAgger、SMILe 与 SEARN<sup class="tn" data-tip="原文脚注 6：我们使用与 Daumé III et al. (2009) 相同的 cost-to-go 近似；此时 SMILe 与 SEARN 只在混合权重上不同。">6</sup> 的性能与监督式做法（Sup）比较。每种方法每轮收集 5000 个数据点（若跑完整关，每关约 150 个数据点），并运行 20 轮。对 SMILe 我们按 Ross and Bagnell (2010) 取 <i>α</i> = 0.1（Sm0.1）。对 DAGGER，我们用不同参数选择取得结果：1) <i>β</i><sub><i>i</i></sub> = <b>I</b>(<i>i</i> = 1)，<b>I</b> 为指示函数（D0）；2) <i>β</i><sub><i>i</i></sub> = <i>p</i><sup><i>i</i>−1</sup>，对所有 <i>p</i> ∈ {0.1, 0.2, …, 0.9}。我们报告 <i>p</i> = 0.5 时取得的最好结果（D0.5），同时也报告 <i>p</i> = 0.9 的结果（D0.9），以展示在后期更频繁使用专家会导致收敛更慢。类似地，对 SEARN 我们在 {0.1, 0.2, …, 1} 中尝试所有 <i>α</i>，报告 <i>α</i> = 0.4 时最好的结果（Se0.4），同时也报告 <i>α</i> = 1.0（Se1）的结果，以展示这种纯策略迭代做法的不稳定性。图 4 展示各方法每轮每关平均前进距离的 95% 置信区间，横轴为累计训练数据总量。这里我们再次观察到，监督式做法随着从专家演示中收集更多数据，性能停滞，因为这并不能帮助解决学到的控制器所犯的特定错误。特别是，监督式做法得分很低的一个原因是：在学到的控制器下，Mario 常常卡在障碍物旁的某处，而不是跳过去。由于专家总是在离障碍物相当远时就起跳，控制器没有学会在紧贴障碍物的情形下如何脱困。另一方面，所有其他迭代方法表现都好得多，因为它们最终会在后续轮次中遇到这些情形并学会脱困。在这个实验中，DAGGER 同样优于 SMILe，并且在我们考虑的所有 <i>α</i> 取值下都优于 SEARN。使用 <i>β</i><sub><i>i</i></sub> = 0.9<sup><i>i</i>−1</sup> 时收敛明显更慢，本可从更多轮次中受益，因为性能在 20 轮结束时仍在改善。选择 0.5<sup><i>i</i>−1</sup> 得到的性能（3030）略好于指示函数（2980）。这可能是因为：使用指示函数时，早期轮次生成了大量「Mario 卡在同一位置」的数据；而少量时间使用专家仍能观测到那些位置，同时还能让 Mario 脱困，从而收集到更多种类的有用数据。YouTube 上的一段视频（Ross, 2010b）也给出了各方法行为的定性对比。</p>
+
+<figure id="fig4"><img src="images/fig4.png" alt="Average distance per stage vs data">
+<figcaption><span class="lab">图 4</span>每关平均前进距离随数据量的变化。</figcaption></figure>
+
+<h3 id="s5-3">5.3 手写识别</h3>
+<p>最后，我们在一项涉及「根据单词中每个字符的图像序列识别手写单词」的结构化预测问题上展示方法的有效性。我们仿照 Daumé III et al. (2009)，把结构化预测视为模仿学习的一种退化形式：系统动力学是确定且平凡的——只是把先前的预测作为未来预测的输入传递下去。我们使用 Taskar et al. (2003) 的数据集，它在文献中被广泛用于比较多种结构化预测方法。该数据集包含约 6600 个单词（共 5.2 万余个字符），划分为 10 折。我们考虑大数据集实验：在 9 折上训练、在 1 折上测试，并对所有折重复此过程。性能以测试折上的字符准确率衡量。</p>
+<p>我们考虑按从左到右的顺序逐个预测字符来预测单词，用先前预测的字符帮助预测下一个，并像 Daumé III et al. (2009) 中的贪心 SEARN 那样使用线性 SVM<sup class="tn" data-tip="原文脚注 7：每个字符是 8×16 的二元像素（128 个输入特征）；另有 26 个二元特征用于编码单词中先前预测出的字母。">7</sup>。这里我们把方法与 SMILe 以及 SEARN（使用与 Daumé III et al. (2009) 相同的近似）比较，也与两个基线比较：一个是非结构化做法（独立预测每个字符），另一个是监督式训练做法（训练时先前的字符始终标注正确）。我们同样对 SEARN 尝试所有 <i>α</i> ∈ {0.1, 0.2, …, 1}，报告 <i>α</i> = 0.1、<i>α</i> = 1（纯策略迭代）以及最好的 <i>α</i> = 0.8 的结果，所有方法都跑 20 轮。图 5 展示各方法每轮后在测试折上的性能随训练数据量的变化。无结构的基线只用独立预测每个字符的 SVM 就取得 82% 的字符准确率。加入先前字符特征、但训练时始终把先前字符标注正确（监督式做法）后，性能升到 83.6%。使用 DAgger 进一步提升到 85.5%。出乎意料的是，我们观察到 <i>α</i> = 1 的 SEARN（纯策略迭代做法）在这个实验中表现很好，与最好的 <i>α</i> = 0.8 以及 DAgger 相近。这是因为输入中只有很小一部分受到当前策略影响（即先前预测的字符特征），所以该方法不像一般强化/模仿学习问题中那样不稳定（正如我们在上一个实验中看到的）。小 <i>α</i> = 0.1 的 SEARN 与 SMILe 表现相近，但明显差于 DAgger。注意我们选择了最简单（贪心、单遍）的解码方式，以展示 DAGGER 相对已有归约方法的优势。类似技术也可用于多遍或束搜索解码，从而得到与当时最优方法相当的结果。</p>
+
+<figure id="fig5"><img src="images/fig5.png" alt="Character accuracy vs iteration">
+<figcaption><span class="lab">图 5</span>字符准确率随迭代轮次的变化。</figcaption></figure>
+
+<h2 id="s6">6 未来工作</h2>
+<p>我们表明，通过把与系统交互的多轮迭代批量化，无遗憾方法（包括本文提出的 DAGGER 方法）可以在模仿学习与结构化预测中提供具有强性能保证的学习归约。在未来的工作中，我们会考虑比简单贪心前向解码更精细的结构化预测策略，也会考虑使用依赖<span class="term" data-tip="Inverse Optimal Control：从专家示范反推出其隐含的代价函数，再用它做规划">逆最优控制</span>（Abbeel and Ng, 2004; Ratliff et al., 2006）技术来学习规划器代价函数的基分类器，以帮助模仿学习中的预测。此外我们认为，通过与本文类似的技术、利用 cost-to-go 估计，可能有助于理解强化学习中在线方法的成功，并提示一种类似的数据聚合方法，在此类设定下也能保证性能。</p>
+
+<h2 id="s7">致谢</h2>
+<p>本工作由 ONR MURI 资助（编号 N00014-09-1-1052，「Reasoning in Reduced Information Spaces」），以及加拿大自然科学与工程研究理事会（NSERC）资助。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按原文要求，参考文献整节保留英文原文，未作翻译；顺序与原文一致（原文按作者姓氏字母序排列，正文采用「作者—年份」式引用）。</p>
+<div class="refs"><ol>
+<li>P. Abbeel and A. Y. Ng. Apprenticeship learning via inverse reinforcement learning. In Proceedings ofthe 21st International Conference on Machine Learning (ICML), 2004.</li>
+<li>B. D. Argall, S. Chernova, M. Veloso, and B. Browning. A survey of robot learning from demonstration. Robotics and Autonomous Systems, 2009.</li>
+<li>A. Beygelzimer, V. Dani, T. Hayes, J. Langford, and B. Zadrozny. Error limiting reductions between classification tasks. In Proceedings of the 22nd International Conference on Machine Learning (ICML), 2005.</li>
+<li>L. Bottou. sgd code, 2009. URL <span style="word-break:break-all">http://www.leon.</span> bottou.org/projects/sgd.</li>
+<li>N. Cesa-Bianchi, A. Conconi, and C. Gentile. On the generalization ability of on-line learning algorithms. 2004.</li>
+<li>S. Chernova and M. Veloso. Interactive policy learning through confidence-based autonomy. 2009.</li>
+<li>H. Daumé III, J. Langford, and D. Marcu. Search-based structured prediction. Machine Learning, 2009.</li>
+<li>E. Hazan, A. Kalai, S. Kale, and A. Agarwal. Logarithmic regret algorithms for online convex optimization. In Proceedings of the 19th annual conference on Computational Learning Theory (COLT), 2006.</li>
+<li>M. Kääriäinen. Lower bounds for reductions, 2006. Atomic Learning workshop.</li>
+<li>S. Kakade and J. Langford. Approximately optimal approximate reinforcement learning. In Proceedings of the 19th International Conference on Machine Learning (ICML), 2002.</li>
+<li>S. Kakade and S. Shalev-Shwartz. Mind the duality gap: Logarithmic regret algorithms for online optimization. In Advances in Neural Information Processing Systems (NIPS), 2008.</li>
+<li>S. Kakade and A. Tewari. On the generalization ability of online strongly convex programming algorithms. In Advances in Neural Information Processing Systems (NIPS), 2009.</li>
+<li>N. Ratliff, D. Bradley, J. A. Bagnell, and J. Chestnutt. Boosting structured prediction for imitation learning. In Advances in Neural Information Processing Systems (NIPS), 2006.</li>
+<li>N. Ratliff, J. A. Bagnell, and M. Zinkevich. (Online) subgradient methods for structured prediction. In Proceedings ofthe International Conference on Artificial Intelligence and Statistics (AISTATS), 2007.</li>
+<li>S. Ross. Comparison of imitation learning approaches on Super Tux Kart, 2010a. URL <span style="word-break:break-all">http://www.</span> youtube.com/watch?v=V00npNnWzSU.</li>
+<li>S. Ross. Comparison of imitation learning approaches on Super Mario Bros, 2010b. URL <span style="word-break:break-all">http://www.</span> youtube.com/watch?v=anOI0xZ3kGM.</li>
+<li>S. Ross and J. A. Bagnell. Efficient reductions for imitation learning. In Proceedings of the 13th International Conference on Artificial Intelligence and Statistics (AIS-TATS), 2010.</li>
+<li>S. Schaal. Is imitation learning the route to humanoid robots? In Trends in Cognitive Sciences, 1999.</li>
+<li>D. Silver, J. A. Bagnell, and A. Stentz. High performance outdoor navigation from overhead data using imitation learning. In Proceedings of Robotics Science and Systems (RSS), 2008.</li>
+<li>B. Taskar, C. Guestrin, and D. Koller. Max margin markov networks. In Advances in Neural Information Processing Systems (NIPS), 2003.</li>
+<li>J. Togelius and S. Karakovskiy. Mario AI Competition, 2009. URL <span style="word-break:break-all">http://julian.togelius.com/</span> mariocompetition2009.</li>
+</ol></div>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　Super Tux Kart 的 Star Track 赛道截图（5.1 节）</li>
+<li><a href="#fig2">图 2</a>　每圈平均掉落次数随训练数据量的变化（5.1 节）</li>
+<li><a href="#fig3">图 3</a>　Super Mario Bros. 游戏画面（5.2 节）</li>
+<li><a href="#fig4">图 4</a>　每关平均前进距离随数据量的变化（5.2 节）</li>
+<li><a href="#fig5">图 5</a>　字符准确率随迭代轮次的变化（5.3 节）</li>
+</ol>
+<p style="margin-top:10px">算法 3.1（DAGGER）以伪代码块形式排入第 3 节；式 (1)–(3) 与定理 2.1、2.2、3.1–3.4、4.1、4.2、引理 4.1 均按原文位置排入正文。本文原文没有表格或附录。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译；原文脚注按位置以悬停注释形式保留并译出。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

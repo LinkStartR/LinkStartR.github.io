@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>流匹配生成建模 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">流匹配生成建模</span><span>Lipman 等，2023 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 预备知识：连续归一化流</a>
+<a href="#s3">3 流匹配</a>
+<a class="sub" href="#s3-1">3.1 由条件概率路径与向量场构造 pt、ut</a>
+<a class="sub" href="#s3-2">3.2 条件流匹配</a>
+<a href="#s4">4 条件概率路径与向量场</a>
+<a class="sub" href="#s4-1">4.1 高斯条件概率路径的特例</a>
+<a href="#s5">5 相关工作</a>
+<a href="#s6">6 实验</a>
+<a class="sub" href="#s6-1">6.1 ImageNet 上的密度建模与样本质量</a>
+<a class="sub" href="#s6-2">6.2 采样效率</a>
+<a class="sub" href="#s6-3">6.3 低分辨率图像的条件采样</a>
+<a href="#s7">7 结论</a>
+<a href="#s8">8 社会责任</a>
+<hr>
+<a href="#refs">参考文献</a>
+<a href="#appA">附录 A　定理证明</a>
+<a href="#appB">附录 B　连续性方程</a>
+<a href="#appC">附录 C　计算 CNF 模型的概率</a>
+<a href="#appD">附录 D　扩散条件向量场</a>
+<a href="#appE">附录 E　实现细节</a>
+<a class="sub" href="#appE1">E.1 扩散基线</a>
+<a class="sub" href="#appE2">E.2 训练与评估细节</a>
+<a href="#appF">附录 F　附加表格与图</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 流匹配生成建模 | Lipman 等，2023 · 中文翻译-->
+<h1 class="doc">流匹配生成建模<span class="en">Flow Matching for Generative Modeling</span></h1>
+<p class="meta">Yaron Lipman<sup>1,2</sup> · Ricky T. Q. Chen<sup>1</sup> · Heli Ben-Hamu<sup>2</sup> · Maximilian Nickel<sup>1</sup> · Matt Le<sup>1</sup><br>
+<sup>1</sup>Meta AI (FAIR)　<sup>2</sup>Weizmann Institute of Science<br>
+International Conference on Learning Representations (ICLR) 2023 · arXiv:2210.02747v2 [cs.LG] 8 Feb 2023 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>我们提出一种建立在<span class="term" data-tip="Continuous Normalizing Flows：用神经网络参数化一个随时间变化的向量场，通过求解常微分方程把简单分布「流」成复杂分布的模型">连续归一化流</span>（CNF）之上的生成建模新范式，它使我们能够以前所未有的规模训练 CNF。具体来说，我们提出<span class="term" data-tip="Flow Matching：不动用 ODE 数值模拟、直接回归「生成目标概率路径的向量场」的免模拟训练目标">流匹配</span>（FM）的概念——一种基于回归固定条件概率路径的向量场的、免模拟的 CNF 训练方法。流匹配与一大类连接噪声与数据样本的高斯概率路径兼容，而已有的扩散路径只是其中的特例。有意思的是，我们发现把 FM 用在扩散路径上，会得到一种更稳健、更稳定的扩散模型训练替代方案。此外，流匹配为用其他非扩散的概率路径训练 CNF 打开了大门。一个特别值得关注的例子是用<span class="term" data-tip="Optimal Transport：在给定两端分布下以最小「搬运代价」把质量从一端运到另一端的最优映射">最优传输</span>（OT）的位移插值来定义条件概率路径；这些路径比扩散路径更高效，带来更快的训练与采样，并取得更好的泛化。在 ImageNet 上用流匹配训练 CNF，在似然与样本质量两方面都一致优于其他基于扩散的方法，并且可以用现成的数值 ODE 求解器实现快速可靠的样本生成。</p>
+</div>
+<p class="hint">正文、图表与参考文献均来自源 PDF 解析结果。专业术语、模型名、数据集名与人名按要求保留原文；术语上的金色虚线表示可悬停（触屏可点按）查看中文解释。参考文献整节保留英文原文不译。本文原文采用「作者—年份」式引用，翻译时保留原样。</p>
+
+<h2 id="s1">1 引言</h2>
+<p>深度生成模型是一类旨在估计未知数据分布并从中采样的深度学习算法。生成建模近来涌现的大量惊人进展——例如图像生成方面的 Ramesh et al. (2022)、Rombach et al. (2022)——主要得益于基于扩散的模型（Ho et al., 2020; Song et al., 2020b）可扩展且相对稳定的训练。然而，局限于简单的扩散过程会带来相当狭窄的采样概率路径空间，导致训练时间非常长，并且需要采用专门方法（例如 Song et al. (2020a); Zhang &amp; Chen (2022)）才能高效采样。</p>
+<p>在本工作中，我们考虑<span class="term" data-tip="Continuous Normalizing Flows：用神经网络参数化随时间变化的向量场，通过求解 ODE 把简单分布「流」成复杂分布">连续归一化流</span>（CNF; Chen et al. (2018)）这一通用且确定性的框架。CNF 能够建模任意的概率路径，并且已知它特别涵盖了扩散过程所建模的概率路径（Song et al., 2021）。然而，除了可以用去噪得分匹配（Vincent, 2011）等方式高效训练的扩散之外，尚不存在可扩展的 CNF 训练算法。事实上，最大似然训练（例如 Grathwohl et al. (2018)）需要昂贵的 ODE 数值模拟，而已有的免模拟方法或者涉及难以计算的积分（Rozen et al., 2021），或者梯度有偏（Ben-Hamu et al., 2022）。</p>
+<p>本工作的目标是提出<span class="term" data-tip="Flow Matching：不动用 ODE 数值模拟、直接回归「生成目标概率路径的向量场」的免模拟训练目标">流匹配</span>（FM）——一种高效的、免模拟的 CNF 模型训练方法，它允许采用一般性的概率路径来监督 CNF 的训练。重要的是，FM 打破了 CNF 训练只能止步于扩散的可扩展性壁垒，并绕过了为处理概率路径而必须推理扩散过程的需要。</p>
+
+<figure id="fig1"><img src="images/fig1.png" alt="Unconditional ImageNet-128 samples">
+<figcaption><span class="lab">图 1</span>用流匹配配合最优传输概率路径训练的 CNF 在 ImageNet-128 上的无条件样本。</figcaption></figure>
+
+<p>具体来说，我们提出流匹配目标（第 3 节），这是一个简单直观的训练目标：回归一个能生成所需概率路径的目标向量场。我们首先说明，可以通过逐样本（即条件）的表述来构造这样的目标向量场。随后，受去噪得分匹配的启发，我们说明一个称为<span class="term" data-tip="Conditional Flow Matching：把回归目标换成「以单个数据样本为条件的向量场」，其梯度与原 FM 目标等价">条件流匹配</span>（CFM）的逐样本训练目标能提供等价的梯度，并且不需要显式知道那个难以计算的目标向量场。进一步，我们讨论一族可用于流匹配的逐样本概率路径（第 4 节），它把已有的扩散路径作为特例包含在内。即便在扩散路径上，我们也发现使用 FM 能带来更稳健、更稳定的训练，并相比得分匹配取得更优表现。此外，这族概率路径还包含一个特别有意思的情形：对应于最优传输（OT）位移插值（McCann, 1997）的向量场。我们发现条件 OT 路径比扩散路径更简单：前者形成直线轨迹，而扩散路径产生弯曲轨迹。这些性质似乎能在经验上转化为更快的训练、更快的生成以及更好的性能。</p>
+<p>我们在 ImageNet 这一庞大且高度多样的图像数据集上，对流匹配以及基于最优传输路径的构造做了实证验证。我们发现可以轻松训练出在似然估计与样本质量两方面都优于同类基于扩散方法的模型。此外，我们发现相比先前方法，我们的模型在计算代价与样本质量之间提供了更好的折中。图 1 展示了我们模型在 ImageNet 128×128 上选出的无条件样本。</p>
+
+<h2 id="s2">2 预备知识：连续归一化流</h2>
+<p>设 ℝ<sup>d</sup> 表示数据空间，数据点 <b>x</b> = (<i>x</i><sup>1</sup>, …, <i>x</i><sup>d</sup>) ∈ ℝ<sup>d</sup>。本文使用两个重要对象：<span class="term" data-tip="probability density path：随时间变化的概率密度函数序列 p_t(x)，t ∈ [0,1]">概率密度路径</span> <i>p</i> : [0, 1] × ℝ<sup>d</sup> → ℝ<sub>&gt;0</sub>，它是一个随时间<sup class="tn" data-tip="原文脚注 1：我们用下标表示时间参数，例如 p_t(x)。">1</sup>变化的概率密度函数，即 ∫ <i>p</i><sub>t</sub>(<b>x</b>) d<b>x</b> = 1；以及一个随时间变化的<span class="term" data-tip="vector field：给每个位置和时间点指定一个速度向量的函数 v_t(x)">向量场</span> <i>v</i> : [0, 1] × ℝ<sup>d</sup> → ℝ<sup>d</sup>。向量场 <i>v</i><sub>t</sub> 可用来构造一个随时间变化的微分同胚映射，称为<b>流</b> <i>φ</i> : [0, 1] × ℝ<sup>d</sup> → ℝ<sup>d</sup>，它由下述常微分方程（ODE）定义：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>φ</i><sub>t</sub>(<b>x</b>) = <i>v</i><sub>t</sub>(<i>φ</i><sub>t</sub>(<b>x</b>))</div><div class="no">(1)</div></div>
+<div class="eq"><div class="body"><i>φ</i><sub>0</sub>(<b>x</b>) = <b>x</b></div><div class="no">(2)</div></div>
+<p>此前，Chen et al. (2018) 提出用神经网络 <i>v</i><sub>t</sub>(<b>x</b>; <i>θ</i>) 建模向量场 <i>v</i><sub>t</sub>，其中 <i>θ</i> ∈ ℝ<sup>p</sup> 是可学习参数，这又给出流 <i>φ</i><sub>t</sub> 的深度参数化模型，称为<span class="term" data-tip="Continuous Normalizing Flow：见上">连续归一化流</span>（CNF）。CNF 通过<span class="term" data-tip="push-forward：把分布「推」到映射像上的算子；也叫变量替换公式，需要乘上逆映射的雅可比行列式">推前</span>（push-forward）方程，把简单先验密度 <i>p</i><sub>0</sub>（例如纯噪声）重塑为更复杂的密度 <i>p</i><sub>1</sub>：</p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub> = [<i>φ</i><sub>t</sub>]<sub>*</sub> <i>p</i><sub>0</sub></div><div class="no">(3)</div></div>
+<p>其中推前（或称变量替换）算子 * 定义为</p>
+<div class="eq"><div class="body">[<i>φ</i><sub>t</sub>]<sub>*</sub> <i>p</i><sub>0</sub>(<b>x</b>) = <i>p</i><sub>0</sub>(<i>φ</i><sub>t</sub><sup>−1</sup>(<b>x</b>)) det <span style="font-size:1.4em">[</span><span class="frac"><span class="n2">∂<i>φ</i><sub>t</sub><sup>−1</sup></span><span class="d2">∂<b>x</b></span></span>(<b>x</b>)<span style="font-size:1.4em">]</span>.</div><div class="no">(4)</div></div>
+<p>若向量场 <i>v</i><sub>t</sub> 的流 <i>φ</i><sub>t</sub> 满足式 3，则称 <i>v</i><sub>t</sub> <b>生成</b>概率密度路径 <i>p</i><sub>t</sub>。检验一个向量场是否生成某概率路径的一个实用方法是使用<span class="term" data-tip="continuity equation：偏微分方程 ∂p/∂t + div(pv) = 0，是「向量场生成该概率路径」的充要条件">连续性方程</span>，它是我们证明中的关键构件，见附录 B。关于 CNF 的更多信息，特别是如何在任意点 <b>x</b> ∈ ℝ<sup>d</sup> 计算概率 <i>p</i><sub>1</sub>(<b>x</b>)，我们在附录 C 中回顾。</p>
+
+<h2 id="s3">3 流匹配</h2>
+<p>记 <b>x</b><sub>1</sub> 为服从某个未知数据分布 <i>q</i>(<b>x</b><sub>1</sub>) 的随机变量。我们假定只能取到来自 <i>q</i>(<b>x</b><sub>1</sub>) 的数据样本，而无法访问密度函数本身。此外，设 <i>p</i><sub>t</sub> 是一条概率路径，使 <i>p</i><sub>0</sub> = <i>p</i> 为简单分布，例如标准正态分布 <i>p</i>(<b>x</b>) = <i>N</i>(<b>x</b> | <b>0</b>, <b>I</b>)，并令 <i>p</i><sub>1</sub> 在分布上近似等于 <i>q</i>。稍后我们将讨论如何构造这样的路径。<span class="term" data-tip="Flow Matching：见上">流匹配</span>目标正是被设计来匹配这一目标概率路径，从而使我们能从 <i>p</i><sub>0</sub> 流向 <i>p</i><sub>1</sub>。</p>
+<p>给定目标概率密度路径 <i>p</i><sub>t</sub>(<b>x</b>) 以及生成它的相应向量场 <i>u</i><sub>t</sub>(<b>x</b>)，我们把流匹配（FM）目标定义为</p>
+<div class="eq"><div class="body">ℒ<sub>FM</sub>(<i>θ</i>) = 𝔼<sub><i>t</i>, <i>p</i><sub>t</sub>(<b>x</b>)</sub> ‖<i>v</i><sub>t</sub>(<b>x</b>) − <i>u</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup>,</div><div class="no">(5)</div></div>
+<p>其中 <i>θ</i> 表示 CNF 向量场 <i>v</i><sub>t</sub> 的可学习参数（如第 2 节所定义），<i>t</i> ∼ 𝒰[0, 1]（均匀分布），<b>x</b> ∼ <i>p</i><sub>t</sub>(<b>x</b>)。简言之，FM 损失就是用神经网络 <i>v</i><sub>t</sub> 去回归向量场 <i>u</i><sub>t</sub>。当损失降为零时，学到的 CNF 模型就会生成 <i>p</i><sub>t</sub>(<b>x</b>)。</p>
+<p>流匹配是一个简单而有吸引力的目标，但若仅凭它本身、按字面直接使用，在实践中是难以计算的，因为我们事先并不知道合适的 <i>p</i><sub>t</sub> 与 <i>u</i><sub>t</sub> 是什么。能满足 <i>p</i><sub>1</sub>(<b>x</b>) ≈ <i>q</i>(<b>x</b>) 的概率路径有无数种，更重要的是，我们一般拿不到生成所需 <i>p</i><sub>t</sub> 的闭式 <i>u</i><sub>t</sub>。本节将说明，我们可以用只在单个样本上定义的概率路径与向量场来构造 <i>p</i><sub>t</sub> 与 <i>u</i><sub>t</sub>，而一种恰当的聚合方式就能给出所需的 <i>p</i><sub>t</sub> 与 <i>u</i><sub>t</sub>。此外，这一构造还使我们能为流匹配建立更易处理的训练目标。</p>
+
+<h3 id="s3-1">3.1 由条件概率路径与向量场构造 <i>p</i><sub>t</sub>、<i>u</i><sub>t</sub></h3>
+<p>构造目标概率路径的一个简单办法是把更简单的概率路径混合起来。给定一个具体数据样本 <b>x</b><sub>1</sub>，我们记 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 为一条<b>条件概率路径</b>，要求它在时刻 <i>t</i> = 0 满足 <i>p</i><sub>0</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <i>p</i>(<b>x</b>)；并把 <i>t</i> = 1 时的 <i>p</i><sub>1</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 设计成一个集中在 <b>x</b> = <b>x</b><sub>1</sub> 附近的分布，例如 <i>p</i><sub>1</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <i>N</i>(<b>x</b> | <b>x</b><sub>1</sub>, <i>σ</i><sup>2</sup><b>I</b>)，即以 <b>x</b><sub>1</sub> 为均值、标准差 <i>σ</i> &gt; 0 足够小的正态分布。把条件概率路径对 <i>q</i>(<b>x</b><sub>1</sub>) 做边缘化，就得到<b>边缘概率路径</b></p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub>(<b>x</b>) = ∫ <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub>,</div><div class="no">(6)</div></div>
+<p>特别地，在时刻 <i>t</i> = 1，边缘概率 <i>p</i><sub>1</sub> 是一个紧密近似数据分布 <i>q</i> 的混合分布：</p>
+<div class="eq"><div class="body"><i>p</i><sub>1</sub>(<b>x</b>) = ∫ <i>p</i><sub>1</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub> ≈ <i>q</i>(<b>x</b>).</div><div class="no">(7)</div></div>
+<p>有意思的是，我们也能以如下方式「边缘化」条件向量场，从而定义出一个<b>边缘向量场</b>（这里假定对所有 <i>t</i> 与 <b>x</b> 都有 <i>p</i><sub>t</sub>(<b>x</b>) &gt; 0）：</p>
+<div class="eq"><div class="body"><i>u</i><sub>t</sub>(<b>x</b>) = ∫ <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <span class="frac"><span class="n2"><i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>)</span><span class="d2"><i>p</i><sub>t</sub>(<b>x</b>)</span></span> d<b>x</b><sub>1</sub>,</div><div class="no">(8)</div></div>
+<p>其中 <i>u</i><sub>t</sub>(· | <b>x</b><sub>1</sub>) : ℝ<sup>d</sup> → ℝ<sup>d</sup> 是生成 <i>p</i><sub>t</sub>(· | <b>x</b><sub>1</sub>) 的条件向量场。这一点初看并不明显，但以这种方式聚合条件向量场，得到的实际上正是建模边缘概率路径所需的正确向量场。</p>
+<p>我们的第一个关键观察是：<b>边缘向量场（式 8）生成边缘概率路径（式 6）。</b></p>
+<p>这在条件向量场（那些生成条件概率路径的场）与边缘向量场（生成边缘概率路径的场）之间建立了一个令人意外的联系。该联系使我们能把未知且难以计算的边缘向量场分解为更简单的条件向量场——后者只依赖单个数据样本，因此定义起来容易得多。我们把这一点形式化为下述定理。</p>
+<div class="thm"><p><b>定理 1.</b> 给定生成条件概率路径 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 的向量场 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)，则对任意分布 <i>q</i>(<b>x</b><sub>1</sub>)，式 8 中的边缘向量场 <i>u</i><sub>t</sub> 生成式 6 中的边缘概率路径 <i>p</i><sub>t</sub>，即 <i>u</i><sub>t</sub> 与 <i>p</i><sub>t</sub> 满足连续性方程（式 26）。</p></div>
+<p>我们各定理的完整证明都放在附录 A 中。定理 1 也可以由 Peluchetti (2021) 的「扩散混合表示定理」（Diffusion Mixture Representation Theorem）导出，该定理给出了扩散 SDE 中边缘漂移系数与扩散系数的公式。</p>
+
+<h3 id="s3-2">3.2 条件流匹配</h3>
+<p>遗憾的是，由于边缘概率路径与边缘向量场定义式（式 6 与式 8）中的积分难以计算，<i>u</i><sub>t</sub> 仍然无法算出，因此也就无法朴素地算出原流匹配目标的无偏估计量。作为替代，我们提出一个更简单的目标——出乎意料的是，它会产生与原目标相同的最优解。具体来说，我们考虑<b>条件流匹配</b>（CFM）目标：</p>
+<div class="eq"><div class="body">ℒ<sub>CFM</sub>(<i>θ</i>) = 𝔼<sub><i>t</i>, <i>q</i>(<b>x</b><sub>1</sub>), <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)</sub> ‖<i>v</i><sub>t</sub>(<b>x</b>) − <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)‖<sup>2</sup>,</div><div class="no">(9)</div></div>
+<p>其中 <i>t</i> ∼ 𝒰[0, 1]、<b>x</b><sub>1</sub> ∼ <i>q</i>(<b>x</b><sub>1</sub>)，而现在 <b>x</b> ∼ <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)。与 FM 目标不同，CFM 目标使我们能轻松采样出无偏估计，只要我们能高效地从 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 采样并计算 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)——而这两件事都容易做到，因为它们都是逐样本定义的。因此我们的第二个关键观察是：</p>
+<p><b>FM（式 5）与 CFM（式 9）两个目标关于 <i>θ</i> 的梯度完全相同。</b></p>
+<p>也就是说，优化 CFM 目标（在期望意义下）等价于优化 FM 目标。由此，我们就能训练 CNF 来生成边缘概率路径 <i>p</i><sub>t</sub>——它在 <i>t</i> = 1 时特别地近似未知数据分布 <i>q</i>——而全程都不需要访问边缘概率路径或边缘向量场。我们只需设计合适的条件概率路径与条件向量场即可。我们把该性质形式化为下述定理。</p>
+<div class="thm"><p><b>定理 2.</b> 假定对所有 <b>x</b> ∈ ℝ<sup>d</sup> 与 <i>t</i> ∈ [0, 1] 都有 <i>p</i><sub>t</sub>(<b>x</b>) &gt; 0，则在不计一个与 <i>θ</i> 无关的常数的意义下，ℒ<sub>CFM</sub> 与 ℒ<sub>FM</sub> 相等。因此 ∇<sub><i>θ</i></sub>ℒ<sub>FM</sub>(<i>θ</i>) = ∇<sub><i>θ</i></sub>ℒ<sub>CFM</sub>(<i>θ</i>)。</p></div>
+
+<h2 id="s4">4 条件概率路径与向量场</h2>
+<p>条件流匹配目标对条件概率路径与条件向量场的任意选择都适用。本节讨论在一大类高斯条件概率路径下如何构造 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 与 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)。具体来说，我们考虑如下形式的条件概率路径：</p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <i>N</i>(<b>x</b> | <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>), <i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>)<sup>2</sup> <b>I</b>),</div><div class="no">(10)</div></div>
+<p>其中 <b>μ</b> : [0, 1] × ℝ<sup>d</sup> → ℝ<sup>d</sup> 是高斯分布的随时间变化的均值，<i>σ</i> : [0, 1] × ℝ<sup>d</sup> → ℝ<sub>&gt;0</sub> 描述随时间变化的标量标准差。我们令 <b>μ</b><sub>0</sub>(<b>x</b><sub>1</sub>) = <b>0</b>、<i>σ</i><sub>0</sub>(<b>x</b><sub>1</sub>) = 1，使得所有条件概率路径在 <i>t</i> = 0 时都收敛到同一个标准高斯噪声分布 <i>p</i>(<b>x</b>) = <i>N</i>(<b>x</b> | <b>0</b>, <b>I</b>)。随后我们令 <b>μ</b><sub>1</sub>(<b>x</b><sub>1</sub>) = <b>x</b><sub>1</sub>、<i>σ</i><sub>1</sub>(<b>x</b><sub>1</sub>) = <i>σ</i><sub>min</sub>，后者取得足够小，以便 <i>p</i><sub>1</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 是一个中心在 <b>x</b><sub>1</sub> 的集中的高斯分布。</p>
+<p>生成某条特定概率路径的向量场有无穷多个（例如，在连续性方程中加一个无散度分量即可，见式 26），但其中绝大多数都源于那些对底层分布保持不变的分量——比如分布具有旋转不变性时的旋转分量——这会带来不必要的额外计算。我们决定采用与高斯分布的规范变换相对应的那个最简向量场。具体来说，考虑（以 <b>x</b><sub>1</sub> 为条件的）流</p>
+<div class="eq"><div class="body"><i>ψ</i><sub>t</sub>(<b>x</b>) = <i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) <b>x</b> + <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>).</div><div class="no">(11)</div></div>
+<p>当 <b>x</b> 服从标准高斯分布时，<i>ψ</i><sub>t</sub>(<b>x</b>) 就是把它映射到均值为 <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)、标准差为 <i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) 的正态随机变量的仿射变换。也就是说，根据式 4，<i>ψ</i> 把噪声分布 <i>p</i><sub>0</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <i>p</i>(<b>x</b>) 推到 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)：</p>
+<div class="eq"><div class="body">[<i>ψ</i><sub>t</sub>]<sub>*</sub> <i>p</i>(<b>x</b>) = <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>).</div><div class="no">(12)</div></div>
+<p>这个流随即给出一个生成该条件概率路径的向量场：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>ψ</i><sub>t</sub>(<b>x</b>) = <i>u</i><sub>t</sub>(<i>ψ</i><sub>t</sub>(<b>x</b>) | <b>x</b><sub>1</sub>).</div><div class="no">(13)</div></div>
+<p>把 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 用 <b>x</b><sub>0</sub> 单独重参数化，并把式 13 代入 CFM 损失，我们得到</p>
+<div class="eq"><div class="body">ℒ<sub>CFM</sub>(<i>θ</i>) = 𝔼<sub><i>t</i>, <i>q</i>(<b>x</b><sub>1</sub>), <i>p</i>(<b>x</b><sub>0</sub>)</sub> ‖<i>v</i><sub>t</sub>(<i>ψ</i><sub>t</sub>(<b>x</b><sub>0</sub>)) − <span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>ψ</i><sub>t</sub>(<b>x</b><sub>0</sub>)‖<sup>2</sup>.</div><div class="no">(14)</div></div>
+<p>由于 <i>ψ</i><sub>t</sub> 是一个简单（可逆）的仿射映射，我们可以用式 13 以闭式解出 <i>u</i><sub>t</sub>。记 <i>f</i>&#8242; 表示对时间的导数，即 <i>f</i>&#8242; = <span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>f</i>。</p>
+<div class="thm"><p><b>定理 3.</b> 设 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 是式 10 中的高斯概率路径，<i>ψ</i><sub>t</sub> 是式 11 中相应的流映射。则定义 <i>ψ</i><sub>t</sub> 的向量场唯一，其形式为：</p>
+<div class="eq"><div class="body"><i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <span class="frac"><span class="n2"><i>σ</i><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>)</span><span class="d2"><i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>)</span></span>(<b>x</b> − <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)) + <b>μ</b><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>).</div><div class="no">(15)</div></div>
+<p>因此 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 生成高斯路径 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)。</p></div>
+
+<h3 id="s4-1">4.1 高斯条件概率路径的特例</h3>
+<p>我们的表述对任意函数 <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>) 与 <i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) 都完全通用，可以把它们设为任何满足所需边界条件的可微函数。我们首先讨论能还原出先前所用扩散过程对应概率路径的那些特例。由于我们直接处理概率路径，因此可以完全不再去推理扩散过程。这样一来，下面的第二个例子中，我们直接基于 Wasserstein-2 最优传输解构造出一条有意思的概率路径。</p>
+<p><b>例 I：扩散条件向量场。</b>扩散模型从数据点出发，逐步加噪直到它近似为纯噪声。这些过程可以被表述为随机过程，而为了在任意时刻 <i>t</i> 获得闭式表示，它们有严格的要求，最终得到具有特定均值 <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>) 与标准差 <i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) 选择的高斯条件概率路径 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)（Sohl-Dickstein et al., 2015; Ho et al., 2020; Song et al., 2020b）。例如，反向（噪声→数据）的方差爆炸（VE）路径具有如下形式：</p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub>(<b>x</b>) = <i>N</i>(<b>x</b> | <b>x</b><sub>1</sub>, <i>σ</i><sub>1−t</sub><sup>2</sup> <b>I</b>),</div><div class="no">(16)</div></div>
+<p>其中 <i>σ</i><sub>t</sub> 是递增函数，<i>σ</i><sub>0</sub> = 0 且 <i>σ</i><sub>1</sub> ≫ 1。于是式 16 给出 <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>) = <b>x</b><sub>1</sub>、<i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) = <i>σ</i><sub>1−t</sub>。把它们代入定理 3 的式 15 得</p>
+<div class="eq"><div class="body"><i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = −<span class="frac"><span class="n2"><i>σ</i><sub>1−t</sub>&#8242;</span><span class="d2"><i>σ</i><sub>1−t</sub></span></span>(<b>x</b> − <b>x</b><sub>1</sub>).</div><div class="no">(17)</div></div>
+<p>反向（噪声→数据）的方差保持（VP）扩散路径具有如下形式：</p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <i>N</i>(<b>x</b> | <i>α</i><sub>1−t</sub> <b>x</b><sub>1</sub>, (1 − <i>α</i><sub>1−t</sub><sup>2</sup>) <b>I</b>),　其中 <i>α</i><sub>t</sub> = e<sup>−(1/2)<i>T</i>(<i>t</i>)</sup>, <i>T</i>(<i>t</i>) = ∫<sub>0</sub><sup><i>t</i></sup> <i>β</i>(<i>s</i>) d<i>s</i>,</div><div class="no">(18)</div></div>
+<p>而 <i>β</i> 是噪声尺度函数。式 18 给出 <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>) = <i>α</i><sub>1−t</sub><b>x</b><sub>1</sub>、<i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) = √(1 − <i>α</i><sub>1−t</sub><sup>2</sup>)。把它们代入定理 3 的式 15 得</p>
+<div class="eq"><div class="body"><i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <span class="frac"><span class="n2"><i>α</i><sub>1−t</sub>&#8242;</span><span class="d2">1 − <i>α</i><sub>1−t</sub><sup>2</sup></span></span>(<i>α</i><sub>1−t</sub><b>x</b> − <b>x</b><sub>1</sub>) = −<span class="frac"><span class="n2"><i>T</i>&#8242;(1 − <i>t</i>)</span><span class="d2">2</span></span><span style="font-size:1.5em">[</span><span class="frac"><span class="n2">e<sup>−<i>T</i>(1−<i>t</i>)</sup><b>x</b> − e<sup>−(1/2)<i>T</i>(1−<i>t</i>)</sup><b>x</b><sub>1</sub></span><span class="d2">1 − e<sup>−<i>T</i>(1−<i>t</i>)</sup></span></span><span style="font-size:1.5em">]</span>.</div><div class="no">(19)</div></div>
+<p>我们构造的条件向量场 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 在限制到这些条件扩散过程时，确实与先前用于确定性概率流（Song et al. (2020b) 式 13）的向量场一致；详见附录 D。尽管如此，把扩散条件向量场与流匹配目标结合起来，为现有得分匹配方法提供了一种有吸引力的训练替代方案——我们在实验中发现它更稳定、更稳健。</p>
+<p>另一个重要观察是：由于这些概率路径此前是作为扩散过程的解导出的，它们实际上并不会在有限时间内到达真正的噪声分布。实践中，<i>p</i><sub>0</sub>(<b>x</b>) 只是用一个合适的高斯分布来近似，以便采样与似然计算。相比之下，我们的构造对概率路径有完全的控制权，可以直接设定 <b>μ</b><sub>t</sub> 与 <i>σ</i><sub>t</sub>，正如我们接下来要做的。</p>
+<p><b>例 II：最优传输条件向量场。</b>对条件概率路径来说，一个或许更自然的选择是让均值与标准差随时间线性变化，即</p>
+<div class="eq"><div class="body"><b>μ</b><sub>t</sub>(<b>x</b>) = <i>t</i><b>x</b><sub>1</sub>,　且　<i>σ</i><sub>t</sub>(<b>x</b>) = 1 − (1 − <i>σ</i><sub>min</sub>)<i>t</i>.</div><div class="no">(20)</div></div>
+<p>根据定理 3，该路径由下述向量场生成：</p>
+<div class="eq"><div class="body"><i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <span class="frac"><span class="n2"><b>x</b><sub>1</sub> − (1 − <i>σ</i><sub>min</sub>)<b>x</b></span><span class="d2">1 − (1 − <i>σ</i><sub>min</sub>)<i>t</i></span></span>,</div><div class="no">(21)</div></div>
+
+<figure id="fig2"><img src="images/fig2.png" alt="Diffusion score vs OT vector field">
+<figcaption><span class="lab">图 2</span>与扩散路径的条件得分函数相比，OT 路径的条件向量场在时间上方向恒定，可以说更容易用参数化模型拟合。注意蓝色表示幅度较大，红色表示幅度较小。</figcaption></figure>
+
+<p>与扩散条件向量场（式 19）不同，它对所有 <i>t</i> ∈ [0, 1] 都有定义。对应于 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 的条件流是</p>
+<div class="eq"><div class="body"><i>ψ</i><sub>t</sub>(<b>x</b>) = (1 − (1 − <i>σ</i><sub>min</sub>)<i>t</i>)<b>x</b> + <i>t</i><b>x</b><sub>1</sub>,</div><div class="no">(22)</div></div>
+<p>此时 CFM 损失（见式 9、式 14）取如下形式：</p>
+<div class="eq"><div class="body">ℒ<sub>CFM</sub>(<i>θ</i>) = 𝔼<sub><i>t</i>, <i>q</i>(<b>x</b><sub>1</sub>), <i>p</i>(<b>x</b><sub>0</sub>)</sub> ‖<i>v</i><sub>t</sub>(<i>ψ</i><sub>t</sub>(<b>x</b><sub>0</sub>)) − (<b>x</b><sub>1</sub> − (1 − <i>σ</i><sub>min</sub>)<b>x</b><sub>0</sub>)‖<sup>2</sup>.</div><div class="no">(23)</div></div>
+<p>让均值与标准差线性变化不仅得到简单直观的路径，而且在下述意义下还是最优的。条件流 <i>ψ</i><sub>t</sub>(<b>x</b>) 实际上就是两个高斯 <i>p</i><sub>0</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 与 <i>p</i><sub>1</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 之间的<b>最优传输（OT）位移映射</b>。OT 插值（它是一条概率路径）定义为（见 McCann (1997) 定义 1.1）：</p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub> = [(1 − <i>t</i>) id + <i>t</i> <i>ψ</i>]<sub>*</sub> <i>p</i><sub>0</sub></div><div class="no">(24)</div></div>
+<p>其中 <i>ψ</i> : ℝ<sup>d</sup> → ℝ<sup>d</sup> 是把 <i>p</i><sub>0</sub> 推到 <i>p</i><sub>1</sub> 的 OT 映射，id 表示恒等映射，即 id(<b>x</b>) = <b>x</b>，而 (1 − <i>t</i>) id + <i>t</i> <i>ψ</i> 称为 OT 位移映射。McCann (1997) 的例 1.7 表明，在我们这种「第一个高斯是标准高斯」的两个高斯情形下，OT 位移映射就取式 22 的形式。</p>
+<p>直观地说，OT 位移映射下的粒子总是沿直线轨迹、以恒定速度运动。图 3 描绘了扩散与 OT 条件向量场的采样路径。有意思的是，我们发现扩散路径的采样轨迹可能「冲过头」越过最终样本，造成不必要的折返，而 OT 路径则保证保持笔直。</p>
+
+<figure id="fig3"><img src="images/fig3.png" alt="Diffusion and OT trajectories">
+<figcaption><span class="lab">图 3</span>扩散轨迹与 OT 轨迹。</figcaption></figure>
+
+<p>图 2 把扩散条件得分函数（典型扩散方法中的回归目标），即 ∇ log <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)（其中 <i>p</i><sub>t</sub> 按式 18 定义），与 OT 条件向量场（式 21）做了比较。两个例子中起始（<i>p</i><sub>0</sub>）与终止（<i>p</i><sub>1</sub>）的高斯完全相同。一个有意思的观察是：OT 向量场在时间上方向恒定，这可以说带来了更简单的回归任务。该性质也可以直接从式 21 验证，因为该向量场可写成 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <i>g</i>(<i>t</i>)<i>h</i>(<b>x</b> | <b>x</b><sub>1</sub>) 的形式。附录中的图 8 给出了扩散向量场的可视化。最后我们指出：尽管条件流是最优的，这绝不意味着边缘向量场就是最优传输解。不过我们预期，边缘向量场仍会保持相对简单。</p>
+
+<h2 id="s5">5 相关工作</h2>
+<p>连续归一化流由 Chen et al. (2018) 提出，作为归一化流的连续时间版本（综述见例如 Kobyzev et al. (2020); Papamakarios et al. (2021)）。最初 CNF 用最大似然目标训练，但这涉及前向与反向传播中昂贵的 ODE 数值模拟，由于 ODE 模拟本身的串行特性而导致很高的时间复杂度。虽然有些工作展示了 CNF 生成模型用于图像合成的能力（Grathwohl et al., 2018），但要扩展到非常高维的图像本质上很困难。一批工作尝试对 ODE 做正则化使其更易求解，例如使用增广（Dupont et al., 2019）、添加正则项（Yang &amp; Karniadakis, 2019; Finlay et al., 2020; Onken et al., 2021; Tong et al., 2020; Kelly et al., 2020），或对积分区间做随机采样（Du et al., 2022）。这些工作只是想正则化 ODE，并没有改变根本的训练算法。</p>
+
+<figure id="fig4"><img src="images/fig4.png" alt="Trajectories and sampling efficiency">
+<figcaption><span class="lab">图 4</span>（左）在 2D 棋盘格数据上用不同目标训练的 CNF 的轨迹。OT 路径更早地引入棋盘格图案，而 FM 带来更稳定的训练。（右）FM 配合 OT 得到更高效的采样，用中点格式求解。</figcaption></figure>
+
+<p>为了加速 CNF 训练，一些工作通过显式设计目标概率路径与动力学，发展了免模拟的 CNF 训练框架。例如 Rozen et al. (2021) 考虑先验密度与目标密度之间的线性插值，但涉及在高维中难以估计的积分；而 Ben-Hamu et al. (2022) 考虑与本工作类似的一般概率路径，却在随机小批量情形下存在梯度有偏的问题。相比之下，流匹配框架允许以无偏梯度进行免模拟训练，并能轻松扩展到极高维。</p>
+<p>另一类免模拟训练方法依赖于构造一个扩散过程来间接定义目标概率路径（Sohl-Dickstein et al., 2015; Ho et al., 2020; Song &amp; Ermon, 2019）。Song et al. (2020b) 表明扩散模型用去噪得分匹配（Vincent, 2011）训练——这是一个条件目标，给出关于得分匹配目标的无偏梯度。条件流匹配从这一结果中获得启发，但推广为直接匹配向量场。由于易于扩展，扩散模型受到越来越多的关注，产生了种种改进，例如损失重缩放（Song et al., 2021）、加入分类器引导以及结构改进（Dhariwal &amp; Nichol, 2021）、以及学习噪声表（Nichol &amp; Dhariwal, 2021; Kingma et al., 2021）。然而（Nichol &amp; Dhariwal, 2021）与（Kingma et al., 2021）只考虑了由带单一参数的简单扩散过程所定义的高斯条件路径这一受限设定——特别地，它并不包含我们的条件 OT 路径。在另一条研究线索中，（De Bortoli et al., 2021; Wang et al., 2021; Peluchetti, 2021）借助扩散桥理论提出了有限时间扩散构造，解决了无限时间去噪构造所带来的近似误差。已有工作利用了扩散过程与具有相同概率路径的连续归一化流之间的联系（Maoutsa et al., 2020b; Song et al., 2020b; 2021），而我们的工作允许推广到简单扩散所能建模的概率路径类之外。借助我们的工作，可以完全绕开扩散过程构造，直接用概率路径推理，同时仍保有高效的训练与对数似然计算。最后，与我们的工作同时，（Liu et al., 2022; Albergo &amp; Vanden-Eijnden, 2022）在 CNF 的免模拟训练上得到了类似的条件目标；而 Neklyudov et al. (2023) 在假定 <i>u</i><sub>t</sub> 为梯度场时导出了一个隐式目标。</p>
+
+<h2 id="s6">6 实验</h2>
+<p>我们在 CIFAR-10（Krizhevsky et al., 2009）以及分辨率 32、64、128 的 ImageNet（Chrabaszcz et al., 2017; Deng et al., 2009）等图像数据集上探究了使用流匹配带来的实证收益。我们还消融了流匹配中扩散路径的选择，特别是在标准方差保持扩散路径与最优传输路径之间。我们讨论了直接参数化生成向量场并使用流匹配目标如何改进样本生成。最后我们展示流匹配也可用于条件生成场景。除另有说明外，我们用 dopri5（Dormand &amp; Prince, 1980）在绝对与相对容差均为 1e-5 下评估模型的似然和样本。生成的样本见附录，全部实现细节见附录 E。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px" rowspan="2"><b>模型</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="3"><b>CIFAR-10</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="3"><b>ImageNet 32×32</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="3"><b>ImageNet 64×64</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px">NLL↓</td><td style="border:1px solid var(--line);padding:5px 9px">FID↓</td><td style="border:1px solid var(--line);padding:5px 9px">NFE↓</td>
+<td style="border:1px solid var(--line);padding:5px 9px">NLL↓</td><td style="border:1px solid var(--line);padding:5px 9px">FID↓</td><td style="border:1px solid var(--line);padding:5px 9px">NFE↓</td>
+<td style="border:1px solid var(--line);padding:5px 9px">NLL↓</td><td style="border:1px solid var(--line);padding:5px 9px">FID↓</td><td style="border:1px solid var(--line);padding:5px 9px">NFE↓</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px" colspan="10"><b>消融</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">DDPM</td><td style="border:1px solid var(--line);padding:5px 9px">3.12</td><td style="border:1px solid var(--line);padding:5px 9px">7.48</td><td style="border:1px solid var(--line);padding:5px 9px">274</td><td style="border:1px solid var(--line);padding:5px 9px">3.54</td><td style="border:1px solid var(--line);padding:5px 9px">6.99</td><td style="border:1px solid var(--line);padding:5px 9px">262</td><td style="border:1px solid var(--line);padding:5px 9px">3.32</td><td style="border:1px solid var(--line);padding:5px 9px">17.36</td><td style="border:1px solid var(--line);padding:5px 9px">264</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Score Matching</td><td style="border:1px solid var(--line);padding:5px 9px">3.16</td><td style="border:1px solid var(--line);padding:5px 9px">19.94</td><td style="border:1px solid var(--line);padding:5px 9px">242</td><td style="border:1px solid var(--line);padding:5px 9px">3.56</td><td style="border:1px solid var(--line);padding:5px 9px">5.68</td><td style="border:1px solid var(--line);padding:5px 9px">178</td><td style="border:1px solid var(--line);padding:5px 9px">3.40</td><td style="border:1px solid var(--line);padding:5px 9px">19.74</td><td style="border:1px solid var(--line);padding:5px 9px">441</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">ScoreFlow</td><td style="border:1px solid var(--line);padding:5px 9px">3.09</td><td style="border:1px solid var(--line);padding:5px 9px">20.78</td><td style="border:1px solid var(--line);padding:5px 9px">428</td><td style="border:1px solid var(--line);padding:5px 9px">3.55</td><td style="border:1px solid var(--line);padding:5px 9px">14.14</td><td style="border:1px solid var(--line);padding:5px 9px">195</td><td style="border:1px solid var(--line);padding:5px 9px">3.36</td><td style="border:1px solid var(--line);padding:5px 9px">24.95</td><td style="border:1px solid var(--line);padding:5px 9px">601</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px" colspan="10"><b>本文</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">FM 配合 Diffusion</td><td style="border:1px solid var(--line);padding:5px 9px">3.10</td><td style="border:1px solid var(--line);padding:5px 9px">8.06</td><td style="border:1px solid var(--line);padding:5px 9px">183</td><td style="border:1px solid var(--line);padding:5px 9px">3.54</td><td style="border:1px solid var(--line);padding:5px 9px">6.37</td><td style="border:1px solid var(--line);padding:5px 9px">193</td><td style="border:1px solid var(--line);padding:5px 9px">3.33</td><td style="border:1px solid var(--line);padding:5px 9px">16.88</td><td style="border:1px solid var(--line);padding:5px 9px">187</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">FM 配合 OT</td><td style="border:1px solid var(--line);padding:5px 9px">2.99</td><td style="border:1px solid var(--line);padding:5px 9px">6.35</td><td style="border:1px solid var(--line);padding:5px 9px">142</td><td style="border:1px solid var(--line);padding:5px 9px">3.53</td><td style="border:1px solid var(--line);padding:5px 9px">5.02</td><td style="border:1px solid var(--line);padding:5px 9px">122</td><td style="border:1px solid var(--line);padding:5px 9px">3.31</td><td style="border:1px solid var(--line);padding:5px 9px">14.45</td><td style="border:1px solid var(--line);padding:5px 9px">138</td></tr>
+</table></div>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px" rowspan="2"><b>模型</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="2"><b>ImageNet 128×128</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px">NLL↓</td><td style="border:1px solid var(--line);padding:5px 9px">FID↓</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">MGAN (Hoang et al., 2018)</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">58.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">PacGAN2 (Lin et al., 2018)</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">57.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Logo-GAN-AE (Sage et al., 2018)</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">50.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Self-cond. GAN (Lučić et al., 2019)</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">41.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Uncond. BigGAN (Lučić et al., 2019)</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">25.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">PGMGAN (Armandpour et al., 2021)</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">21.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">FM<sup>w</sup>/ OT</td><td style="border:1px solid var(--line);padding:5px 9px">2.90</td><td style="border:1px solid var(--line);padding:5px 9px">20.9</td></tr>
+</table></div>
+<p class="fn"><b>表 1</b>　同一模型用不同方法训练时的似然（BPD）、生成样本质量（FID）与评估时间（NFE）。</p>
+
+<figure id="fig6"><img src="images/fig6.png" alt="Sample paths from same initial noise">
+<figcaption><span class="lab">图 6</span>在 ImageNet 64×64 上训练的模型、从同一初始噪声出发的采样路径。OT 路径约以线性方式减少噪声，而扩散路径明显只在路径末端才去除噪声。注意生成图像之间的差异。</figcaption></figure>
+
+<h3 id="s6-1">6.1 ImageNet 上的密度建模与样本质量</h3>
+<p>我们首先比较同一模型结构，即来自 Dhariwal &amp; Nichol (2021) 的 U-Net 结构（仅做最小改动），在 CIFAR-10 与 ImageNet 32/64 上以不同主流扩散损失训练的结果：来自（Ho et al., 2020）的 DDPM、得分匹配（SM）（Song et al., 2020b）与 Score Flow（SF）（Song et al., 2021）；确切细节见附录 E.1。表 1（左）总结了我们的结果以及这些基线，报告以每维比特数（BPD）为单位的负对数似然（NLL）、以 Frechet Inception 距离（FID; Heusel et al. (2017)）衡量的样本质量，以及自适应求解器达到其预设数值容差所需的平均函数求值次数（NFE，对 5 万样本取平均）。所有模型使用相同结构、相同超参数取值与相同训练迭代数，其中允许基线使用更多迭代以获得更好收敛。注意这些都是无条件模型。在 CIFAR-10 与 ImageNet 上，FM-OT 在所有定量指标上相对竞争方法都一致取得最佳结果。我们注意到 CIFAR-10 上的 FID 相比先前工作（Ho et al., 2020; Song et al., 2020b; 2021）偏高，这可能是因为我们使用的结构并非为 CIFAR-10 优化过。</p>
+<p>其次，表 1（右）比较了用流匹配配合 OT 路径在 ImageNet 128×128 分辨率上训练的模型。除 IC-GAN（Casanova et al., 2021）之外，我们的 FID 达到当时最优；IC-GAN 使用一个自监督 ResNet50 模型做条件化，因此被排除在本表之外。附录中的图 11、12、13 展示了这些模型的未经挑选的样本。</p>
+<p><b>更快的训练。</b>已有工作用非常多的迭代来训练扩散模型（例如 Score Flow 与 VDM 分别报告了 130 万与 1000 万次迭代），而我们发现流匹配总体收敛快得多。图 5 展示了在 ImageNet 64×64 上训练流匹配与各基线时的 FID 曲线；FM-OT 能比这些替代方法更快、更大幅度地降低 FID。对 ImageNet-128，Dhariwal &amp; Nichol (2021) 以批量大小 256 训练了 436 万次迭代，而 FM（模型大 25%）用了 50 万次迭代、批量大小 1.5k，即图像吞吐量少 33%；确切细节见表 3。此外，使用得分匹配时，从模型采样的代价在训练过程中可能剧烈变化，而用流匹配训练时采样代价保持恒定（附录图 10）。</p>
+
+<figure id="fig5"><img src="images/fig5.png" alt="Image quality during training">
+<figcaption><span class="lab">图 5</span>训练过程中的图像质量，ImageNet 64×64。</figcaption></figure>
+
+<h3 id="s6-2">6.2 采样效率</h3>
+<p>采样时，我们先抽取随机噪声样本 <b>x</b><sub>0</sub> ∼ <i>N</i>(0, <b>I</b>)，再用训练好的向量场 <i>v</i><sub>t</sub>、在区间 <i>t</i> ∈ [0, 1] 上用 ODE 求解器求解式 1 得到 <i>φ</i><sub>1</sub>(<b>x</b><sub>0</sub>)。虽然扩散模型也可以通过 SDE 形式采样，但那样可能非常低效，许多提出快速采样器的方法（例如 Song et al. (2020a); Zhang &amp; Chen (2022)）都直接利用了 ODE 视角（见附录 D）。部分原因在于 ODE 求解器效率高得多——在相近计算代价下误差更低（Kloeden et al., 2012）——以及可用的 ODE 求解格式众多。与我们消融出的模型相比，我们发现用流匹配配合 OT 路径训练的模型无论用哪种 ODE 求解器，都始终给出最高效的采样器，如下所示。</p>
+
+<figure id="fig7"><img src="images/fig7.png" alt="NFE vs error and FID">
+<figcaption><span class="lab">图 7</span>流匹配——尤其是使用 OT 路径时——使我们能用更少的采样求值次数，同时保持相近的数值误差（左）与样本质量（右）。结果来自 ImageNet 32×32 上训练的模型，数值误差对应中点格式。</figcaption></figure>
+
+<p><b>采样路径。</b>我们首先定性地可视化扩散与 OT 在采样路径上的差异。图 6 展示了 ImageNet-64 模型在相同随机种子下的样本，我们发现 OT 路径模型比扩散路径模型更早开始生成图像，而后者直到最后一刻噪声都占主导。我们还刻画了 2D 棋盘格生成中的概率密度路径，图 4（左），观察到类似的趋势。</p>
+<p><b>低成本采样。</b>接下来我们换用固定步长求解器，并用表 1 中的 ImageNet-32 模型比较低（≤100）NFE 的样本。在图 7（左）中，我们比较低 NFE 解与 1000 NFE 解之间的逐像素 MSE（使用 256 个随机噪声种子），发现 FM 配合 OT 的模型在计算代价意义上数值误差最好，只需约 60% 的 NFE 就能达到与扩散模型相同的误差阈值。其次，图 7（右）展示 FID 如何随计算代价变化，我们发现 FM 配合 OT 即便在很低的 NFE 值下也能取得不错的 FID，在样本质量与代价之间给出比消融模型更好的折中。图 4（右）展示了 2D 棋盘格实验中的低成本采样效果。</p>
+
+<h3 id="s6-3">6.3 低分辨率图像的条件采样</h3>
+<p>最后，我们在条件图像生成上试验了流匹配，特别是把图像从 64×64 上采样到 256×256。我们遵循（Saharia et al., 2022）的评估流程，计算上采样后验证图像的 FID；基线包括参考（原始验证集的 FID）与回归。结果见表 2。上采样图像样本见附录图 14、15。FM-OT 取得了与（Saharia et al., 2022）相近的 PSNR 与 SSIM 值，同时在 FID 与 IS 上有明显改善——如（Saharia et al., 2022）所论证的，后者是生成质量的更好指示。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"><b>模型</b></td><td style="border:1px solid var(--line);padding:5px 9px">FID↓</td><td style="border:1px solid var(--line);padding:5px 9px">IS↑</td><td style="border:1px solid var(--line);padding:5px 9px">PSNR↑</td><td style="border:1px solid var(--line);padding:5px 9px">SSIM↑</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Reference</td><td style="border:1px solid var(--line);padding:5px 9px">1.9</td><td style="border:1px solid var(--line);padding:5px 9px">240.8</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Regression</td><td style="border:1px solid var(--line);padding:5px 9px">15.2</td><td style="border:1px solid var(--line);padding:5px 9px">121.1</td><td style="border:1px solid var(--line);padding:5px 9px">27.9</td><td style="border:1px solid var(--line);padding:5px 9px">0.801</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">SR3 (Saharia et al., 2022)</td><td style="border:1px solid var(--line);padding:5px 9px">5.2</td><td style="border:1px solid var(--line);padding:5px 9px">180.1</td><td style="border:1px solid var(--line);padding:5px 9px">26.4</td><td style="border:1px solid var(--line);padding:5px 9px">0.762</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">FM<sup>w</sup>/ OT</td><td style="border:1px solid var(--line);padding:5px 9px">3.4</td><td style="border:1px solid var(--line);padding:5px 9px">200.8</td><td style="border:1px solid var(--line);padding:5px 9px">24.7</td><td style="border:1px solid var(--line);padding:5px 9px">0.747</td></tr>
+</table></div>
+<p class="fn"><b>表 2</b>　ImageNet 验证集上的图像超分辨率。</p>
+
+<h2 id="s7">7 结论</h2>
+<p>我们提出了流匹配——一个用于训练连续归一化流模型的新型免模拟框架，它依靠条件构造毫不费力地扩展到极高维。此外，FM 框架提供了看待扩散模型的另一种视角，并建议舍弃随机/扩散构造，转而更直接地指定概率路径，从而使我们能够构造例如允许更快采样和/或改进生成的路径。我们通过实验展示了使用流匹配框架训练与采样的便利性；未来我们预期 FM 将为引入大量概率路径（例如非各向同性高斯或更一般的核）打开大门。</p>
+
+<h2 id="s8">8 社会责任</h2>
+<p>除了许多正面应用之外，图像生成也可能被用于有害目的。使用内容受控的训练集以及图像验证/分类有助于减少这类用途。此外，训练大型深度学习模型的能耗需求正在快速增长（Amodei et al., 2018; Thompson et al., 2020），因此专注于能用更少梯度更新/图像吞吐完成训练的方法，可以带来显著的时间与能源节省。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按原文要求，参考文献整节保留英文原文，未作翻译；编号顺序与原文一致（原文采用「作者—年份」式引用）。</p>
+<div class="refs"><ol>
+<li>Michael S Albergo and Eric Vanden-Eijnden. Building normalizing flows with stochastic interpolants. arXiv preprint arXiv:2209.15571, 2022.</li>
+<li>Dario Amodei, Danny Hernandez, Girish SastryJack, Jack Clark, Greg Brockman, and Ilya Sutskever. Ai and compute. <span style="word-break:break-all">https://openai.com/blog/ai-and-compute/,</span> 2018.</li>
+<li>Mohammadreza Armandpour, Ali Sadeghian, Chunyuan Li, and Mingyuan Zhou. Partition-guided gans. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 5099–5109, 2021.</li>
+<li>Heli Ben-Hamu, Samuel Cohen, Joey Bose, Brandon Amos, Aditya Grover, Maximilian Nickel, Ricky T. Q. Chen, and Yaron Lipman. Matching normalizing flows and probability paths on manifolds. arXiv preprint arXiv:2207.04711, 2022.</li>
+<li>Arantxa Casanova, Marlene Careil, Jakob Verbeek, Michal Drozdzal, and Adriana Romero Soriano. Instance-conditioned gan. Advances in Neural Information Processing Systems, 34:27517–27529, 2021.</li>
+<li>Ricky T. Q. Chen. torchdiffeq, 2018. URL <span style="word-break:break-all">https://github.com/rtqichen/</span> torchdiffeq.</li>
+<li>Ricky T. Q. Chen, Yulia Rubanova, Jesse Bettencourt, and David K Duvenaud. Neural ordinary differential equations. Advances in neural information processing systems, 31, 2018.</li>
+<li>Patryk Chrabaszcz, Ilya Loshchilov, and Frank Hutter. A downsampled variant of imagenet as an alternative to the cifar datasets. arXiv preprint arXiv:1707.08819, 2017.</li>
+<li>Valentin De Bortoli, James Thornton, Jeremy Heng, and Arnaud Doucet. Diffusion schrodinger ¨ bridge with applications to score-based generative modeling. (arXiv:2106.01357), Dec 2021. doi: 10.48550/arXiv.2106.01357. URL <span style="word-break:break-all">http://arxiv.org/abs/2106.01357.</span> arXiv:2106.01357 [cs, math, stat].</li>
+<li>Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In 2009 IEEE Conference on Computer Vision and Pattern Recognition, pp. 248–255, 2009. doi: 10.1109/CVPR.2009.5206848.</li>
+<li>Prafulla Dhariwal and Alexander Quinn Nichol. Diffusion models beat GANs on image synthesis. In A. Beygelzimer, Y. Dauphin, P. Liang, and J. Wortman Vaughan (eds.), Advances in Neural Information Processing Systems, 2021. URL <span style="word-break:break-all">https://openreview.net/forum?id=</span> AAWuCvzaVt.</li>
+<li>John R Dormand and Peter J Prince. A family of embedded runge-kutta formulae. Journal of computational and applied mathematics, 6(1):19–26, 1980.</li>
+<li>Shian Du, Yihong Luo, Wei Chen, Jian Xu, and Delu Zeng. To-flow: Efficient continuous normalizing flows with temporal optimization adjoint with moving speed, 2022. URL https: //arxiv.org/abs/2203.10335.</li>
+<li>Emilien Dupont, Arnaud Doucet, and Yee Whye Teh. Augmented neural odes. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d´ Alche-Buc, E. Fox, and R. Gar-´ nett (eds.), Advances in Neural Information Processing Systems, volume 32. Curran Associates, Inc., 2019. URL <span style="word-break:break-all">https://proceedings.neurips.cc/paper/2019/file/</span> 21be9a4bd4f81549a9d1d241981cec3c-Paper.pdf.</li>
+<li>Chris Finlay, Jorn-Henrik Jacobsen, Levon Nurbekyan, and Adam M. Oberman. How to train your¨ neural ode: the world of jacobian and kinetic regularization. In ICML, pp. 3154–3164, 2020. URL <span style="word-break:break-all">http://proceedings.mlr.press/v119/finlay20a.html.</span></li>
+<li>Will Grathwohl, Ricky T. Q. Chen, Jesse Bettencourt, Ilya Sutskever, and David Duvenaud. Ffjord: Free-form continuous dynamics for scalable reversible generative models, 2018. URL https: //arxiv.org/abs/1810.01367.</li>
+<li>Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter. Gans trained by a two time-scale update rule converge to a local nash equilibrium. Advances in neural information processing systems, 30, 2017.</li>
+<li>Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising diffusion probabilistic models. Advances in Neural Information Processing Systems, 33:6840–6851, 2020.</li>
+<li>Quan Hoang, Tu Dinh Nguyen, Trung Le, and Dinh Phung. Mgan: Training generative adversarial nets with multiple generators. In International conference on learning representations, 2018.</li>
+<li>Jacob Kelly, Jesse Bettencourt, Matthew J Johnson, and David K Duvenaud. Learning differential equations that are easy to solve. Advances in Neural Information Processing Systems, 33:4370– 4380, 2020.</li>
+<li>Diederik P Kingma, Tim Salimans, Ben Poole, and Jonathan Ho. Variational diffusion models. In A. Beygelzimer, Y. Dauphin, P. Liang, and J. Wortman Vaughan (eds.), Advances in Neural Information Processing Systems, 2021. URL <span style="word-break:break-all">https://openreview.net/forum?id=</span> 2LdBqxc1Yv.</li>
+<li>Peter Eris Kloeden, Eckhard Platen, and Henri Schurz. Numerical solution of SDE through computer experiments. Springer Science &amp; Business Media, 2012.</li>
+<li>Ivan Kobyzev, Simon JD Prince, and Marcus A Brubaker. Normalizing flows: An introduction and review of current methods. IEEE transactions on pattern analysis and machine intelligence, 43 (11):3964–3979, 2020.</li>
+<li>Alex Krizhevsky, Geoffrey Hinton, et al. Learning multiple layers of features from tiny images. 2009.</li>
+<li>Zinan Lin, Ashish Khetan, Giulia Fanti, and Sewoong Oh. Pacgan: The power of two samples in generative adversarial networks. Advances in neural information processing systems, 31, 2018.</li>
+<li>Xingchao Liu, Chengyue Gong, and Qiang Liu. Flow straight and fast: Learning to generate and transfer data with rectified flow. arXiv preprint arXiv:2209.03003, 2022.</li>
+<li>Mario Luciˇ c, Michael Tschannen, Marvin Ritter, Xiaohua Zhai, Olivier Bachem, and Sylvain Gelly.´ High-fidelity image generation with fewer labels. In International conference on machine learning, pp. 4183–4192. PMLR, 2019.</li>
+<li>Dimitra Maoutsa, Sebastian Reich, and Manfred Opper. Interacting particle solutions of fokker–planck equations through gradient–log–density estimation. Entropy, 22(8):802, jul 2020a. doi: 10.3390/e22080802. URL <span style="word-break:break-all">https://doi.org/10.3390%2Fe22080802.</span></li>
+<li>Dimitra Maoutsa, Sebastian Reich, and Manfred Opper. Interacting particle solutions of fokker– planck equations through gradient–log–density estimation. Entropy, 22(8):802, 2020b.</li>
+<li>Robert J McCann. A convexity principle for interacting gases. Advances in mathematics, 128(1): 153–179, 1997.</li>
+<li>Kirill Neklyudov, Daniel Severo, and Alireza Makhzani. Action matching: A variational method for learning stochastic dynamics from samples, 2023. URL <span style="word-break:break-all">https://openreview.net/</span> forum?id=T6HPzkhaKeS.</li>
+<li>Alexander Quinn Nichol and Prafulla Dhariwal. Improved denoising diffusion probabilistic models. In International Conference on Machine Learning, pp. 8162–8171. PMLR, 2021.</li>
+<li>Derek Onken, Samy Wu Fung, Xingjian Li, and Lars Ruthotto. Ot-flow: Fast and accurate continuous normalizing flows via optimal transport. Proceedings of the AAAI Conference on Artificial Intelligence, 35(10):9223–9232, May 2021. URL <span style="word-break:break-all">https://ojs.aaai.org/index.php/</span> AAAI/article/view/17113.</li>
+<li>George Papamakarios, Eric T Nalisnick, Danilo Jimenez Rezende, Shakir Mohamed, and Balaji Lakshminarayanan. Normalizing flows for probabilistic modeling and inference. J. Mach. Learn. Res., 22(57):1–64, 2021.</li>
+<li>Stefano Peluchetti. Non-denoising forward-time diffusions. 2021.</li>
+<li>Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen. Hierarchical textconditional image generation with clip latents. arXiv preprint arXiv:2204.06125, 2022.</li>
+<li>Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bjorn Ommer. High-¨ resolution image synthesis with latent diffusion models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 10684–10695, 2022.</li>
+<li>Noam Rozen, Aditya Grover, Maximilian Nickel, and Yaron Lipman. Moser flow: Divergencebased generative modeling on manifolds. In A. Beygelzimer, Y. Dauphin, P. Liang, and J. Wortman Vaughan (eds.), Advances in Neural Information Processing Systems, 2021. URL <span style="word-break:break-all">https://openreview.net/forum?id=qGvMv3undNJ.</span></li>
+<li>Alexander Sage, Eirikur Agustsson, Radu Timofte, and Luc Van Gool. Logo synthesis and manipulation with clustered generative adversarial networks. In Proceedings ofthe IEEE Conference on Computer Vision and Pattern Recognition, pp. 5879–5888, 2018.</li>
+<li>Chitwan Saharia, Jonathan Ho, William Chan, Tim Salimans, David J Fleet, and Mohammad Norouzi. Image super-resolution via iterative refinement. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2022.</li>
+<li>Jascha Sohl-Dickstein, Eric Weiss, Niru Maheswaranathan, and Surya Ganguli. Deep unsupervised learning using nonequilibrium thermodynamics. In International Conference on Machine Learning, pp. 2256–2265. PMLR, 2015.</li>
+<li>Jiaming Song, Chenlin Meng, and Stefano Ermon. Denoising diffusion implicit models. arXiv preprint arXiv:2010.02502, 2020a.</li>
+<li>Yang Song and Stefano Ermon. Generative modeling by estimating gradients of the data distribution. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d´ Alche-Buc, E. Fox, and R. Gar-´ nett (eds.), Advances in Neural Information Processing Systems, volume 32. Curran Associates, Inc., 2019. URL <span style="word-break:break-all">https://proceedings.neurips.cc/paper/2019/file/</span> 3001ef257407d5a371a96dcd947c7d93-Paper.pdf.</li>
+<li>Yang Song, Jascha Sohl-Dickstein, Diederik P Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole. Score-based generative modeling through stochastic differential equations. arXiv preprint arXiv:2011.13456, 2020b.</li>
+<li>Yang Song, Conor Durkan, Iain Murray, and Stefano Ermon. Maximum likelihood training of scorebased diffusion models. In Thirty-Fifth Conference on Neural Information Processing Systems, 2021.</li>
+<li>Neil C Thompson, Kristjan Greenewald, Keeheon Lee, and Gabriel F Manso. The computational limits of deep learning. arXiv preprint arXiv:2007.05558, 2020.</li>
+<li>Alexander Tong, Jessie Huang, Guy Wolf, David Van Dijk, and Smita Krishnaswamy. Trajectorynet: A dynamic optimal transport network for modeling cellular dynamics. In International conference on machine learning, pp. 9526–9536. PMLR, 2020.</li>
+<li>Cedric Villani.´ Optimal transport: old and new, volume 338. Springer, 2009.</li>
+<li>Pascal Vincent. A connection between score matching and denoising autoencoders. Neural computation, 23(7):1661–1674, 2011.</li>
+<li>Gefei Wang, Yuling Jiao, Qian Xu, Yang Wang, and Can Yang. Deep generative learning via schrodinger bridge. (arXiv:2106.10410), Jul 2021. doi: 10.48550/arXiv.2106.10410. URL¨ <span style="word-break:break-all">http://arxiv.org/abs/2106.10410.</span> arXiv:2106.10410 [cs].</li>
+<li>Liu Yang and George E. Karniadakis. Potential flow generator with \$l 2\$ optimal transport regularity for generative models. CoRR, abs/1908.11462, 2019. URL <span style="word-break:break-all">http://arxiv.org/abs/</span> 1908.11462.</li>
+<li>Qinsheng Zhang and Yongxin Chen. Fast sampling of diffusion models with exponential integrator. arXiv preprint arXiv:2204.13902, 2022.</li>
+</ol></div>
+
+<h2 id="appA">附录 A　定理证明</h2>
+<div class="thm"><p><b>定理 1.</b> 给定生成条件概率路径 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 的向量场 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)，则对任意分布 <i>q</i>(<b>x</b><sub>1</sub>)，式 8 中的边缘向量场 <i>u</i><sub>t</sub> 生成式 6 中的边缘概率路径 <i>p</i><sub>t</sub>，即 <i>u</i><sub>t</sub> 与 <i>p</i><sub>t</sub> 满足连续性方程（式 26）。</p></div>
+<p><b>证明.</b> 为此我们验证 <i>p</i><sub>t</sub> 与 <i>u</i><sub>t</sub> 满足连续性方程（式 26）：</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:10%"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>p</i><sub>t</sub>(<b>x</b>) = ∫ (<span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub> = − ∫ div(<i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub><br>
+= − div(∫ <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub>) = − div(<i>u</i><sub>t</sub>(<b>x</b>) <i>p</i><sub>t</sub>(<b>x</b>)),</div></div>
+<p>其中第二个等号用到了「<i>u</i><sub>t</sub>(· | <b>x</b><sub>1</sub>) 生成 <i>p</i><sub>t</sub>(· | <b>x</b><sub>1</sub>)」这一事实，最后一个等号用到了式 8。此外，第一个与第三个等号成立，是假定被积函数满足莱布尼茨法则（交换积分与求导）的正则性条件。</p>
+<div class="thm"><p><b>定理 2.</b> 假定对所有 <b>x</b> ∈ ℝ<sup>d</sup> 与 <i>t</i> ∈ [0, 1] 都有 <i>p</i><sub>t</sub>(<b>x</b>) &gt; 0，则在不计一个与 <i>θ</i> 无关的常数的意义下，ℒ<sub>CFM</sub> 与 ℒ<sub>FM</sub> 相等。因此 ∇<sub><i>θ</i></sub>ℒ<sub>FM</sub>(<i>θ</i>) = ∇<sub><i>θ</i></sub>ℒ<sub>CFM</sub>(<i>θ</i>)。</p></div>
+<p><b>证明.</b> 为保证所有积分存在、并允许交换积分次序（用 Fubini 定理），我们假定 <i>q</i>(<b>x</b>) 与 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 在 ‖<b>x</b>‖ → ∞ 时以足够快的速度衰减到零，且 <i>u</i><sub>t</sub>、<i>v</i><sub>t</sub>、∇<sub><i>θ</i></sub><i>v</i><sub>t</sub> 有界。</p>
+<p>首先，利用 2-范数的标准双线性性质有</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%">‖<i>v</i><sub>t</sub>(<b>x</b>) − <i>u</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup> = ‖<i>v</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup> − 2⟨<i>v</i><sub>t</sub>(<b>x</b>), <i>u</i><sub>t</sub>(<b>x</b>)⟩ + ‖<i>u</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup><br>
+‖<i>v</i><sub>t</sub>(<b>x</b>) − <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)‖<sup>2</sup> = ‖<i>v</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup> − 2⟨<i>v</i><sub>t</sub>(<b>x</b>), <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)⟩ + ‖<i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)‖<sup>2</sup></div></div>
+<p>接着，注意 <i>u</i><sub>t</sub> 与 <i>θ</i> 无关，并且</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%">𝔼<sub><i>p</i><sub>t</sub>(<b>x</b>)</sub>‖<i>v</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup> = ∫ ‖<i>v</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup> <i>p</i><sub>t</sub>(<b>x</b>) d<b>x</b> = ∫ ‖<i>v</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup> <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub> d<b>x</b> = 𝔼<sub><i>q</i>(<b>x</b><sub>1</sub>), <i>p</i><sub>t</sub>(<b>x</b>|<b>x</b><sub>1</sub>)</sub>‖<i>v</i><sub>t</sub>(<b>x</b>)‖<sup>2</sup>,</div></div>
+<p>其中第二个等号用到式 6，第三个等号交换了积分次序。接着，</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%">𝔼<sub><i>p</i><sub>t</sub>(<b>x</b>)</sub>⟨<i>v</i><sub>t</sub>(<b>x</b>), <i>u</i><sub>t</sub>(<b>x</b>)⟩ = ∫ ⟨<i>v</i><sub>t</sub>(<b>x</b>), <span class="frac"><span class="n2">∫ <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub></span><span class="d2"><i>p</i><sub>t</sub>(<b>x</b>)</span></span>⟩ <i>p</i><sub>t</sub>(<b>x</b>) d<b>x</b><br>
+= ∫ ⟨<i>v</i><sub>t</sub>(<b>x</b>), ∫ <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub>⟩ d<b>x</b><br>
+= ∫ ⟨<i>v</i><sub>t</sub>(<b>x</b>), <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)⟩ <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) <i>q</i>(<b>x</b><sub>1</sub>) d<b>x</b><sub>1</sub> d<b>x</b> = 𝔼<sub><i>q</i>(<b>x</b><sub>1</sub>), <i>p</i><sub>t</sub>(<b>x</b>|<b>x</b><sub>1</sub>)</sub>⟨<i>v</i><sub>t</sub>(<b>x</b>), <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)⟩,</div></div>
+<p>其中最后一个等号再次交换了积分次序。</p>
+<div class="thm"><p><b>定理 3.</b> 设 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 是式 10 中的高斯概率路径，<i>ψ</i><sub>t</sub> 是式 11 中相应的流映射。则定义 <i>ψ</i><sub>t</sub> 的向量场唯一，其形式为</p>
+<div class="eq"><div class="body"><i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <span class="frac"><span class="n2"><i>σ</i><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>)</span><span class="d2"><i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>)</span></span>(<b>x</b> − <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)) + <b>μ</b><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>).</div><div class="no">(15)</div></div>
+<p>因此 <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) 生成高斯路径 <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)。</p></div>
+<p><b>证明.</b> 为记号简洁，令 <i>w</i><sub>t</sub>(<b>x</b>) = <i>u</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)。现在考虑式 1：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>ψ</i><sub>t</sub>(<b>x</b>) = <i>w</i><sub>t</sub>(<i>ψ</i><sub>t</sub>(<b>x</b>)).</div></div>
+<p>由于 <i>ψ</i><sub>t</sub> 可逆（因为 <i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) &gt; 0），我们令 <b>x</b> = <i>ψ</i><sup>−1</sup>(<b>y</b>) 得到</p>
+<div class="eq"><div class="body"><i>ψ</i><sub>t</sub>&#8242;(<i>ψ</i><sup>−1</sup>(<b>y</b>)) = <i>w</i><sub>t</sub>(<b>y</b>),</div><div class="no">(25)</div></div>
+<p>其中我们用撇号记导数，以强调 <i>ψ</i><sub>t</sub>&#8242; 是在 <i>ψ</i><sup>−1</sup>(<b>y</b>) 处求值。现在，对 <i>ψ</i><sub>t</sub>(<b>x</b>) 求逆给出</p>
+<div class="eq"><div class="body"><i>ψ</i><sub>t</sub><sup>−1</sup>(<b>y</b>) = <span class="frac"><span class="n2"><b>y</b> − <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)</span><span class="d2"><i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>)</span></span>.</div></div>
+<p>对 <i>ψ</i><sub>t</sub> 关于 <i>t</i> 求导得</p>
+<div class="eq"><div class="body"><i>ψ</i><sub>t</sub>&#8242;(<b>x</b>) = <i>σ</i><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>)<b>x</b> + <b>μ</b><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>).</div></div>
+<p>把最后两式代入式 25 得</p>
+<div class="eq"><div class="body"><i>w</i><sub>t</sub>(<b>y</b>) = <span class="frac"><span class="n2"><i>σ</i><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>)</span><span class="d2"><i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>)</span></span>(<b>y</b> − <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)) + <b>μ</b><sub>t</sub>&#8242;(<b>x</b><sub>1</sub>),</div></div>
+<p>即所证。</p>
+
+<h2 id="appB">附录 B　连续性方程</h2>
+<p>检验一个向量场 <i>v</i><sub>t</sub> 是否生成概率路径 <i>p</i><sub>t</sub> 的一种方法是<span class="term" data-tip="continuity equation：偏微分方程 ∂p/∂t + div(pv) = 0；它是「v 生成 p」的充要条件">连续性方程</span>（Villani, 2009）。它是一个偏微分方程（PDE），给出了「向量场 <i>v</i><sub>t</sub> 生成 <i>p</i><sub>t</sub>」的充要条件：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>p</i><sub>t</sub>(<b>x</b>) + div(<i>p</i><sub>t</sub>(<b>x</b>) <i>v</i><sub>t</sub>(<b>x</b>)) = 0,</div><div class="no">(26)</div></div>
+<p>其中散度算子 div 是对空间变量 <b>x</b> = (<i>x</i><sup>1</sup>, …, <i>x</i><sup>d</sup>) 定义的，即 div = <span class="sum"><span class="t">d</span><span class="o">∑</span><span class="b"><i>i</i>=1</span></span><span class="frac"><span class="n2">∂</span><span class="d2">∂<i>x</i><sup><i>i</i></sup></span></span>。</p>
+
+<h2 id="appC">附录 C　计算 CNF 模型的概率</h2>
+<p>给定任意数据点 <b>x</b><sub>1</sub> ∈ ℝ<sup>d</sup>，我们需要计算该点处的模型概率，即 <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>)。下面我们回顾如何做到这一点，涵盖相关的基本 ODE、散度计算的缩放、考虑数据变换（例如数据中心化）以及每维比特数（BPD）计算。</p>
+<p><b>计算 <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>) 的 ODE。</b>连续性方程与式 1 导出了瞬时变量替换公式（Chen et al., 2018; Ben-Hamu et al., 2022）：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span> log <i>p</i><sub>t</sub>(<i>φ</i><sub>t</sub>(<b>x</b>)) + div(<i>v</i><sub>t</sub>(<i>φ</i><sub>t</sub>(<b>x</b>))) = 0.</div></div>
+<p>对 <i>t</i> ∈ [0, 1] 积分给出：</p>
+<div class="eq"><div class="body">log <i>p</i><sub>1</sub>(<i>φ</i><sub>1</sub>(<b>x</b>)) − log <i>p</i><sub>0</sub>(<i>φ</i><sub>0</sub>(<b>x</b>)) = −∫<sub>0</sub><sup>1</sup> div(<i>v</i><sub>t</sub>(<i>φ</i><sub>t</sub>(<b>x</b>))) d<i>t</i></div><div class="no">(27)</div></div>
+<p>因此，对数概率可以与流的轨迹一起、通过求解下述 ODE 得到：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span> <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><i>φ</i><sub>t</sub>(<b>x</b>)<br><i>f</i>(<i>t</i>)</span><span style="font-size:1.6em">]</span> = <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><i>v</i><sub>t</sub>(<i>φ</i><sub>t</sub>(<b>x</b>))<br>−div(<i>v</i><sub>t</sub>(<i>φ</i><sub>t</sub>(<b>x</b>)))</span><span style="font-size:1.6em">]</span></div><div class="no">(28)</div></div>
+<p>给定初始条件</p>
+<div class="eq"><div class="body"><span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><i>φ</i><sub>0</sub>(<b>x</b>)<br><i>f</i>(0)</span><span style="font-size:1.6em">]</span> = <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><b>x</b><sub>0</sub><br><i>c</i></span><span style="font-size:1.6em">]</span>.</div><div class="no">(29)</div></div>
+<p>解 [<i>φ</i><sub>t</sub>(<b>x</b>), <i>f</i>(<i>t</i>)]<sup>T</sup> 被唯一确定（在向量场 <i>v</i><sub>t</sub> 的一些温和条件下）。记 <b>x</b><sub>1</sub> = <i>φ</i><sub>1</sub>(<b>x</b>)，根据式 27，</p>
+<div class="eq"><div class="body"><i>f</i>(1) = <i>c</i> + log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>) − log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>).</div><div class="no">(30)</div></div>
+<p>现在给定任意 <b>x</b><sub>1</sub>，我们想计算 <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>)。为此我们需要反向求解式 28，即</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>s</i></span></span> <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>)<br><i>f</i>(1−<i>s</i>)</span><span style="font-size:1.6em">]</span> = <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle">−<i>v</i><sub>1−<i>s</i></sub>(<i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>))<br>div(<i>v</i><sub>1−<i>s</i></sub>(<i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>)))</span><span style="font-size:1.6em">]</span></div><div class="no">(31)</div></div>
+<p>并在 <i>s</i> ∈ [0, 1] 上求解它，初始条件取在 <i>s</i> = 0：</p>
+<div class="eq"><div class="body"><span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><i>φ</i><sub>1</sub>(<b>x</b>)<br><i>f</i>(1)</span><span style="font-size:1.6em">]</span> = <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><b>x</b><sub>1</sub><br>0</span><span style="font-size:1.6em">]</span>.</div><div class="no">(32)</div></div>
+<p>由 ODE 解的唯一性，该解将与式 28 在式 29 初始条件下、令 <i>c</i> = log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>) 时的解相同。这可由式 30 并令 <i>f</i>(1) = 0 看出。因此我们得到</p>
+<div class="eq"><div class="body"><i>f</i>(0) = log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>)</div></div>
+<p>从而</p>
+<div class="eq"><div class="body">log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>) = log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − <i>f</i>(0).</div><div class="no">(33)</div></div>
+<p>总结：要计算 <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>)，我们先以式 32 为初始条件求解式 31 的 ODE，然后计算式 33。</p>
+<p><b><i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>) 的无偏估计量。</b>求解式 31 需要计算 ℝ<sup>d</sup> 中向量场的散度，代价高昂。Grathwohl et al. (2018) 建议用（无偏的）Hutchinson 迹估计量代替散度：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d</span><span class="d2">d<i>s</i></span></span> <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle"><i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>)<br><i>f̃</i>(1−<i>s</i>)</span><span style="font-size:1.6em">]</span> = <span style="font-size:1.6em">[</span><span style="display:inline-block;text-align:center;vertical-align:middle">−<i>v</i><sub>1−<i>s</i></sub>(<i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>))<br><b>z</b><sup>T</sup><i>D</i><i>v</i><sub>1−<i>s</i></sub>(<i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>))<b>z</b></span><span style="font-size:1.6em">]</span>,</div><div class="no">(34)</div></div>
+<p>其中 <b>z</b> ∈ ℝ<sup>d</sup> 是某个满足 𝔼<b>zz</b><sup>T</sup> = <b>I</b> 的随机变量的样本。以式 32 为初始条件精确求解（实践中带一个受控的小误差）式 34 的 ODE，可得</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%">𝔼<sub><b>z</b></sub>[log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − <i>f̃</i>(0)] = log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − 𝔼<sub><b>z</b></sub>[<i>f̃</i>(0) − <i>f̃</i>(1)]<br>
+= log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − 𝔼<sub><b>z</b></sub>[∫<sub>0</sub><sup>1</sup> <b>z</b><sup>T</sup><i>D</i><i>v</i><sub>1−<i>s</i></sub>(<i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>))<b>z</b> d<i>s</i>] = log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − ∫<sub>0</sub><sup>1</sup> 𝔼<sub><b>z</b></sub>[<b>z</b><sup>T</sup><i>D</i><i>v</i><sub>1−<i>s</i></sub>(<i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>))<b>z</b>] d<i>s</i><br>
+= log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − ∫<sub>0</sub><sup>1</sup> div(<i>v</i><sub>1−<i>s</i></sub>(<i>φ</i><sub>1−<i>s</i></sub>(<b>x</b>))) d<i>s</i> = log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − (<i>f</i>(0) − <i>f</i>(1))<br>
+= log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − (log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>)) = log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>),</div></div>
+<p>其中第三个等号在假定 Fubini 定理的充分条件成立时交换了积分次序，倒数第二个等号用到了式 30。因此随机变量</p>
+<div class="eq"><div class="body">log <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>) − <i>f̃</i>(0)</div><div class="no">(35)</div></div>
+<p>是 log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>) 的无偏估计量。总结：为实现可扩展的无偏估计，我们先以式 32 为初始条件求解式 34 的 ODE，然后输出式 35。</p>
+<p><b>变换后的数据。</b>训练生成模型之前，我们常先对数据做变换，例如缩放和/或平移。这样的变换记为 <i>φ</i><sup>−1</sup> : ℝ<sup>d</sup> → ℝ<sup>d</sup>，我们的生成模型则成为一个复合</p>
+<div class="eq"><div class="body"><i>ψ</i>(<b>x</b>) = <i>φ</i> ∘ <i>ϕ</i>(<b>x</b>)</div></div>
+<p>其中 <i>ϕ</i> : ℝ<sup>d</sup> → ℝ<sup>d</sup> 是我们训练的模型。给定先验概率 <i>p</i><sub>0</sub>，该概率在 <i>ψ</i> 下的推前（式 3 与式 4）取如下形式：</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%"><i>p</i><sub>1</sub>(<b>x</b>) = <i>ψ</i><sub>*</sub> <i>p</i><sub>0</sub>(<b>x</b>) = <i>p</i><sub>0</sub>(<i>ϕ</i><sup>−1</sup>(<i>φ</i><sup>−1</sup>(<b>x</b>))) det[<i>D</i><i>ϕ</i><sup>−1</sup>(<i>φ</i><sup>−1</sup>(<b>x</b>))] det[<i>D</i><i>φ</i><sup>−1</sup>(<b>x</b>)]<br>
+= (<i>ϕ</i><sub>*</sub> <i>p</i><sub>0</sub>(<i>φ</i><sup>−1</sup>(<b>x</b>))) det[<i>D</i><i>φ</i><sup>−1</sup>(<b>x</b>)]</div></div>
+<p>因此</p>
+<div class="eq"><div class="body">log <i>p</i><sub>1</sub>(<b>x</b>) = log <i>ϕ</i><sub>*</sub> <i>p</i><sub>0</sub>(<i>φ</i><sup>−1</sup>(<b>x</b>)) + log det[<i>D</i><i>φ</i><sup>−1</sup>(<b>x</b>)].</div></div>
+<p>对图像，<i>d</i> = <i>H</i> × <i>W</i> × 3，我们考虑把每个像素值从 [−1, 1] 映射到 [0, 256] 的变换 <i>φ</i>。因此</p>
+<div class="eq"><div class="body"><i>φ</i>(<b>y</b>) = 2<sup>7</sup>(<b>y</b> + 1)　且　<i>φ</i><sup>−1</sup>(<b>x</b>) = 2<sup>−7</sup><b>x</b> − 1</div></div>
+<p>此时有</p>
+<div class="eq"><div class="body">log <i>p</i><sub>1</sub>(<b>x</b>) = log <i>ϕ</i><sub>*</sub> <i>p</i><sub>0</sub>(<i>φ</i><sup>−1</sup>(<b>x</b>)) − 7<i>d</i> log 2.</div><div class="no">(36)</div></div>
+<p><b>每维比特数（BPD）计算。</b>BPD 定义为</p>
+<div class="eq"><div class="body">BPD = 𝔼<sub><b>x</b><sub>1</sub></sub>[ −<span class="frac"><span class="n2">log<sub>2</sub> <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>)</span><span class="d2"><i>d</i></span></span> ] = 𝔼<sub><b>x</b><sub>1</sub></sub>[ −<span class="frac"><span class="n2">log <i>p</i><sub>1</sub>(<b>x</b><sub>1</sub>)</span><span class="d2"><i>d</i> log 2</span></span> ]</div><div class="no">(37)</div></div>
+<p>由式 36 我们得到</p>
+<div class="eq"><div class="body">BPD = −<span class="frac"><span class="n2">log <i>ϕ</i><sub>*</sub> <i>p</i><sub>0</sub>(<i>φ</i><sup>−1</sup>(<b>x</b>))</span><span class="d2"><i>d</i> log 2</span></span> + 7</div></div>
+<p>而 log <i>ϕ</i><sub>*</sub> <i>p</i><sub>0</sub>(<i>φ</i><sup>−1</sup>(<b>x</b>)) 用式 35 的无偏估计量在变换后的数据 <i>φ</i><sup>−1</sup>(<b>x</b><sub>1</sub>) 上近似。在大的测试集 <b>x</b><sub>1</sub> 上对该无偏估计量取平均，就能很好地近似测试集 BPD。</p>
+
+<h2 id="appD">附录 D　扩散条件向量场</h2>
+<p>我们为 VE 与 VP 扩散路径（式 18）推导支配概率流 ODE（Song et al. (2020b) 式 13）的向量场，并指出它与我们用定理 3 导出的条件向量场一致，即式 16 与式 19 定义的向量场。</p>
+<p>我们先用一小段引论说明如何为 Fokker-Planck 方程描述的概率路径找到条件向量场，然后把它具体化到 VE 与 VP 概率路径。</p>
+<p>由于扩散文献中的扩散过程从 <i>t</i> = 0 的数据走到 <i>t</i> = 1 的噪声，我们需要下述引理把扩散向量场翻译到我们「<i>t</i> = 0 对应噪声、<i>t</i> = 1 对应数据」的约定：</p>
+<div class="thm"><p><b>引理 1.</b> 考虑由向量场 <i>u</i><sub>t</sub>(<b>x</b>) 定义的流，它生成概率密度路径 <i>p</i><sub>t</sub>(<b>x</b>)。则向量场 <i>ũ</i><sub>t</sub>(<b>x</b>) = −<i>u</i><sub>1−t</sub>(<b>x</b>) 在从 <i>p̃</i><sub>0</sub>(<b>x</b>) = <i>p</i><sub>1</sub>(<b>x</b>) 出发时生成路径 <i>p̃</i><sub>t</sub>(<b>x</b>) = <i>p</i><sub>1−t</sub>(<b>x</b>)。</p></div>
+<p><b>证明.</b> 我们使用连续性方程（式 26）：</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%"><span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>p̃</i><sub>t</sub>(<b>x</b>) = <span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>p</i><sub>1−t</sub>(<b>x</b>) = −<i>p</i><sub>1−t</sub>&#8242;(<b>x</b>) = div(<i>p</i><sub>1−t</sub>(<b>x</b>) <i>u</i><sub>1−t</sub>(<b>x</b>)) = −div(<i>p̃</i><sub>t</sub>(<b>x</b>) (−<i>u</i><sub>1−t</sub>(<b>x</b>)))</div></div>
+<p>因此 <i>ũ</i><sub>t</sub>(<b>x</b>) = −<i>u</i><sub>1−t</sub>(<b>x</b>) 生成 <i>p̃</i><sub>t</sub>(<b>x</b>)。</p>
+<p><b>Fokker-Planck 概率路径的条件向量场。</b>考虑标准形式的随机微分方程（SDE）</p>
+<div class="eq"><div class="body">d<b>y</b> = <i>f</i><sub>t</sub> d<i>t</i> + <i>g</i><sub>t</sub> d<b>w</b></div><div class="no">(38)</div></div>
+<p>其中时间参数为 <i>t</i>、漂移为 <i>f</i><sub>t</sub>、扩散系数为 <i>g</i><sub>t</sub>，d<b>w</b> 是 Wiener 过程。该 SDE 的解 <b>y</b><sub>t</sub> 是一个随机过程，即一个连续的时间相关随机变量，其概率密度 <i>p</i><sub>t</sub>(<b>y</b><sub>t</sub>) 由 Fokker-Planck 方程刻画：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d<i>p</i><sub>t</sub></span><span class="d2">d<i>t</i></span></span> = −div(<i>f</i><sub>t</sub> <i>p</i><sub>t</sub>) + <span class="frac"><span class="n2"><i>g</i><sub>t</sub><sup>2</sup></span><span class="d2">2</span></span>Δ<i>p</i><sub>t</sub></div><div class="no">(39)</div></div>
+<p>其中 Δ 表示（关于 <b>y</b> 的）Laplace 算子，即 div ∇，∇ 是（同样关于 <b>y</b> 的）梯度算子。把该方程改写成连续性方程的形式可以这样做（Maoutsa et al., 2020a）：</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">d<i>p</i><sub>t</sub></span><span class="d2">d<i>t</i></span></span> = −div(<i>f</i><sub>t</sub> <i>p</i><sub>t</sub> − <span class="frac"><span class="n2"><i>g</i><sup>2</sup></span><span class="d2">2</span></span><span class="frac"><span class="n2">∇<i>p</i><sub>t</sub></span><span class="d2"><i>p</i><sub>t</sub></span></span> <i>p</i><sub>t</sub>) = −div((<i>f</i><sub>t</sub> − <span class="frac"><span class="n2"><i>g</i><sub>t</sub><sup>2</sup></span><span class="d2">2</span></span>∇ log <i>p</i><sub>t</sub>) <i>p</i><sub>t</sub>) = −div(<i>w</i><sub>t</sub> <i>p</i><sub>t</sub>)</div></div>
+<p>其中向量场</p>
+<div class="eq"><div class="body"><i>w</i><sub>t</sub> = <i>f</i><sub>t</sub> − <span class="frac"><span class="n2"><i>g</i><sub>t</sub><sup>2</sup></span><span class="d2">2</span></span>∇ log <i>p</i><sub>t</sub></div><div class="no">(40)</div></div>
+<p>与概率路径 <i>p</i><sub>t</sub> 一起满足连续性方程，因此生成 <i>p</i><sub>t</sub>。</p>
+<p><b>方差爆炸（VE）路径。</b>VE 路径的 SDE 是</p>
+<div class="eq"><div class="body">d<b>y</b> = √(<span class="frac"><span class="n2">d</span><span class="d2">d<i>t</i></span></span><i>σ</i><sub>t</sub><sup>2</sup>) d<b>w</b>,</div></div>
+<p>其中 <i>σ</i><sub>0</sub> = 0，且随着 <i>t</i> → 1 递增到无穷。该 SDE 从 <i>t</i> = 0 的数据 <b>y</b><sub>0</sub> 走到 <i>t</i> = 1 的噪声 <b>y</b><sub>1</sub>，其概率路径为</p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub>(<b>y</b> | <b>y</b><sub>0</sub>) = <i>N</i>(<b>y</b> | <b>y</b><sub>0</sub>, <i>σ</i><sub>t</sub><sup>2</sup><b>I</b>).</div></div>
+<p>根据式 40，其条件向量场为</p>
+<div class="eq"><div class="body"><i>w</i><sub>t</sub>(<b>y</b> | <b>y</b><sub>0</sub>) = <span class="frac"><span class="n2"><i>σ</i><sub>t</sub>&#8242;</span><span class="d2"><i>σ</i><sub>t</sub></span></span>(<b>y</b> − <b>y</b><sub>0</sub>)</div></div>
+<p>用引理 1 可得概率路径</p>
+<div class="eq"><div class="body"><i>p̃</i><sub>t</sub>(<b>y</b> | <b>y</b><sub>0</sub>) = <i>N</i>(<b>y</b> | <b>y</b><sub>0</sub>, <i>σ</i><sub>1−t</sub><sup>2</sup><b>I</b>)</div></div>
+<p>由下式生成</p>
+<div class="eq"><div class="body"><i>w̃</i><sub>t</sub>(<b>y</b> | <b>y</b><sub>0</sub>) = −<span class="frac"><span class="n2"><i>σ</i><sub>1−t</sub>&#8242;</span><span class="d2"><i>σ</i><sub>1−t</sub></span></span>(<b>y</b> − <b>y</b><sub>0</sub>),</div></div>
+<p>这与式 17 一致。</p>
+<p><b>方差保持（VP）路径。</b>VP 路径的 SDE 是</p>
+<div class="eq"><div class="body">d<b>y</b> = −<span class="frac"><span class="n2"><i>T</i>&#8242;(<i>t</i>)</span><span class="d2">2</span></span><b>y</b> + √(<i>T</i>&#8242;(<i>t</i>)) d<b>w</b>,</div></div>
+<p>其中 <i>T</i>(<i>t</i>) = ∫<sub>0</sub><sup><i>t</i></sup> <i>β</i>(<i>s</i>) d<i>s</i>，<i>t</i> ∈ [0, 1]。因此该 SDE 的系数为</p>
+<div class="eq"><div class="body"><i>f</i><sub>s</sub>(<b>y</b>) = −<span class="frac"><span class="n2"><i>T</i>&#8242;(<i>s</i>)</span><span class="d2">2</span></span><b>y</b>,　<i>g</i><sub>s</sub> = √(<i>T</i>&#8242;(<i>s</i>))　且　<i>p</i><sub>t</sub>(<b>y</b> | <b>y</b><sub>0</sub>) = <i>N</i>(<b>y</b> | e<sup>−(1/2)<i>T</i>(<i>t</i>)</sup><b>y</b><sub>0</sub>, (1 − e<sup>−<i>T</i>(<i>t</i>)</sup>)<b>I</b>).</div></div>
+<p>把这些选择代入式 40，得到条件向量场</p>
+<div class="eq"><div class="body"><i>w</i><sub>t</sub>(<b>y</b> | <b>y</b><sub>0</sub>) = <span class="frac"><span class="n2"><i>T</i>&#8242;(<i>t</i>)</span><span class="d2">2</span></span>(<span class="frac"><span class="n2"><b>y</b> − e<sup>−(1/2)<i>T</i>(<i>t</i>)</sup><b>y</b><sub>0</sub></span><span class="d2">1 − e<sup>−<i>T</i>(<i>t</i>)</sup></span></span> − <b>y</b>)</div><div class="no">(41)</div></div>
+<p>用引理 1 反转时间，我们得到反概率路径的条件向量场：</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%"><i>w̃</i><sub>t</sub>(<b>y</b> | <b>y</b><sub>0</sub>) = −<span class="frac"><span class="n2"><i>T</i>&#8242;(1 − <i>t</i>)</span><span class="d2">2</span></span>(<span class="frac"><span class="n2"><b>y</b> − e<sup>−(1/2)<i>T</i>(1−<i>t</i>)</sup><b>y</b><sub>0</sub></span><span class="d2">1 − e<sup>−<i>T</i>(1−<i>t</i>)</sup></span></span> − <b>y</b>) = −<span class="frac"><span class="n2"><i>T</i>&#8242;(1 − <i>t</i>)</span><span class="d2">2</span></span><span style="font-size:1.5em">[</span><span class="frac"><span class="n2">e<sup>−<i>T</i>(1−<i>t</i>)</sup><b>y</b> − e<sup>−(1/2)<i>T</i>(1−<i>t</i>)</sup><b>y</b><sub>0</sub></span><span class="d2">1 − e<sup>−<i>T</i>(1−<i>t</i>)</sup></span></span><span style="font-size:1.5em">]</span>,</div></div>
+<p>这与式 19 一致。</p>
+
+<figure id="fig8"><img src="images/fig8.png" alt="VP diffusion conditional vector field">
+<figcaption><span class="lab">图 8</span>VP 扩散路径的条件向量场。可与图 2 对照。</figcaption></figure>
+<figure id="fig9"><img src="images/fig9.png" alt="ScoreFlow and DDPM trajectories">
+<figcaption><span class="lab">图 9</span>在 2D 棋盘格数据上用 ScoreFlow（Song et al., 2021）与 DDPM（Ho et al., 2020）损失训练的 CNF 轨迹，学习率与其他超参数同图 4。</figcaption></figure>
+
+<h2 id="appE">附录 E　实现细节</h2>
+<p>对 2D 例子我们使用含 5 个隐藏层、每层 512 个神经元的 MLP；对图像我们使用 Dhariwal &amp; Nichol (2021) 的 UNet 结构。对图像，我们做中心裁剪并缩放到合适尺寸；对 32×32 与 64×64 分辨率我们使用与（Chrabaszcz et al., 2017）相同的预处理。三种方法（FM-OT、FM-Diffusion 与 SM-Diffusion）始终在相同结构、相同超参数与相同轮数下训练。</p>
+
+<h3 id="appE1">E.1 扩散基线</h3>
+<p><b>损失。</b>我们考虑三种选项作为扩散基线，对应最主流的扩散损失参数化（Song &amp; Ermon, 2019; Song et al., 2021; Ho et al., 2020; Kingma et al., 2021）。我们假定式 10 的一般高斯路径形式，即</p>
+<div class="eq"><div class="body"><i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>) = <i>N</i>(<b>x</b> | <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>), <i>σ</i><sub>t</sub><sup>2</sup>(<b>x</b><sub>1</sub>)<b>I</b>).</div></div>
+<p>得分匹配损失为</p>
+<div class="eq"><div class="body">ℒ<sub>SM</sub>(<i>θ</i>) = 𝔼<sub><i>t</i>, <i>q</i>(<b>x</b><sub>1</sub>), <i>p</i><sub>t</sub>(<b>x</b>|<b>x</b><sub>1</sub>)</sub> <i>λ</i>(<i>t</i>)‖<i>s</i><sub>t</sub>(<b>x</b>) − ∇ log <i>p</i><sub>t</sub>(<b>x</b> | <b>x</b><sub>1</sub>)‖<sup>2</sup></div><div class="no">(42)</div></div>
+<div class="eq"><div class="body">= 𝔼<sub><i>t</i>, <i>q</i>(<b>x</b><sub>1</sub>), <i>p</i><sub>t</sub>(<b>x</b>|<b>x</b><sub>1</sub>)</sub> <i>λ</i>(<i>t</i>)‖<i>s</i><sub>t</sub>(<b>x</b>) − <span class="frac"><span class="n2"><b>x</b> − <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)</span><span class="d2"><i>σ</i><sub>t</sub><sup>2</sup>(<b>x</b><sub>1</sub>)</span></span>‖<sup>2</sup>.</div><div class="no">(43)</div></div>
+<p>取 <i>λ</i>(<i>t</i>) = <i>σ</i><sub>t</sub><sup>2</sup>(<b>x</b><sub>1</sub>) 对应 Song &amp; Ermon (2019) 的原始得分匹配（SM）损失；取 <i>λ</i>(<i>t</i>) = <i>β</i>(1 − <i>t</i>)（<i>β</i> 定义见下）对应由 NLL 上界导出的 Score Flow（SF）损失（Song et al., 2021）；<i>s</i><sub>t</sub> 是可学习的得分函数。Ho et al. (2020)（式 14）的 DDPM（噪声匹配）损失为</p>
+<div class="eq"><div class="body">ℒ<sub>NM</sub>(<i>θ</i>) = 𝔼<sub><i>t</i>, <i>q</i>(<b>x</b><sub>1</sub>), <i>p</i><sub>t</sub>(<b>x</b>|<b>x</b><sub>1</sub>)</sub> ‖<i>ϵ</i><sub>t</sub>(<b>x</b>) − <span class="frac"><span class="n2"><b>x</b> − <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)</span><span class="d2"><i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>)</span></span>‖<sup>2</sup></div><div class="no">(44)</div></div>
+<div class="eq"><div class="body">= 𝔼<sub><i>t</i>, <i>q</i>(<b>x</b><sub>1</sub>), <i>p</i><sub>0</sub>(<b>x</b><sub>0</sub>)</sub> ‖<i>ϵ</i><sub>t</sub>(<i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>)<b>x</b><sub>0</sub> + <b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>)) − <b>x</b><sub>0</sub>‖<sup>2</sup></div><div class="no">(45)</div></div>
+<p>其中 <i>p</i><sub>0</sub>(<b>x</b>) = <i>N</i>(<b>x</b> | 0, <b>I</b>) 是标准高斯，<i>ϵ</i><sub>t</sub> 是可学习的噪声函数。</p>
+<p><b>扩散路径。</b>对扩散路径我们使用标准 VP 扩散（式 19），即</p>
+<div class="eq"><div class="body"><b>μ</b><sub>t</sub>(<b>x</b><sub>1</sub>) = <i>α</i><sub>1−t</sub><b>x</b><sub>1</sub>,　<i>σ</i><sub>t</sub>(<b>x</b><sub>1</sub>) = √(1 − <i>α</i><sub>1−t</sub><sup>2</sup>),　其中 <i>α</i><sub>t</sub> = e<sup>−(1/2)<i>T</i>(<i>t</i>)</sup>,　<i>T</i>(<i>t</i>) = ∫<sub>0</sub><sup><i>t</i></sup> <i>β</i>(<i>s</i>) d<i>s</i>,</div></div>
+<p>并按 Song et al. (2020b) 的建议取 <i>β</i>(<i>s</i>) = <i>β</i><sub>min</sub> + <i>s</i>(<i>β</i><sub>max</sub> − <i>β</i><sub>min</sub>)，从而</p>
+<div class="eq"><div class="body"><i>T</i>(<i>s</i>) = ∫<sub>0</sub><sup><i>s</i></sup> <i>β</i>(<i>r</i>) d<i>r</i> = <i>s</i><i>β</i><sub>min</sub> + <span class="frac"><span class="n2">1</span><span class="d2">2</span></span><i>s</i><sup>2</sup>(<i>β</i><sub>max</sub> − <i>β</i><sub>min</sub>),</div></div>
+<p>其中 <i>β</i><sub>min</sub> = 0.1、<i>β</i><sub>max</sub> = 20，时间在 [0, 1 − <i>ϵ</i>] 中采样，训练与似然时 <i>ϵ</i> = 10<sup>−5</sup>，采样时 <i>ϵ</i> = 10<sup>−5</sup>。<sup class="tn" data-tip="原文此处把训练/似然与采样两处的 ε 都写成 1e−5；译文如实照录。">注</sup></p>
+<p><b>采样。</b>得分匹配样本通过用向量场求解 ODE（式 1）得到：</p>
+<div class="eq"><div class="body"><i>u</i><sub>t</sub>(<b>x</b>) = −<span class="frac"><span class="n2"><i>T</i>&#8242;(1 − <i>t</i>)</span><span class="d2">2</span></span>[<i>s</i><sub>t</sub>(<b>x</b>) − <b>x</b>].</div><div class="no">(46)</div></div>
+<p>DDPM 样本则在令 <i>s</i><sub>t</sub>(<b>x</b>) = <i>ϵ</i><sub>t</sub>(<b>x</b>)/<i>σ</i><sub>t</sub> 后用式 46 计算，其中 <i>σ</i><sub>t</sub> = √(1 − <i>α</i><sub>1−t</sub><sup>2</sup>)。</p>
+
+<h3 id="appE2">E.2 训练与评估细节</h3>
+<p>我们在表 3 中报告所用的超参数。训练 CIFAR10 与 ImageNet-32 时使用完整 32 位精度，训练 ImageNet-64/128/256 时使用 16 位混合精度。所有模型都用 Adam 优化器训练，参数为 <i>β</i><sub>1</sub> = 0.9、<i>β</i><sub>2</sub> = 0.999、权重衰减 = 0.0、<i>ϵ</i> = 1e−8。我们训练的所有方法（即 FM-OT、FM-Diffusion、SM-Diffusion）使用相同结构、相同参数、相同轮数（细节见表 3）。我们使用常数学习率表或多项式衰减表（见表 3）。多项式衰减学习率表包含一个指定训练步数的预热阶段：预热阶段学习率从 1e−8 线性升到峰值学习率（表 3 中给出）；达到峰值后，学习率线性衰减到 1e−8 直到最后一步训练。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">CIFAR10</td><td style="border:1px solid var(--line);padding:5px 9px">ImageNet-32</td><td style="border:1px solid var(--line);padding:5px 9px">ImageNet-64</td><td style="border:1px solid var(--line);padding:5px 9px">ImageNet-128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Channels</td><td style="border:1px solid var(--line);padding:5px 9px">256</td><td style="border:1px solid var(--line);padding:5px 9px">256</td><td style="border:1px solid var(--line);padding:5px 9px">192</td><td style="border:1px solid var(--line);padding:5px 9px">256</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Depth</td><td style="border:1px solid var(--line);padding:5px 9px">2</td><td style="border:1px solid var(--line);padding:5px 9px">3</td><td style="border:1px solid var(--line);padding:5px 9px">3</td><td style="border:1px solid var(--line);padding:5px 9px">3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Channels multiple</td><td style="border:1px solid var(--line);padding:5px 9px">1,2,2,2</td><td style="border:1px solid var(--line);padding:5px 9px">1,2,2,2</td><td style="border:1px solid var(--line);padding:5px 9px">1,2,3,4</td><td style="border:1px solid var(--line);padding:5px 9px">1,1,2,3,4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Heads</td><td style="border:1px solid var(--line);padding:5px 9px">4</td><td style="border:1px solid var(--line);padding:5px 9px">4</td><td style="border:1px solid var(--line);padding:5px 9px">4</td><td style="border:1px solid var(--line);padding:5px 9px">4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Heads Channels</td><td style="border:1px solid var(--line);padding:5px 9px">64</td><td style="border:1px solid var(--line);padding:5px 9px">64</td><td style="border:1px solid var(--line);padding:5px 9px">64</td><td style="border:1px solid var(--line);padding:5px 9px">64</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Attention resolution</td><td style="border:1px solid var(--line);padding:5px 9px">16</td><td style="border:1px solid var(--line);padding:5px 9px">16,8</td><td style="border:1px solid var(--line);padding:5px 9px">32,16,8</td><td style="border:1px solid var(--line);padding:5px 9px">32,16,8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Dropout</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Effective Batch size</td><td style="border:1px solid var(--line);padding:5px 9px">256</td><td style="border:1px solid var(--line);padding:5px 9px">1024</td><td style="border:1px solid var(--line);padding:5px 9px">2048</td><td style="border:1px solid var(--line);padding:5px 9px">1536</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GPUs</td><td style="border:1px solid var(--line);padding:5px 9px">2</td><td style="border:1px solid var(--line);padding:5px 9px">4</td><td style="border:1px solid var(--line);padding:5px 9px">16</td><td style="border:1px solid var(--line);padding:5px 9px">32</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Epochs</td><td style="border:1px solid var(--line);padding:5px 9px">1000</td><td style="border:1px solid var(--line);padding:5px 9px">200</td><td style="border:1px solid var(--line);padding:5px 9px">250</td><td style="border:1px solid var(--line);padding:5px 9px">571</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Iterations</td><td style="border:1px solid var(--line);padding:5px 9px">391k</td><td style="border:1px solid var(--line);padding:5px 9px">250k</td><td style="border:1px solid var(--line);padding:5px 9px">157k</td><td style="border:1px solid var(--line);padding:5px 9px">500k</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Learning Rate</td><td style="border:1px solid var(--line);padding:5px 9px">5e-4</td><td style="border:1px solid var(--line);padding:5px 9px">1e-4</td><td style="border:1px solid var(--line);padding:5px 9px">1e-4</td><td style="border:1px solid var(--line);padding:5px 9px">1e-4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Learning Rate Scheduler</td><td style="border:1px solid var(--line);padding:5px 9px">Polynomial Decay</td><td style="border:1px solid var(--line);padding:5px 9px">Polynomial Decay</td><td style="border:1px solid var(--line);padding:5px 9px">Constant</td><td style="border:1px solid var(--line);padding:5px 9px">Polynomial Decay</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Warmup Steps</td><td style="border:1px solid var(--line);padding:5px 9px">45k</td><td style="border:1px solid var(--line);padding:5px 9px">20k</td><td style="border:1px solid var(--line);padding:5px 9px">-</td><td style="border:1px solid var(--line);padding:5px 9px">20k</td></tr>
+</table></div>
+<p class="fn"><b>表 3</b>　训练各模型所用的超参数。</p>
+
+<p>报告负对数似然时，我们使用标准的均匀去量化。我们报告用下式得到的重要性加权估计：</p>
+<div class="eq"><div class="body">log <span class="frac"><span class="n2">1</span><span class="d2"><i>K</i></span></span> <span class="sum"><span class="t"><i>K</i></span><span class="o">∑</span><span class="b"><i>k</i>=1</span></span> <i>p</i><sub>t</sub>(<b>x</b> + <b>u</b><sub><i>k</i></sub>),　其中 <b>u</b><sub><i>k</i></sub> ∼ 𝒰(0, 1),</div><div class="no">(47)</div></div>
+<p>其中 <b>x</b> 取值于 {0, …, 255}，并在 <i>t</i> = 1 用自适应步长求解器 dopri5（atol = rtol = 1e−5）、借助 torchdiffeq（Chen, 2018）库求解。不同 <i>K</i> 值下的估计值见表 4。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px" rowspan="2"><b>模型</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="3"><b>CIFAR-10</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="3"><b>ImageNet 32×32</b></td>
+<td style="border:1px solid var(--line);padding:5px 9px" colspan="3"><b>ImageNet 64×64</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 9px">K=1</td><td style="border:1px solid var(--line);padding:5px 9px">K=20</td><td style="border:1px solid var(--line);padding:5px 9px">K=50</td>
+<td style="border:1px solid var(--line);padding:5px 9px">K=1</td><td style="border:1px solid var(--line);padding:5px 9px">K=5</td><td style="border:1px solid var(--line);padding:5px 9px">K=15</td>
+<td style="border:1px solid var(--line);padding:5px 9px">K=1</td><td style="border:1px solid var(--line);padding:5px 9px">K=5</td><td style="border:1px solid var(--line);padding:5px 9px">K=10</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px" colspan="10"><b>消融</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">DDPM</td><td style="border:1px solid var(--line);padding:5px 9px">3.24</td><td style="border:1px solid var(--line);padding:5px 9px">3.14</td><td style="border:1px solid var(--line);padding:5px 9px">3.12</td><td style="border:1px solid var(--line);padding:5px 9px">3.62</td><td style="border:1px solid var(--line);padding:5px 9px">3.57</td><td style="border:1px solid var(--line);padding:5px 9px">3.54</td><td style="border:1px solid var(--line);padding:5px 9px">3.36</td><td style="border:1px solid var(--line);padding:5px 9px">3.33</td><td style="border:1px solid var(--line);padding:5px 9px">3.32</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Score Matching</td><td style="border:1px solid var(--line);padding:5px 9px">3.28</td><td style="border:1px solid var(--line);padding:5px 9px">3.18</td><td style="border:1px solid var(--line);padding:5px 9px">3.16</td><td style="border:1px solid var(--line);padding:5px 9px">3.65</td><td style="border:1px solid var(--line);padding:5px 9px">3.59</td><td style="border:1px solid var(--line);padding:5px 9px">3.57</td><td style="border:1px solid var(--line);padding:5px 9px">3.43</td><td style="border:1px solid var(--line);padding:5px 9px">3.41</td><td style="border:1px solid var(--line);padding:5px 9px">3.40</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">ScoreFlow</td><td style="border:1px solid var(--line);padding:5px 9px">3.21</td><td style="border:1px solid var(--line);padding:5px 9px">3.11</td><td style="border:1px solid var(--line);padding:5px 9px">3.09</td><td style="border:1px solid var(--line);padding:5px 9px">3.63</td><td style="border:1px solid var(--line);padding:5px 9px">3.57</td><td style="border:1px solid var(--line);padding:5px 9px">3.55</td><td style="border:1px solid var(--line);padding:5px 9px">3.39</td><td style="border:1px solid var(--line);padding:5px 9px">3.37</td><td style="border:1px solid var(--line);padding:5px 9px">3.36</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px" colspan="10"><b>本文</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">FM<sup>w</sup>/ Diffusion</td><td style="border:1px solid var(--line);padding:5px 9px">3.23</td><td style="border:1px solid var(--line);padding:5px 9px">3.13</td><td style="border:1px solid var(--line);padding:5px 9px">3.10</td><td style="border:1px solid var(--line);padding:5px 9px">3.64</td><td style="border:1px solid var(--line);padding:5px 9px">3.58</td><td style="border:1px solid var(--line);padding:5px 9px">3.56</td><td style="border:1px solid var(--line);padding:5px 9px">3.37</td><td style="border:1px solid var(--line);padding:5px 9px">3.34</td><td style="border:1px solid var(--line);padding:5px 9px">3.33</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">FM<sup>w</sup>/ OT</td><td style="border:1px solid var(--line);padding:5px 9px">3.11</td><td style="border:1px solid var(--line);padding:5px 9px">3.01</td><td style="border:1px solid var(--line);padding:5px 9px">2.99</td><td style="border:1px solid var(--line);padding:5px 9px">3.62</td><td style="border:1px solid var(--line);padding:5px 9px">3.56</td><td style="border:1px solid var(--line);padding:5px 9px">3.53</td><td style="border:1px solid var(--line);padding:5px 9px">3.35</td><td style="border:1px solid var(--line);padding:5px 9px">3.33</td><td style="border:1px solid var(--line);padding:5px 9px">3.31</td></tr>
+</table></div>
+<p class="fn"><b>表 4</b>　用均匀去量化时，不同 <i>K</i> 值下测试集上的负对数似然（以每维比特为单位）。</p>
+
+<figure id="fig10"><img src="images/fig10.png" alt="Function evaluations during training">
+<figcaption><span class="lab">图 10</span>训练过程中采样的函数求值次数，模型在 CIFAR-10 上训练、用 dopri5 求解器、容差 1e<sup>−5</sup>。</figcaption></figure>
+
+<p>在计算 CIFAR10、ImageNet-32/64 的 FID/Inception 分数时，我们使用 TensorFlow GAN 库<sup class="tn" data-tip="原文脚注 2：https://github.com/tensorflow/gan">2</sup>。为了与 Dhariwal &amp; Nichol (2021) 在 ImageNet-128 上保持可比，我们使用他们在公开代码库中提供的评估脚本<sup class="tn" data-tip="原文脚注 3：https://github.com/openai/guided-diffusion">3</sup>。</p>
+
+<h2 id="appF">附录 F　附加表格与图</h2>
+
+<figure id="fig11"><img src="images/fig11.png" alt="ImageNet-32 samples">
+<figcaption><span class="lab">图 11</span>用 FM-OT 训练的 CNF 的无条件 ImageNet-32 生成图像，未经挑选。</figcaption></figure>
+<figure id="fig12"><img src="images/fig12.png" alt="ImageNet-64 samples">
+<figcaption><span class="lab">图 12</span>用 FM-OT 训练的 CNF 的无条件 ImageNet-64 生成图像，未经挑选。</figcaption></figure>
+<figure id="fig13"><img src="images/fig13.png" alt="ImageNet-128 samples">
+<figcaption><span class="lab">图 13</span>用 FM-OT 训练的 CNF 的无条件 ImageNet-128 生成图像，未经挑选。</figcaption></figure>
+<figure id="fig14"><img src="images/fig14.png" alt="Conditional generation 64 to 256">
+<figcaption><span class="lab">图 14</span>条件生成 64×64 → 256×256。流匹配 OT 对验证集图像的上采样结果。</figcaption></figure>
+<figure id="fig15"><img src="images/fig15.png" alt="Conditional generation 64 to 256">
+<figcaption><span class="lab">图 15</span>条件生成 64×64 → 256×256。流匹配 OT 对验证集图像的上采样结果。</figcaption></figure>
+<figure id="fig16"><img src="images/fig16.png" alt="Varying NFE, ImageNet-128">
+<figcaption><span class="lab">图 16</span>从同一初始噪声出发、改变函数求值次数（NFE）得到的生成样本。用 OT 路径的流匹配，在 ImageNet-128 上训练。</figcaption></figure>
+<figure id="fig17"><img src="images/fig17.png" alt="Varying NFE, ImageNet 256">
+<figcaption><span class="lab">图 17</span>从同一初始噪声出发、改变函数求值次数（NFE）得到的生成样本。用 OT 路径的流匹配，在 ImageNet 256×256 上训练。</figcaption></figure>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　ImageNet-128 无条件样本（引言）</li>
+<li><a href="#fig2">图 2</a>　扩散条件得分函数与 OT 条件向量场的对比（4.1 节）</li>
+<li><a href="#fig3">图 3</a>　扩散轨迹与 OT 轨迹（4.1 节）</li>
+<li><a href="#fig4">图 4</a>　2D 棋盘格上的轨迹与采样效率（5 节）</li>
+<li><a href="#fig5">图 5</a>　训练过程中的图像质量，ImageNet 64×64（6.1 节）</li>
+<li><a href="#fig6">图 6</a>　同一初始噪声下的采样路径，ImageNet 64×64（6 节）</li>
+<li><a href="#fig7">图 7</a>　NFE 与数值误差、样本质量的关系，ImageNet 32×32（6.2 节）</li>
+<li><a href="#fig8">图 8</a>　VP 扩散路径的条件向量场（附录 D）</li>
+<li><a href="#fig9">图 9</a>　ScoreFlow 与 DDPM 损失训练出的 CNF 轨迹（附录 D）</li>
+<li><a href="#fig10">图 10</a>　训练中采样所需的函数求值次数，CIFAR-10（附录 E.2）</li>
+<li><a href="#fig11">图 11</a>　无条件 ImageNet-32 生成样本（附录 F）</li>
+<li><a href="#fig12">图 12</a>　无条件 ImageNet-64 生成样本（附录 F）</li>
+<li><a href="#fig13">图 13</a>　无条件 ImageNet-128 生成样本（附录 F）</li>
+<li><a href="#fig14">图 14</a>　条件生成 64×64 → 256×256（附录 F）</li>
+<li><a href="#fig15">图 15</a>　条件生成 64×64 → 256×256（附录 F）</li>
+<li><a href="#fig16">图 16</a>　不同 NFE 的生成样本，ImageNet-128（附录 F）</li>
+<li><a href="#fig17">图 17</a>　不同 NFE 的生成样本，ImageNet 256×256（附录 F）</li>
+</ol>
+<p style="margin-top:10px">表 1 同一模型不同训练方法的 NLL / FID / NFE（6 节）、表 2 ImageNet 验证集上的超分辨率（6.3 节）、表 3 训练超参数（附录 E.2）、表 4 不同 <i>K</i> 下的 NLL（附录 E.2）已在正文中直接排出。式 (1)–(47) 以公式块形式排入正文。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译；原文脚注按位置保留并译出。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

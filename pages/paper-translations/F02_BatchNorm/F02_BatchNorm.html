@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>批归一化：通过减少内部协变量偏移来加速深度网络训练 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">批归一化：通过减少内部协变量偏移加速深度网络训练</span><span>Ioffe 和 Szegedy，2015 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 减少内部协变量偏移</a>
+<a href="#s3">3 通过小批量统计量做归一化</a>
+<a class="sub" href="#s31">3.1 批归一化网络的训练与推理</a>
+<a class="sub" href="#s32">3.2 批归一化的卷积网络</a>
+<a class="sub" href="#s33">3.3 批归一化让更高的学习率成为可能</a>
+<a class="sub" href="#s34">3.4 批归一化对模型起正则化作用</a>
+<a href="#s4">4 实验</a>
+<a class="sub" href="#s41">4.1 激活值随时间的演化</a>
+<a class="sub" href="#s42">4.2 ImageNet 分类</a>
+<a class="sub" href="#s421">4.2.1 加速 BN 网络</a>
+<a class="sub" href="#s422">4.2.2 单网络分类</a>
+<a class="sub" href="#s423">4.2.3 集成分类</a>
+<a href="#s5">5 结论</a>
+<a href="#sapp">附录：所用 Inception 模型的变体</a>
+<hr>
+<a href="#refs">参考文献</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 批归一化：通过减少内部协变量偏移加速深度网络训练 | Ioffe 和 Szegedy，2015 · 中文翻译-->
+<h1 class="doc">批归一化：通过减少内部协变量偏移来加速深度网络训练<span class="en">Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift</span></h1>
+<p class="meta">Sergey Ioffe · Christian Szegedy（Google Inc.）<br>arXiv:1502.03167 · ICML 2015 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>深度神经网络的训练之所以复杂，是因为每一层输入的分布在训练过程中会不断变化：前一层参数一变，后一层的输入分布就跟着变。这迫使训练不得不使用更低的学习率、更小心的参数初始化，也让带<span class="term" data-tip="saturating nonlinearities：当输入很大或很小时，导数趋于 0 的非线性函数（如 sigmoid、tanh），此时梯度会被“压死”传不回去">饱和非线性</span>的模型变得出了名地难训。我们把这一现象称为<span class="term" data-tip="internal covariate shift：网络内部各层输入分布随训练而漂移的现象，作者把它与统计学中的协变量偏移类比">内部协变量偏移</span>，并通过归一化层输入来解决它。我们的方法之所以有力，是因为把归一化做成了模型结构的一部分，并且对每个训练小批量都执行归一化。批归一化让我们可以使用高得多的学习率，也不必那么小心地初始化。它还起到<span class="term" data-tip="regularizer：正则化手段，抑制过拟合；这里指 BN 自身带来的泛化增益">正则化</span>的作用，某些情况下甚至可以省掉 Dropout。把它用在当时最好的图像分类模型上，批归一化只用 1/14 的训练步数就达到相同精度，并显著超过原模型。用一组批归一化网络做<span class="term" data-tip="ensemble：把多个模型的预测平均起来，通常比单个模型更准">集成</span>，我们刷新了 ImageNet 分类的最好公开结果：top-5 验证误差 4.9%（测试误差 4.8%），超过了人类标注者的准确率。</p>
+</div>
+
+<h2 id="s1">1 引言</h2>
+<p>深度学习已经在视觉、语音以及许多其他领域大幅推进了最好水平。随机梯度下降（SGD）被证明是训练深度网络的有效方式，而 momentum（Sutskever 等, 2013）、Adagrad（Duchi 等, 2011）等 SGD 变体则被用来取得当时最好的性能。SGD 优化网络的参数 Θ，以最小化损失</p>
+<div class="eq"><div class="body">Θ = arg min<sub>Θ</sub> <span class="frac"><span class="n2">1</span><span class="d2"><i>N</i></span></span> <span class="sum"><span class="t"><i>N</i></span><span class="o">Σ</span><span class="b"><i>i</i> = 1</span></span> ℓ(x<sub><i>i</i></sub>, Θ)</div></div>
+<p>其中 x<sub>1…N</sub> 是训练数据集。用 SGD 训练是一步一步进行的，每一步考虑一个大小为 <i>m</i> 的小批量（<span class="term" data-tip="mini-batch：每次参数更新只用一小批样本而不是全部训练数据，用来近似整体梯度">mini-batch</span>）x<sub>1…m</sub>。小批量被用来近似损失函数关于参数的梯度，即计算</p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">1</span><span class="d2"><i>m</i></span></span> <span class="frac"><span class="n2">∂ℓ(x<sub><i>i</i></sub>, Θ)</span><span class="d2">∂Θ</span></span></div></div>
+<p>与一次只用一个样本相比，使用小批量样本在好几方面都有帮助。第一，一个小批量上的损失梯度是训练集上梯度的估计，批量越大，估计质量越好。第二，由于现代计算平台提供的并行性，对一批数据做计算可以比逐样本做 <i>m</i> 次计算高效得多。</p>
+<p>虽然随机梯度简单有效，但它需要仔细地调节模型超参数，尤其是优化所用的学习率，以及模型参数的初始值。训练之所以复杂，是因为每一层的输入都受到前面所有层参数的影响——于是网络越深，参数上的微小变化就会被放得越大。</p>
+<p>各层输入分布的变化之所以是个问题，是因为各层必须不断去适应新的分布。当一个学习系统的输入分布发生变化时，我们说它经历了<span class="term" data-tip="covariate shift：输入（协变量）的分布发生了变化，而输入与输出之间的条件关系不变">协变量偏移</span>（Shimodaira, 2000）。这通常通过<span class="term" data-tip="domain adaptation：把在源领域上训练的模型迁移到分布不同的目标领域">领域自适应</span>来处理（Jiang, 2008）。不过，协变量偏移这一概念可以超出「整个学习系统」的范围，用到它的各个组成部分上，例如一个子网络或一层。考虑计算</p>
+<div class="eq"><div class="body">ℓ = <i>F</i><sub>2</sub>(<i>F</i><sub>1</sub>(u, Θ<sub>1</sub>), Θ<sub>2</sub>)</div></div>
+<p>的网络，其中 <i>F</i><sub>1</sub> 和 <i>F</i><sub>2</sub> 是任意变换，参数 Θ<sub>1</sub>、Θ<sub>2</sub> 需要被学习以最小化损失 ℓ。学习 Θ<sub>2</sub> 可以看作是把输入 x = <i>F</i><sub>1</sub>(u, Θ<sub>1</sub>) 喂给子网络</p>
+<div class="eq"><div class="body">ℓ = <i>F</i><sub>2</sub>(x, Θ<sub>2</sub>)</div></div>
+<p>例如，一步梯度下降</p>
+<div class="eq"><div class="body">Θ<sub>2</sub> ← Θ<sub>2</sub> − <span class="frac"><span class="n2">α</span><span class="d2"><i>m</i></span></span> <span class="sum"><span class="t"><i>m</i></span><span class="o">Σ</span><span class="b"><i>i</i> = 1</span></span> <span class="frac"><span class="n2">∂<i>F</i><sub>2</sub>(x<sub><i>i</i></sub>, Θ<sub>2</sub>)</span><span class="d2">∂Θ<sub>2</sub></span></span></div></div>
+<p>（批量大小 <i>m</i>、学习率 α）与一个以 x 为输入的独立网络 <i>F</i><sub>2</sub> 的更新完全等价。因此，那些让训练更高效的输入分布性质——例如训练数据与测试数据同分布——同样适用于子网络的训练。所以，让 x 的分布随时间保持不变是有利的。这样，Θ<sub>2</sub> 就不必为了补偿 x 分布的变化而反复重新调整。</p>
+<p>子网络输入的固定分布，对子网络之外的层也会带来好处。考虑一个带 sigmoid 激活的层 z = <i>g</i>(<i>W</i>u + b)，其中 u 是层输入，权重矩阵 <i>W</i> 与偏置向量 b 是该层待学习的参数，<i>g</i>(x) = 1/(1 + exp(−x))。当 x 增大时，<i>g</i>′(x) 趋于 0。这意味着，对 x = <i>W</i>u + b 的所有维度而言，除了那些绝对值很小的维度，回传到 u 的梯度都会消失，模型也就训练得很慢。然而 x 受 <i>W</i>、b 以及下面所有层参数的影响，训练中这些参数一变，很可能把 x 的许多维度推进非线性的饱和区，拖慢收敛。网络越深，这种效应被放得越大。实践中，饱和问题与由此产生的<span class="term" data-tip="vanishing gradients：梯度在反向传播中逐层变小，导致浅层几乎收不到有效更新信号">梯度消失</span>通常靠以下手段缓解：使用<span class="term" data-tip="Rectified Linear Units：修正线性单元，ReLU(x)=max(x,0)，负半轴恒为 0，正半轴梯度恒为 1">修正线性单元</span>（Nair &amp; Hinton, 2010）ReLU(x) = max(x, 0)、精心设计的初始化（Bengio &amp; Glorot, 2010; Saxe 等, 2013）以及较小的学习率。但是，如果我们能保证非线性层输入的分布在训练中更稳定，那么优化器就不太会卡在饱和区，训练就会加速。</p>
+<p>我们把训练过程中深度网络内部节点分布的变化称为<b>内部协变量偏移</b>（Internal Covariate Shift）。消除它有望带来更快的训练。我们提出一种新机制，称之为<b>批归一化</b>（Batch Normalization）：它朝着减少内部协变量偏移迈出一步，并由此大幅加速深度网络的训练。它通过一个归一化步骤来实现，即固定层输入的均值与方差。批归一化对网络中的梯度流动也有好处，它降低了梯度对参数尺度或参数初值的依赖。这让我们可以使用高得多的学习率而不担心发散。此外，批归一化使模型正则化，减少了对 Dropout 的需要（Srivastava 等, 2014）。最后，批归一化让使用饱和非线性成为可能，因为它阻止网络卡在饱和模式中。</p>
+<p>在第 4.2 节，我们把批归一化应用到当时性能最好的 ImageNet 分类网络上，结果表明我们只用 7% 的训练步数就能达到它的性能，并且能进一步以明显幅度超过它的精度。用一组这样训练出的批归一化网络做集成，我们取得的 top-5 误差率刷新了 ImageNet 分类的已知最好结果。</p>
+
+<h2 id="s2">2 减少内部协变量偏移</h2>
+<p>我们把内部协变量偏移定义为：训练过程中网络参数变化所导致的网络激活值分布的变化。为了改善训练，我们力求减少内部协变量偏移。如果在训练推进过程中固定层输入 x 的分布，我们期望训练速度得到改善。人们很早就知道（LeCun 等, 1998b; Wiesler &amp; Ney, 2011）：如果网络的输入被<span class="term" data-tip="whitening：线性变换使数据零均值、单位方差且各维不相关">白化</span>——即线性变换到零均值、单位方差并去相关——训练收敛得更快。由于每一层看到的是下面各层产出的输入，那么对每一层的输入也做同样的白化将是有利的。通过对每一层的输入做白化，我们就朝「输入分布固定」迈出了一步，从而消除内部协变量偏移的坏影响。</p>
+<p>我们可以考虑在每一个训练步、或者每隔一段时间对激活值做白化，方式可以是直接修改网络，也可以是让优化算法的参数依赖于网络激活值（Wiesler 等, 2014; Raiko 等, 2012; Povey 等, 2014; Desjardins &amp; Kavukcuoglu）。但是，如果这些修改与优化步骤交替进行，那么梯度下降步就可能试图以「需要同步更新归一化」的方式更新参数，从而削弱梯度步的效果。举个例子，考虑一个输入为 u、加上学到的偏置 b、再用训练数据上算出的激活均值做减均值归一化的层：x̂ = x − E[x]，其中 x = u + b，𝒳 = {x<sub>1…N</sub>} 是 x 在训练集上的取值集合，E[x] = (1/N) Σ<sup>N</sup><sub>i=1</sub> x<sub>i</sub>。如果梯度下降步忽略了 E[x] 对 b 的依赖，它就会把 b 更新为 b + Δb，其中 Δb ∝ −∂ℓ/∂x̂。于是 u + (b + Δb) − E[u + (b + Δb)] = u + b − E[u + b]。也就是说，对 b 的更新与随后归一化的改变合起来，既没有改变该层的输出，也就没有改变损失。随着训练继续，b 会无限增长，而损失保持不变。如果归一化不仅做中心化、还做缩放，这个问题会更严重。我们在最初的实验中经验性地观察到了这一点：当归一化参数在梯度下降步之外计算时，模型会爆掉。</p>
+<p>上述做法的问题在于：梯度下降优化没有把「归一化会发生」这件事考虑进去。为解决这个问题，我们希望保证：对任意参数值，网络总是产生具有期望分布的激活值。这样，损失关于模型参数的梯度就能把归一化及其对模型参数 Θ 的依赖一并考虑进来。再次设 x 为某一层的输入（视为向量），𝒳 为该输入在训练数据集上的取值集合。那么归一化可以写成一个变换</p>
+<div class="eq"><div class="body">x̂ = Norm(x, 𝒳)</div></div>
+<p>它不仅依赖于给定的训练样本 x，还依赖于所有样本 𝒳——如果 x 是另一层生成的，那么每个样本都依赖 Θ。做反向传播时，我们需要计算<span class="term" data-tip="Jacobian：雅可比矩阵，函数所有一阶偏导数构成的矩阵，刻画输出对输入的局部敏感度">雅可比矩阵</span></p>
+<div class="eq"><div class="body"><span class="frac"><span class="n2">∂Norm(x, 𝒳)</span><span class="d2">∂x</span></span> 与 <span class="frac"><span class="n2">∂Norm(x, 𝒳)</span><span class="d2">∂𝒳</span></span></div></div>
+<p>忽略后一项就会导致前面描述的爆炸。在这个框架下，对层输入做白化代价很高，因为它需要计算<span class="term" data-tip="covariance matrix：协方差矩阵，描述各维度之间的相关性与各自方差">协方差矩阵</span> Cov[x] = E<sub>x∈𝒳</sub>[xx<sup>T</sup>] − E[x]E[x]<sup>T</sup> 及其逆平方根，以得到白化后的激活值 Cov[x]<sup>−1/2</sup>(x − E[x])，还要为反向传播计算这些变换的导数。这促使我们去寻找另一种做法：它做输入归一化的方式是可微的，而且不需要在每次参数更新后都分析整个训练集。</p>
+<p>此前的一些方法（例如 Lyu &amp; Simoncelli, 2008）使用单个训练样本上的统计量，或者在图像网络的情形下，使用给定位置上不同特征图之间的统计量。然而这会丢掉激活值的绝对尺度，从而改变网络的表达能力。我们希望保留网络中的信息：用整个训练数据的统计量作为参照，来归一化某个训练样本中的激活值。</p>
+
+<h2 id="s3">3 通过小批量统计量做归一化</h2>
+<p>由于对每层输入做完全白化代价高昂且并非处处可微，我们做两个必要的简化。第一，我们不再联合白化层输入与输出的特征，而是独立地归一化每一个标量特征，使它具有零均值和单位方差。对于 d 维输入 x = (x<sup>(1)</sup> … x<sup>(d)</sup>) 的层，我们归一化每一维</p>
+<div class="eq"><div class="body">x̂<sup>(k)</sup> = <span class="frac"><span class="n2">x<sup>(k)</sup> − E[x<sup>(k)</sup>]</span><span class="d2">√( Var[x<sup>(k)</sup>] )</span></span></div></div>
+<p>其中期望与方差都在训练数据集上计算。正如（LeCun 等, 1998b）所示，即使特征之间没有去相关，这样的归一化也能加速收敛。</p>
+<p>请注意，仅仅归一化某一层的每个输入可能会改变这一层能表示的东西。例如，把 sigmoid 的输入归一化，就会把它们约束到非线性的线性区。为解决这一点，我们要确保插入网络的变换能够表示<span class="term" data-tip="identity transform：恒等变换，输出等于输入，保证网络不会因为加了归一化而失去原有的表达能力">恒等变换</span>。为此，我们为每个激活值 x<sup>(k)</sup> 引入一对参数 γ<sup>(k)</sup>、β<sup>(k)</sup>，对归一化后的值做缩放与平移：</p>
+<div class="eq"><div class="body">y<sup>(k)</sup> = γ<sup>(k)</sup> x̂<sup>(k)</sup> + β<sup>(k)</sup></div></div>
+<p>这些参数与原始模型参数一起学习，恢复了网络的表达能力。事实上，只要令 γ<sup>(k)</sup> = √(Var[x<sup>(k)</sup>]) 与 β<sup>(k)</sup> = E[x<sup>(k)</sup>]，如果那样做是最优的，我们就能还原出原来的激活值。</p>
+<p>在每步训练都基于整个训练集的批量设置中，我们会用整个集合来归一化激活值。然而在使用随机优化时这不现实。因此我们做第二个简化：由于随机梯度训练使用小批量，每个小批量会给出每个激活值均值与方差的估计。这样一来，用于归一化的统计量就能充分参与梯度的反向传播。注意，使用小批量之所以可行，是因为我们计算的是逐维方差而不是联合协方差；在联合的情形下就需要正则化，因为小批量大小很可能小于被白化的激活值个数，导致协方差矩阵奇异。</p>
+<p>考虑一个大小为 <i>m</i> 的小批量。由于归一化独立地施加于每个激活值，我们聚焦于某个特定的激活值 x<sup>(k)</sup> 并为了清晰省去 k。这个小批量中该激活值有 <i>m</i> 个取值，</p>
+<div class="eq"><div class="body">ℬ = {x<sub>1…m</sub>}</div></div>
+<p>设归一化后的值为 x̂<sub>1…m</sub>，它们的线性变换为 y<sub>1…m</sub>。我们把变换</p>
+<div class="eq"><div class="body">BN<sub>γ,β</sub> : x<sub>1…m</sub> → y<sub>1…m</sub></div></div>
+<p>称为<b>批归一化变换</b>（Batch Normalizing Transform）。算法 1 给出了 BN 变换。算法中，ϵ 是加到小批量方差上的常数，用于数值稳定性。</p>
+<div class="alg">
+<div class="cap">算法 1　批归一化变换（Batch Normalizing Transform），作用于小批量上的激活值 x</div>
+<div class="req">输入：小批量上 x 的取值 ℬ = {x<sub>1…m</sub>}；待学习参数：γ, β</div>
+<div class="req">输出：{y<sub>i</sub> = BN<sub>γ,β</sub>(x<sub>i</sub>)}</div>
+<ol>
+<li>μ<sub>ℬ</sub> ← (1/<i>m</i>) Σ<sup><i>m</i></sup><sub><i>i</i>=1</sub> x<sub><i>i</i></sub>　<span style="color:#6b7280">// 小批量均值</span></li>
+<li>σ<sub>ℬ</sub><sup>2</sup> ← (1/<i>m</i>) Σ<sup><i>m</i></sup><sub><i>i</i>=1</sub> (x<sub><i>i</i></sub> − μ<sub>ℬ</sub>)<sup>2</sup>　<span style="color:#6b7280">// 小批量方差</span></li>
+<li>x̂<sub><i>i</i></sub> ← (x<sub><i>i</i></sub> − μ<sub>ℬ</sub>) / √(σ<sub>ℬ</sub><sup>2</sup> + ϵ)　<span style="color:#6b7280">// 归一化</span></li>
+<li>y<sub><i>i</i></sub> ← γ x̂<sub><i>i</i></sub> + β ≡ BN<sub>γ,β</sub>(x<sub><i>i</i></sub>)　<span style="color:#6b7280">// 缩放与平移</span></li>
+</ol>
+</div>
+<p>BN 变换可以加入到网络中，用来操纵任意激活值。在记号 y = BN<sub>γ,β</sub>(x) 中，我们表示参数 γ 与 β 是要学习的；但要注意，BN 变换并不是独立地处理每个训练样本中的激活值。相反，BN<sub>γ,β</sub>(x) 既依赖于该训练样本，也依赖于小批量中的其他样本。缩放平移后的值 y 被传给网络的其他层。归一化后的激活值 x̂ 是我们变换内部的量，但它们的存在至关重要。只要每个小批量的元素都是从同一分布中采样的，并且我们忽略 ϵ，那么任意 x 的取值分布就有期望 0 与方差 1。这可以通过观察 Σ<sup><i>m</i></sup><sub><i>i</i>=1</sub> x̂<sub><i>i</i></sub> = 0 与 (1/<i>m</i>) Σ<sup><i>m</i></sup><sub><i>i</i>=1</sub> x̂<sub><i>i</i></sub><sup>2</sup> = 1，再取期望得到。每个归一化后的激活值 x̂<sup>(k)</sup> 都可以看作某个子网络的输入，该子网络由线性变换 y<sup>(k)</sup> = γ<sup>(k)</sup>x̂<sup>(k)</sup> + β<sup>(k)</sup> 以及原网络后续的处理构成。这些子网络输入都具有固定的均值与方差；虽然这些归一化后的 x̂<sup>(k)</sup> 的联合分布会在训练过程中变化，但我们预期引入归一化输入会加速该子网络、从而加速整个网络的训练。</p>
+<p>训练时我们需要让损失 ℓ 的梯度通过这个变换反向传播，同时计算关于 BN 变换参数的梯度。我们按如下方式使用链式法则（尚未化简）：</p>
+<div class="eq"><div class="body" style="text-align:left;line-height:2.2">
+∂ℓ/∂x̂<sub><i>i</i></sub> = (∂ℓ/∂y<sub><i>i</i></sub>) · γ<br>
+∂ℓ/∂σ<sub>ℬ</sub><sup>2</sup> = <span class="sum"><span class="t"><i>m</i></span><span class="o">Σ</span><span class="b"><i>i</i> = 1</span></span> (∂ℓ/∂x̂<sub><i>i</i></sub>) · (x<sub><i>i</i></sub> − μ<sub>ℬ</sub>) · (−1/2)(σ<sub>ℬ</sub><sup>2</sup> + ϵ)<sup>−3/2</sup><br>
+∂ℓ/∂μ<sub>ℬ</sub> = ( <span class="sum"><span class="t"><i>m</i></span><span class="o">Σ</span><span class="b"><i>i</i> = 1</span></span> (∂ℓ/∂x̂<sub><i>i</i></sub>) · (−1/√(σ<sub>ℬ</sub><sup>2</sup> + ϵ)) ) + (∂ℓ/∂σ<sub>ℬ</sub><sup>2</sup>) · ( Σ<sup><i>m</i></sup><sub><i>i</i>=1</sub> −2(x<sub><i>i</i></sub> − μ<sub>ℬ</sub>) / <i>m</i> )<br>
+∂ℓ/∂x<sub><i>i</i></sub> = (∂ℓ/∂x̂<sub><i>i</i></sub>) · (1/√(σ<sub>ℬ</sub><sup>2</sup> + ϵ)) + (∂ℓ/∂σ<sub>ℬ</sub><sup>2</sup>) · (2(x<sub><i>i</i></sub> − μ<sub>ℬ</sub>)/<i>m</i>) + (∂ℓ/∂μ<sub>ℬ</sub>) · (1/<i>m</i>)<br>
+∂ℓ/∂γ = <span class="sum"><span class="t"><i>m</i></span><span class="o">Σ</span><span class="b"><i>i</i> = 1</span></span> (∂ℓ/∂y<sub><i>i</i></sub>) · x̂<sub><i>i</i></sub><br>
+∂ℓ/∂β = <span class="sum"><span class="t"><i>m</i></span><span class="o">Σ</span><span class="b"><i>i</i> = 1</span></span> ∂ℓ/∂y<sub><i>i</i></sub>
+</div></div>
+<p>因此，BN 变换是一个可微的变换，它把归一化后的激活值引入网络。这保证了在模型训练时，各层能够继续在内部协变量偏移更小的输入分布上学习，从而加速训练。此外，施加在这些归一化激活值上的可学习仿射变换，使 BN 变换能够表示恒等变换，从而保留网络容量。</p>
+
+<h3 id="s31">3.1 批归一化网络的训练与推理</h3>
+<p>要对一个网络做批归一化，我们先指定一个激活值子集，再按算法 1 为其中每个激活值插入 BN 变换。任何原先以 x 为输入的层，现在都以 BN(x) 为输入。使用批归一化的模型可以用批量梯度下降来训练，也可以用小批量大小 <i>m</i> &gt; 1 的随机梯度下降、或它的任何变体（例如 Adagrad（Duchi 等, 2011））来训练。依赖小批量的激活值归一化让训练变得高效，但在推理时既不需要、也不希望这样做；我们希望输出只确定性地依赖于输入。为此，网络训练好之后，我们使用总体统计量（而不是小批量统计量）做归一化</p>
+<div class="eq"><div class="body">x̂ = <span class="frac"><span class="n2">x − E[x]</span><span class="d2">√( Var[x] + ϵ )</span></span></div></div>
+<p>忽略 ϵ 后，这些归一化激活值与训练时一样具有均值 0、方差 1。我们使用<span class="term" data-tip="unbiased variance estimate：用 m/(m−1) 校正的样本方差估计，使期望等于真实方差">无偏方差估计</span> Var[x] = m/(m−1) · E<sub>ℬ</sub>[σ<sub>ℬ</sub><sup>2</sup>]，其中期望是对大小为 <i>m</i> 的训练小批量取的，σ<sub>ℬ</sub><sup>2</sup> 是它们的样本方差。也可以改用滑动平均，这样我们就能跟踪模型在训练过程中的准确率。由于推理时均值与方差是固定的，归一化就是施加于每个激活值的一个简单线性变换。它还可以与 γ 的缩放、β 的平移合在一起，化为一个单一的线性变换来替代 BN(x)。算法 2 总结了训练批归一化网络的过程。</p>
+<div class="alg">
+<div class="cap">算法 2　训练一个批归一化网络</div>
+<div class="req">输入：具有可训练参数 Θ 的网络 <i>N</i>；激活值子集 {x<sup>(k)</sup>}<sup><i>K</i></sup><sub><i>k</i>=1</sub></div>
+<div class="req">输出：用于推理的批归一化网络 <i>N</i><sup>inf</sup><sub>BN</sub></div>
+<ol>
+<li><i>N</i><sup>tr</sup><sub>BN</sub> ← <i>N</i>　<span style="color:#6b7280">// 训练 BN 网络</span></li>
+<li>对 <i>k</i> = 1 … <i>K</i> 循环</li>
+<li>　把变换 y<sup>(k)</sup> = BN<sub>γ<sup>(k)</sup>, β<sup>(k)</sup></sub>(x<sup>(k)</sup>) 加入 <i>N</i><sup>tr</sup><sub>BN</sub>（算法 1）</li>
+<li>　把 <i>N</i><sup>tr</sup><sub>BN</sub> 中以 x<sup>(k)</sup> 为输入的层改为以 y<sup>(k)</sup> 为输入</li>
+<li>结束循环</li>
+<li>训练 <i>N</i><sup>tr</sup><sub>BN</sub>，优化参数 Θ ∪ {γ<sup>(k)</sup>, β<sup>(k)</sup>}<sup><i>K</i></sup><sub><i>k</i>=1</sub></li>
+<li><i>N</i><sup>inf</sup><sub>BN</sub> ← <i>N</i><sup>tr</sup><sub>BN</sub>　<span style="color:#6b7280">// 冻结参数，得到推理用的 BN 网络</span></li>
+<li>对 <i>k</i> = 1 … <i>K</i> 循环</li>
+<li>　<span style="color:#6b7280">// 为清晰起见记 x ≡ x<sup>(k)</sup>、γ ≡ γ<sup>(k)</sup>、μ<sub>ℬ</sub> ≡ μ<sub>ℬ</sub><sup>(k)</sup> 等</span></li>
+<li>　处理多个大小为 <i>m</i> 的训练小批量 ℬ，并对它们取平均：E[x] ← E<sub>ℬ</sub>[μ<sub>ℬ</sub>]；Var[x] ← m/(m−1) · E<sub>ℬ</sub>[σ<sub>ℬ</sub><sup>2</sup>]</li>
+<li>　在 <i>N</i><sup>inf</sup><sub>BN</sub> 中，把变换 y = BN<sub>γ,β</sub>(x) 替换为 y = ( γ / √(Var[x] + ϵ) ) · x + ( β − γ E[x] / √(Var[x] + ϵ) )</li>
+<li>结束循环</li>
+</ol>
+</div>
+
+<h3 id="s32">3.2 批归一化的卷积网络</h3>
+<p>批归一化可以施加于网络中任意一组激活值。这里我们聚焦于「仿射变换后接逐元素非线性」这一组合：</p>
+<div class="eq"><div class="body">z = <i>g</i>(<i>W</i>u + b)</div></div>
+<p>其中 <i>W</i> 与 b 是模型待学习的参数，<i>g</i>(·) 是 sigmoid 或 ReLU 之类的非线性。这一形式同时涵盖全连接层与卷积层。我们紧跟非线性之前加入 BN 变换，也就是对 x = <i>W</i>u + b 做归一化。我们本来也可以归一化层的输入 u，但 u 很可能是另一个非线性的输出，其分布形状在训练中很可能变化，仅仅约束它的一阶与二阶矩并不能消除协变量偏移。相比之下，<i>W</i>u + b 更可能具有对称、非稀疏、「更接近高斯」的分布（Hyvärinen &amp; Oja, 2000）；对它做归一化更可能产生分布稳定的激活值。</p>
+<p>注意，由于我们归一化的是 <i>W</i>u + b，偏置 b 可以忽略，因为它的作用会被随后的减均值抵消（偏置的角色由算法 1 中的 β 承担）。于是，z = <i>g</i>(<i>W</i>u + b) 被替换为</p>
+<div class="eq"><div class="body">z = <i>g</i>( BN(<i>W</i>u) )</div></div>
+<p>其中 BN 变换独立地施加于 x = <i>W</i>u 的每一维，每一维有各自的一对可学习参数 γ<sup>(k)</sup>、β<sup>(k)</sup>。</p>
+<p>对于卷积层，我们还希望归一化遵守卷积的性质——即同一特征图在不同位置上的不同元素，应以同样的方式被归一化。为此，我们对一个小批量内、所有位置上的全部激活值做联合归一化。在算法 1 中，我们令 ℬ 为一个特征图上、跨小批量各元素与各空间位置的全部取值集合——于是对于大小为 <i>m</i> 的小批量和 <i>p</i> × <i>q</i> 大小的特征图，我们使用有效小批量大小 <i>m</i>′ = |ℬ| = <i>m</i> · <i>pq</i>。我们为每个特征图（而不是每个激活值）学习一对参数 γ<sup>(k)</sup> 与 β<sup>(k)</sup>。算法 2 也做相应修改，使得推理时 BN 变换对给定特征图中的每个激活值施加同一个线性变换。</p>
+
+<h3 id="s33">3.3 批归一化让更高的学习率成为可能</h3>
+<p>在传统的深度网络中，学习率太高可能导致梯度爆炸或消失，也可能卡在糟糕的局部极小值。批归一化有助于解决这些问题。通过归一化整个网络中的激活值，它防止参数的微小变化在梯度中被放大成更大、次优的激活值变化；例如，它阻止训练卡在非线性的饱和区。</p>
+<p>批归一化还让训练对参数尺度更有韧性。通常，大学习率会增大层参数的尺度，后者在反向传播中又会放大梯度，导致模型爆炸。然而有了批归一化，通过某一层的反向传播不受其参数尺度的影响。事实上，对标量 a，</p>
+<div class="eq"><div class="body">BN(<i>W</i>u) = BN((<i>a</i><i>W</i>)u)</div></div>
+<p>并且可以证明</p>
+<div class="eq"><div class="body" style="text-align:left;line-height:2.2">
+∂BN((<i>a</i><i>W</i>)u) / ∂u = ∂BN(<i>W</i>u) / ∂u<br>
+∂BN((<i>a</i><i>W</i>)u) / ∂(<i>a</i><i>W</i>) = (1/<i>a</i>) · ∂BN(<i>W</i>u) / ∂<i>W</i>
+</div></div>
+<p>尺度既不影响该层的雅可比矩阵，也就不影响梯度的传播。而且，更大的权重会带来更小的梯度，批归一化会稳定参数的增长。</p>
+<p>我们进一步猜测，批归一化可能使各层的雅可比矩阵<span class="term" data-tip="singular values：矩阵的奇异值，刻画该线性变换在各方向上的缩放倍数；接近 1 意味着反向传播时梯度幅度基本不变">奇异值</span>接近 1，而这一点已知对训练有益（Saxe 等, 2013）。考虑两个相邻的、输入都经过归一化的层，以及这两个归一化向量之间的变换：ẑ = <i>F</i>(x̂)。假设 x̂ 与 ẑ 都是高斯且不相关，并且对于给定的模型参数，<i>F</i>(x̂) ≈ <i>J</i>x̂ 是线性变换，那么 x̂ 和 ẑ 都具有单位协方差，且 <i>I</i> = Cov[ẑ] = <i>J</i> Cov[x̂] <i>J</i><sup>T</sup> = <i>J J</i><sup>T</sup>。因此 <i>J J</i><sup>T</sup> = <i>I</i>，于是 <i>J</i> 的所有奇异值都等于 1，这就在反向传播中保持了梯度幅度。现实中该变换并非线性，归一化后的值也不保证是高斯或独立的，但我们仍然预期批归一化有助于让梯度传播行为更好。批归一化对梯度传播的确切影响仍有待进一步研究。</p>
+
+<h3 id="s34">3.4 批归一化对模型起正则化作用</h3>
+<p>使用批归一化训练时，一个训练样本是与其他样本一起在小批量中被看到的，训练网络对给定训练样本不再产出确定性的值。在我们的实验中，我们发现这一效应对网络的泛化有利。Dropout（Srivastava 等, 2014）通常用来减轻过拟合，而在批归一化网络中我们发现它要么可以去掉，要么可以减弱。</p>
+
+<h2 id="s4">4 实验</h2>
+<h3 id="s41">4.1 激活值随时间的演化</h3>
+<p>为了验证内部协变量偏移对训练的影响、以及批归一化对抗它的能力，我们考察 MNIST 数据集（LeCun 等, 1998a）上的数字分类问题。我们使用一个非常简单的网络：输入为 28×28 的二值图像，以及 3 个全连接隐藏层，每层 100 个激活值。每个隐藏层计算 y = <i>g</i>(<i>W</i>u + b)，非线性为 sigmoid，权重 <i>W</i> 初始化为很小的随机高斯值。最后一个隐藏层之后接一个 10 个激活值的全连接层（每类一个），损失为交叉熵。我们训练网络 50000 步，每个小批量 60 个样本。我们按 3.1 节的做法把批归一化加到每个隐藏层上。我们感兴趣的是基线与批归一化网络之间的对比，而不是在 MNIST 上达到最好性能（上述架构做不到这一点）。</p>
+<figure id="fig1"><img src="images/fig1.png" alt="Figure 1"><figcaption><span class="lab">图 1</span>(a) 使用与不使用批归一化的 MNIST 网络在训练步数上的测试准确率对比；批归一化帮助网络训练得更快、达到更高准确率。(b, c) 训练过程中，某个典型 sigmoid 的输入分布演化，以第 15、50、85 百分位表示。批归一化让分布更稳定，减少了内部协变量偏移。</figcaption></figure>
+<p>图 1(a) 显示了训练推进过程中两个网络在留出测试数据上的正确预测比例。批归一化网络享有更高的测试准确率。为了弄清原因，我们研究了原网络 <i>N</i> 与批归一化网络 <i>N</i><sup>tr</sup><sub>BN</sub>（算法 2）中 sigmoid 的输入在训练过程中的变化。图 1(b, c) 展示了每个网络最后一个隐藏层中一个典型激活值其分布的演化方式。原网络中的分布随时间显著变化，均值与方差都在变，这让后续层的训练变得复杂。相比之下，批归一化网络中的分布在训练推进过程中稳定得多，这有助于训练。</p>
+
+<h3 id="s42">4.2 ImageNet 分类</h3>
+<p>我们把批归一化应用到 Inception 网络（Szegedy 等, 2014）的一个新变体上，并在 ImageNet 分类任务（Russakovsky 等, 2014）上训练。该网络有大量的卷积层与池化层，最后是一个 softmax 层，在 1000 个可能类别中预测图像类别。卷积层使用 ReLU 作为非线性。与（Szegedy 等, 2014）中描述的网络相比，主要差别是：5×5 卷积层被替换为两个连续的 3×3 卷积层，滤波器数量最多 128 个。该网络包含 13.6 · 10<sup>6</sup> 个参数，除最上层的 softmax 之外没有全连接层。更多细节见附录。下文我们把该模型称为 Inception。模型使用带 momentum 的随机梯度下降（Sutskever 等, 2013）训练，小批量大小为 32。训练在一个大规模分布式架构（类似 Dean 等, 2012）上进行。所有网络都在训练推进过程中评估：在留出集上计算 validation accuracy @1，即每张图像用单个裁剪（single crop）时，在 1000 个可能类别中预测正确标签的概率。</p>
+<p>在我们的实验中，我们评估了 Inception 加上批归一化后的若干种修改方案。所有情形下，批归一化都按 3.2 节所述、以卷积的方式施加于每个非线性的输入，其余架构保持不变。</p>
+
+<h3 id="s421">4.2.1 加速 BN 网络</h3>
+<p>仅仅把批归一化加进网络，并不能充分利用我们的方法。为此我们进一步改动了网络及其训练参数，具体如下：</p>
+<p><b>提高学习率。</b>在批归一化模型中，我们能够从更高的学习率中获得训练加速，且没有不良副作用（3.3 节）。</p>
+<p><b>去掉 Dropout。</b>如 3.4 节所述，批归一化实现了与 Dropout 部分相同的目标。从 Modified BN-Inception 中去掉 Dropout 会加快训练，且不增加过拟合。</p>
+<p><b>减小 L<sub>2</sub> 权重正则。</b>在 Inception 中，模型参数上的 L<sub>2</sub> 损失控制着过拟合；而在 Modified BN-Inception 中，该损失的权重被减小为原来的 1/5。我们发现这提高了留出验证数据上的准确率。</p>
+<p><b>加快学习率衰减。</b>训练 Inception 时学习率按指数衰减。由于我们的网络训练得比 Inception 快，我们把学习率衰减速度提高 6 倍。</p>
+<p><b>去掉局部响应归一化（LRN）。</b>虽然 Inception 及其他网络（Srivastava 等, 2014）从中获益，但我们发现在有批归一化时并不需要它。</p>
+<p><b>更彻底地打乱训练样本。</b>我们启用了分片（shard）内部的训练数据打乱，避免同样的样本总是出现在同一个小批量里。这带来了约 1% 的验证准确率提升，与「把批归一化视为正则化」的观点一致（3.4 节）：我们方法内在的随机化，应该在一个样本每次被看到时都以不同方式影响它的时候最有益。</p>
+<p><b>减少光度畸变。</b>由于批归一化网络训练更快、每个训练样本被看到的次数更少，我们让训练器少做畸变，从而专注于更「真实」的图像。</p>
+<figure id="fig2"><img src="images/fig2.png" alt="Figure 2"><figcaption><span class="lab">图 2</span>Inception 及其批归一化变体的单裁剪验证准确率随训练步数的变化。</figcaption></figure>
+
+<h3 id="s422">4.2.2 单网络分类</h3>
+<p>我们评估了下列网络，全部在 LSVRC2012 训练数据上训练、并在验证数据上测试：</p>
+<ol>
+<li><b>Inception</b>：第 4.2 节开头描述的网络，用初始学习率 0.0015 训练。</li>
+<li><b>BN-Baseline</b>：与 Inception 相同，但在每个非线性之前加入批归一化。</li>
+<li><b>BN-x5</b>：Inception 加批归一化，并采用 4.2.1 节的修改。初始学习率提高 5 倍，达到 0.0075。对原版 Inception 做同样的学习率提高，会让模型参数达到机器无穷大。</li>
+<li><b>BN-x30</b>：同 BN-x5，但初始学习率为 0.045（是 Inception 的 30 倍）。</li>
+<li><b>BN-x5-Sigmoid</b>：同 BN-x5，但用 sigmoid 非线性 <i>g</i>(t) = 1/(1 + exp(−x)) 替代 ReLU。我们也尝试过用 sigmoid 训练原版 Inception，但模型始终停留在与随机猜测相当的准确率上。</li>
+</ol>
+<p>在图 2 中，我们展示了各网络的验证准确率随训练步数的变化。Inception 在 31 · 10<sup>6</sup> 个训练步后达到 72.2% 的准确率。图 3 给出了每个网络达到同样 72.2% 准确率所需的训练步数，以及该网络达到的最大验证准确率和达到它所需的步数。</p>
+<p>仅使用批归一化（BN-Baseline），我们就在不到一半的训练步数内达到 Inception 的准确率。通过应用 4.2.1 节的修改，我们显著提升了网络的训练速度。BN-x5 达到 72.2% 准确率所需的步数比 Inception 少 14 倍。有意思的是，把学习率进一步提高（BN-x30）会让模型一开始训练得稍慢，但能达到更高的最终准确率：它在 6 · 10<sup>6</sup> 步后达到 74.8%，也就是 Inception 达到 72.2% 所需步数的 1/5。</p>
+<p>我们还验证了：内部协变量偏移的减少，使得带批归一化的深度网络可以在使用 sigmoid 作为非线性时被训练，尽管这类网络以难训著称。事实上，BN-x5-Sigmoid 达到了 69.8% 的准确率。没有批归一化时，使用 sigmoid 的 Inception 从未超过 1/1000 的准确率。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:14px;margin:16px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 14px"><b>模型</b></td><td style="border:1px solid var(--line);padding:6px 14px"><b>达到 72.2% 所需步数</b></td><td style="border:1px solid var(--line);padding:6px 14px"><b>最大准确率</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">Inception</td><td style="border:1px solid var(--line);padding:6px 14px">31.0 · 10<sup>6</sup></td><td style="border:1px solid var(--line);padding:6px 14px">72.2%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">BN-Baseline</td><td style="border:1px solid var(--line);padding:6px 14px">13.3 · 10<sup>6</sup></td><td style="border:1px solid var(--line);padding:6px 14px">72.7%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">BN-x5</td><td style="border:1px solid var(--line);padding:6px 14px">2.1 · 10<sup>6</sup></td><td style="border:1px solid var(--line);padding:6px 14px">73.0%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">BN-x30</td><td style="border:1px solid var(--line);padding:6px 14px">2.7 · 10<sup>6</sup></td><td style="border:1px solid var(--line);padding:6px 14px">74.8%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">BN-x5-Sigmoid</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">69.8%</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">图 3　对 Inception 及各批归一化变体：达到 Inception 最大准确率（72.2%）所需的训练步数，以及网络达到的最大准确率。（原文为表格，此处保留表内数值。）</p>
+
+<h3 id="s423">4.2.3 集成分类</h3>
+<p>在 ImageNet 大规模视觉识别挑战赛上，当时公开报告的最好结果是传统模型的 Deep Image 集成（Wu 等, 2015）以及（He 等, 2015）的集成模型。后者报告 top-5 误差为 4.94%（由 ILSVRC 服务器评估）。这里我们报告 top-5 验证误差 4.9%、测试误差 4.82%（依据 ILSVRC 服务器）。这刷新了此前的最好结果，并超过了（Russakovsky 等, 2014）估计的人类标注者准确率。</p>
+<p>我们的集成使用了 6 个网络。每个都基于 BN-x30，并做了以下部分修改：增大卷积层的初始权重；使用 Dropout（Dropout 概率 5% 或 10%，而原版 Inception 是 40%）；以及在模型最后几个隐藏层使用非卷积的、逐激活值的批归一化。每个网络都在约 6 · 10<sup>6</sup> 个训练步后达到其最大准确率。集成预测基于各组成网络预测的类别概率的算术平均。集成与多裁剪推理的细节与（Szegedy 等, 2014）类似。</p>
+<p>我们在图 4 中表明，批归一化让我们在 ImageNet 分类挑战赛基准上以可观的幅度创下新的最好水平。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:14px;margin:16px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 14px"><b>模型</b></td><td style="border:1px solid var(--line);padding:6px 14px"><b>分辨率</b></td><td style="border:1px solid var(--line);padding:6px 14px"><b>裁剪数</b></td><td style="border:1px solid var(--line);padding:6px 14px"><b>模型数</b></td><td style="border:1px solid var(--line);padding:6px 14px"><b>Top-1 误差</b></td><td style="border:1px solid var(--line);padding:6px 14px"><b>Top-5 误差</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">GoogLeNet 集成</td><td style="border:1px solid var(--line);padding:6px 14px">224</td><td style="border:1px solid var(--line);padding:6px 14px">144</td><td style="border:1px solid var(--line);padding:6px 14px">7</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">6.67%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">Deep Image 低分辨率</td><td style="border:1px solid var(--line);padding:6px 14px">256</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">1</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">7.96%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">Deep Image 高分辨率</td><td style="border:1px solid var(--line);padding:6px 14px">512</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">1</td><td style="border:1px solid var(--line);padding:6px 14px">24.88</td><td style="border:1px solid var(--line);padding:6px 14px">7.42%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">Deep Image 集成</td><td style="border:1px solid var(--line);padding:6px 14px">可变</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">—</td><td style="border:1px solid var(--line);padding:6px 14px">5.98%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">BN-Inception 单裁剪</td><td style="border:1px solid var(--line);padding:6px 14px">224</td><td style="border:1px solid var(--line);padding:6px 14px">1</td><td style="border:1px solid var(--line);padding:6px 14px">1</td><td style="border:1px solid var(--line);padding:6px 14px">25.2%</td><td style="border:1px solid var(--line);padding:6px 14px">7.82%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">BN-Inception 多裁剪</td><td style="border:1px solid var(--line);padding:6px 14px">224</td><td style="border:1px solid var(--line);padding:6px 14px">144</td><td style="border:1px solid var(--line);padding:6px 14px">1</td><td style="border:1px solid var(--line);padding:6px 14px">21.99%</td><td style="border:1px solid var(--line);padding:6px 14px">5.82%</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">BN-Inception 集成</td><td style="border:1px solid var(--line);padding:6px 14px">224</td><td style="border:1px solid var(--line);padding:6px 14px">144</td><td style="border:1px solid var(--line);padding:6px 14px">6</td><td style="border:1px solid var(--line);padding:6px 14px">20.1%</td><td style="border:1px solid var(--line);padding:6px 14px">4.9%*</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">图 4　批归一化 Inception 与先前最好水平在所提供的 50000 张图像验证集上的比较。*BN-Inception 集成在 ImageNet 测试集（100000 张图像）上达到 4.82% 的 top-5 误差，由测试服务器报告。</p>
+
+<h2 id="s5">5 结论</h2>
+<p>我们提出了一种新颖的机制，能大幅加速深度网络的训练。它基于这样一个前提：协变量偏移——已知它会让机器学习系统的训练变复杂——同样适用于子网络与层，而把它从网络的内部激活值中移除可能有助于训练。我们提出的方法，其力量来自对激活值做归一化，并把这种归一化纳入网络架构本身。这就保证了无论用什么优化方法训练网络，归一化都会被恰当地处理。为了让深度网络训练中常用的随机优化方法可行，我们对每个小批量做归一化，并让梯度通过归一化参数反向传播。批归一化只为每个激活值增加两个参数，从而保留了网络的表示能力。我们给出了构造、训练与推理批归一化网络的算法。所得网络可以用饱和非线性训练，对更大的训练速率更宽容，并且往往不再需要 Dropout 来做正则化。</p>
+<p>仅仅把一个当时最好的图像分类模型加上批归一化，就能带来可观的训练加速。通过进一步提高学习率、去掉 Dropout 以及批归一化所允许的其他修改，我们只用一小部分训练步数就达到了先前的最好水平——随后在单网络图像分类上超过了它。进一步地，把多个用批归一化训练的模型组合起来，我们以显著幅度超过了 ImageNet 上已知最好的系统。</p>
+<p>有意思的是，我们的方法与（Gülçehre &amp; Bengio, 2013）的标准化层有相似之处，尽管两者出自非常不同的目标、执行不同的任务。批归一化的目标是在整个训练过程中获得稳定的激活值分布，在实验中我们把它施加在非线性之前，因为在那里匹配一阶与二阶矩更可能得到稳定的分布。相反，（Gülçehre &amp; Bengio, 2013）把标准化层施加在非线性的输出上，这会带来更稀疏的激活值。在我们的大规模图像分类实验中，我们没有观察到非线性的输入是稀疏的，无论有没有批归一化。批归一化其他值得注意的区别特征包括：可学习的缩放与平移，使 BN 变换能够表示恒等变换（标准化层不需要这一点，因为它后面跟着可学习的线性变换，概念上会吸收必要的缩放与平移）；对卷积层的处理方式；不依赖小批量的确定性推理；以及对网络中每一个卷积层都做批归一化。</p>
+<p>在这项工作中，我们尚未穷尽批归一化可能带来的全部可能性。我们的未来工作包括把方法应用到循环神经网络（Pascanu 等, 2013）上——在那里内部协变量偏移与梯度消失/爆炸可能格外严重，也能让我们更充分地检验「归一化改善梯度传播」这一假设（3.3 节）。我们计划研究批归一化能否在传统意义上帮助领域自适应，即网络所做的归一化是否能让它更容易泛化到新的数据分布上，也许只需重新计算总体均值与方差（算法 2）。最后，我们相信对该算法做进一步的理论分析会带来更多改进与应用。</p>
+
+<h2 id="sapp">附录：所用 Inception 模型的变体</h2>
+<p>图 5 记录了相对 GoogLeNet 架构所做的改动。关于这张表的解读，请参阅（Szegedy 等, 2014）。相对 GoogLeNet 模型值得注意的架构变化包括：</p>
+<ul>
+<li>5×5 卷积层被两个连续的 3×3 卷积层替代。这使网络的最大深度增加 9 个带权重的层，参数量增加 25%，计算代价增加约 30%。</li>
+<li>28×28 的 inception 模块数量从 2 增加到 3。</li>
+<li>模块内部有时使用平均池化、有时使用最大池化，这由表中与池化层相应的条目标示。</li>
+<li>任意两个 Inception 模块之间没有贯穿式的池化层，但在模块 3c、4e 中，滤波器拼接之前使用了步长为 2 的卷积/池化层。</li>
+<li>我们的模型在第一个卷积层上使用了深度乘数为 8 的可分离卷积（separable convolution）。这降低了计算代价，同时增加了训练时的内存占用。</li>
+</ul>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:16px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px">type</td>
+<td style="border:1px solid var(--line);padding:5px 10px">patch size/stride</td>
+<td style="border:1px solid var(--line);padding:5px 10px">output size</td>
+<td style="border:1px solid var(--line);padding:5px 10px">depth</td>
+<td style="border:1px solid var(--line);padding:5px 10px">#1×1</td>
+<td style="border:1px solid var(--line);padding:5px 10px">#3×3 reduce</td>
+<td style="border:1px solid var(--line);padding:5px 10px">#3×3</td>
+<td style="border:1px solid var(--line);padding:5px 10px">double #3×3 reduce</td>
+<td style="border:1px solid var(--line);padding:5px 10px">double #3×3</td>
+<td style="border:1px solid var(--line);padding:5px 10px">Pool +proj</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">convolution*</td><td style="border:1px solid var(--line);padding:5px 10px">7×7/2</td><td style="border:1px solid var(--line);padding:5px 10px">112×112×64</td><td style="border:1px solid var(--line);padding:5px 10px">1</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">max pool</td><td style="border:1px solid var(--line);padding:5px 10px">3×3/2</td><td style="border:1px solid var(--line);padding:5px 10px">56×56×64</td><td style="border:1px solid var(--line);padding:5px 10px">0</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">convolution</td><td style="border:1px solid var(--line);padding:5px 10px">3×3/1</td><td style="border:1px solid var(--line);padding:5px 10px">56×56×192</td><td style="border:1px solid var(--line);padding:5px 10px">1</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">max pool</td><td style="border:1px solid var(--line);padding:5px 10px">3×3/2</td><td style="border:1px solid var(--line);padding:5px 10px">28×28×192</td><td style="border:1px solid var(--line);padding:5px 10px">0</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (3a)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">28×28×256</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">avg + 32</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (3b)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">28×28×320</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">avg + 64</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (3c)</td><td style="border:1px solid var(--line);padding:5px 10px">stride 2</td><td style="border:1px solid var(--line);padding:5px 10px">28×28×576</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">0</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">160</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">max + pass through</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (4a)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">14×14×576</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">224</td><td style="border:1px solid var(--line);padding:5px 10px">64</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">avg + 128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (4b)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">14×14×576</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">avg + 128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (4c)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">14×14×576</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">160</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">160</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">160</td><td style="border:1px solid var(--line);padding:5px 10px">avg + 128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (4d)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">14×14×576</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">96</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">160</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">avg + 128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (4e)</td><td style="border:1px solid var(--line);padding:5px 10px">stride 2</td><td style="border:1px solid var(--line);padding:5px 10px">14×14×1024</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">0</td><td style="border:1px solid var(--line);padding:5px 10px">128</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">max + pass through</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (5a)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">7×7×1024</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">352</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">320</td><td style="border:1px solid var(--line);padding:5px 10px">160</td><td style="border:1px solid var(--line);padding:5px 10px">224</td><td style="border:1px solid var(--line);padding:5px 10px">avg + 128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">inception (5b)</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">7×7×1024</td><td style="border:1px solid var(--line);padding:5px 10px">3</td><td style="border:1px solid var(--line);padding:5px 10px">352</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">320</td><td style="border:1px solid var(--line);padding:5px 10px">192</td><td style="border:1px solid var(--line);padding:5px 10px">224</td><td style="border:1px solid var(--line);padding:5px 10px">max + 128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">avg pool</td><td style="border:1px solid var(--line);padding:5px 10px">7×7/1</td><td style="border:1px solid var(--line);padding:5px 10px">1×1×1024</td><td style="border:1px solid var(--line);padding:5px 10px">0</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">图 5　Inception 架构（原文为表格，此处保留表内结构以维持信息完整；表中数值未作改动。）</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按约定，参考文献条目保留英文原文，不作翻译（便于与原文及检索工具对照）。</p>
+<div class="refs"><ol>
+<li>Bengio, Yoshua and Glorot, Xavier. Understanding the difficulty of training deep feedforward neural networks. In Proceedings of AISTATS 2010, volume 9, pp. 249–256, May 2010.</li>
+<li>Dean, Jeffrey, Corrado, Greg S., Monga, Rajat, Chen, Kai, Devin, Matthieu, Le, Quoc V., Mao, Mark Z., Ranzato, Marc'Aurelio, Senior, Andrew, Tucker, Paul, Yang, Ke, and Ng, Andrew Y. Large scale distributed deep networks. In NIPS, 2012.</li>
+<li>Desjardins, Guillaume and Kavukcuoglu, Koray. Natural neural networks. (unpublished).</li>
+<li>Duchi, John, Hazan, Elad, and Singer, Yoram. Adaptive subgradient methods for online learning and stochastic optimization. J. Mach. Learn. Res., 12:2121–2159, July 2011. ISSN 1532-4435.</li>
+<li>Gülçehre, Çaglar and Bengio, Yoshua. Knowledge matters: Importance of prior information for optimization. CoRR, abs/1301.4083, 2013.</li>
+<li>He, K., Zhang, X., Ren, S., and Sun, J. Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification. ArXiv e-prints, February 2015.</li>
+<li>Hyvärinen, A. and Oja, E. Independent component analysis: Algorithms and applications. Neural Netw., 13(4-5):411–430, May 2000.</li>
+<li>Jiang, Jing. A literature survey on domain adaptation of statistical classifiers, 2008.</li>
+<li>LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P. Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11):2278–2324, November 1998a.</li>
+<li>LeCun, Y., Bottou, L., Orr, G., and Muller, K. Efficient backprop. In Orr, G. and K., Muller (eds.), Neural Networks: Tricks of the trade. Springer, 1998b.</li>
+<li>Lyu, S and Simoncelli, E P. Nonlinear image representation using divisive normalization. In Proc. Computer Vision and Pattern Recognition, pp. 1–8. IEEE Computer Society, Jun 23-28 2008. doi: 10.1109/CVPR.2008.4587821.</li>
+<li>Nair, Vinod and Hinton, Geoffrey E. Rectified linear units improve restricted boltzmann machines. In ICML, pp. 807–814. Omnipress, 2010.</li>
+<li>Pascanu, Razvan, Mikolov, Tomas, and Bengio, Yoshua. On the difficulty of training recurrent neural networks. In Proceedings of the 30th International Conference on Machine Learning, ICML 2013, Atlanta, GA, USA, 16-21 June 2013, pp. 1310–1318, 2013.</li>
+<li>Povey, Daniel, Zhang, Xiaohui, and Khudanpur, Sanjeev. Parallel training of deep neural networks with natural gradient and parameter averaging. CoRR, abs/1410.7455, 2014.</li>
+<li>Raiko, Tapani, Valpola, Harri, and LeCun, Yann. Deep learning made easier by linear transformations in perceptrons. In International Conference on Artificial Intelligence and Statistics (AISTATS), pp. 924–932, 2012.</li>
+<li>Russakovsky, Olga, Deng, Jia, Su, Hao, Krause, Jonathan, Satheesh, Sanjeev, Ma, Sean, Huang, Zhiheng, Karpathy, Andrej, Khosla, Aditya, Bernstein, Michael, Berg, Alexander C., and Fei-Fei, Li. ImageNet Large Scale Visual Recognition Challenge, 2014.</li>
+<li>Saxe, Andrew M., McClelland, James L., and Ganguli, Surya. Exact solutions to the nonlinear dynamics of learning in deep linear neural networks. CoRR, abs/1312.6120, 2013.</li>
+<li>Shimodaira, Hidetoshi. Improving predictive inference under covariate shift by weighting the log-likelihood function. Journal of Statistical Planning and Inference, 90(2):227–244, October 2000.</li>
+<li>Srivastava, Nitish, Hinton, Geoffrey, Krizhevsky, Alex, Sutskever, Ilya, and Salakhutdinov, Ruslan. Dropout: A simple way to prevent neural networks from overfitting. J. Mach. Learn. Res., 15(1):1929–1958, January 2014.</li>
+<li>Sutskever, Ilya, Martens, James, Dahl, George E., and Hinton, Geoffrey E. On the importance of initialization and momentum in deep learning. In ICML (3), volume 28 of JMLR Proceedings, pp. 1139–1147. JMLR.org, 2013.</li>
+<li>Szegedy, Christian, Liu, Wei, Jia, Yangqing, Sermanet, Pierre, Reed, Scott, Anguelov, Dragomir, Erhan, Dumitru, Vanhoucke, Vincent, and Rabinovich, Andrew. Going deeper with convolutions. CoRR, abs/1409.4842, 2014.</li>
+<li>Wiesler, Simon and Ney, Hermann. A convergence analysis of log-linear training. In Shawe-Taylor, J., Zemel, R.S., Bartlett, P., Pereira, F.C.N., and Weinberger, K.Q. (eds.), Advances in Neural Information Processing Systems 24, pp. 657–665, Granada, Spain, December 2011.</li>
+<li>Wiesler, Simon, Richard, Alexander, Schlüter, Ralf, and Ney, Hermann. Mean-normalized stochastic gradient for large-scale deep learning. In IEEE International Conference on Acoustics, Speech, and Signal Processing, pp. 180–184, Florence, Italy, May 2014.</li>
+<li>Wu, Ren, Yan, Shengen, Shan, Yi, Dang, Qingqing, and Sun, Gang. Deep image: Scaling up image recognition, 2015.</li>
+</ol></div>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　(a) 有无批归一化的 MNIST 网络测试准确率；(b, c) sigmoid 输入分布随训练的演化</li>
+<li><a href="#fig2">图 2</a>　Inception 及其批归一化变体的单裁剪验证准确率</li>
+</ol>
+<p style="margin-top:10px">原文中的图 3、图 4、图 5 实为表格，已按其内容直接排入正文 4.2.2、4.2.3 节与附录。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

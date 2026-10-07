@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一张图等于 16×16 个词：面向大规模图像识别的 Transformer · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">一张图等于 16×16 个词：面向大规模图像识别的 Transformer</span><span>Dosovitskiy 等，2021 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 相关工作</a>
+<a href="#s3">3 方法</a>
+<a class="sub" href="#s31">3.1 视觉 Transformer（ViT）</a>
+<a class="sub" href="#s32">3.2 微调与更高分辨率</a>
+<a href="#s4">4 实验</a>
+<a class="sub" href="#s41">4.1 实验设置</a>
+<a class="sub" href="#s42">4.2 与当时最好水平的比较</a>
+<a class="sub" href="#s43">4.3 预训练数据的需求</a>
+<a class="sub" href="#s44">4.4 规模研究</a>
+<a class="sub" href="#s45">4.5 检视 Vision Transformer</a>
+<a class="sub" href="#s46">4.6 自监督</a>
+<a href="#s5">5 结论</a>
+<hr>
+<a href="#refs">参考文献</a>
+<a href="#appx">附录</a>
+<a href="#appa">A 多头自注意力</a>
+<a href="#appb">B 实验细节</a>
+<a class="sub" href="#appb1">B.1 训练</a>
+<a class="sub" href="#appb11">B.1.1 微调</a>
+<a class="sub" href="#appb12">B.1.2 自监督</a>
+<a href="#appc">C 补充结果</a>
+<a href="#appd">D 补充分析</a>
+<a class="sub" href="#appd1">D.1 ResNet 上 SGD 与 Adam 的对比</a>
+<a class="sub" href="#appd2">D.2 Transformer 的形状</a>
+<a class="sub" href="#appd3">D.3 头的类型与 class token</a>
+<a class="sub" href="#appd4">D.4 位置嵌入</a>
+<a class="sub" href="#appd5">D.5 实际计算成本</a>
+<a class="sub" href="#appd6">D.6 轴向注意力</a>
+<a class="sub" href="#appd7">D.7 注意力距离</a>
+<a class="sub" href="#appd8">D.8 注意力图</a>
+<a class="sub" href="#appd9">D.9 ObjectNet 结果</a>
+<a class="sub" href="#appd10">D.10 VTAB 分解</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 一张图等于 16×16 个词：面向大规模图像识别的 Transformer | Dosovitskiy 等，2021 · 中文翻译-->
+<h1 class="doc">一张图等于 16×16 个词：面向大规模图像识别的 Transformer<span class="en">An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale</span></h1>
+<p class="meta">Alexey Dosovitskiy<sup>∗,†</sup> · Lucas Beyer<sup>∗</sup> · Alexander Kolesnikov<sup>∗</sup> · Dirk Weissenborn<sup>∗</sup> · Xiaohua Zhai<sup>∗</sup> · Thomas Unterthiner · Mostafa Dehghani · Matthias Minderer · Georg Heigold · Sylvain Gelly · Jakob Uszkoreit · Neil Houlsby<sup>∗,†</sup><br>
+<span style="font-size:12.5px">Google Research, Brain Team&nbsp;&nbsp;|&nbsp;&nbsp;<sup>∗</sup> 同等技术贡献 &nbsp;<sup>†</sup> 同等指导</span><br>
+arXiv:2010.11929v2 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>尽管 Transformer 架构已成为自然语言处理任务事实上的标准，它在计算机视觉中的应用仍然有限。在视觉领域，注意力要么与卷积网络结合使用，要么被用来替换卷积网络的某些组件，同时保留其整体结构。我们表明，这种对 CNN 的依赖并非必要：一个直接应用于图像块序列的纯 <span class="term" data-tip="Transformer：完全由多头自注意力与前馈网络堆叠而成的架构">Transformer</span> 就能在图像分类任务上表现很好。当在大量数据上预训练并迁移到多个中等或小规模图像识别基准（ImageNet、CIFAR-100、VTAB 等）时，<span class="term" data-tip="Vision Transformer（ViT）：把图像切成块、当作 token 序列处理的标准 Transformer">Vision Transformer</span>（ViT）与当时最好的卷积网络相比取得出色结果，而训练所需的计算资源显著更少<span class="tn" data-tip="译者注：原文脚注 1，见页末">1</span>。</p>
+</div>
+<p class="hint">正文、图表与参考文献均来自源 PDF 解析结果。专业术语、模型名、数据集名与人名按要求保留原文；术语上的金色虚线表示可悬停（触屏可点按）查看中文解释。参考文献整节保留英文原文不译。</p>
+<div class="fn">
+<p><sup>1</sup> 微调代码与预训练模型见 https://github.com/google-research/vision_transformer</p>
+</div>
+
+<h2 id="s1">1 引言</h2>
+<p>基于自注意力的架构，特别是 Transformer (Vaswani et al., 2017)，已成为自然语言处理（NLP）中的首选模型。主导做法是在大规模文本语料上预训练，再在较小的任务特定数据集上微调 (Devlin et al., 2019)。得益于 Transformer 的计算效率与可扩展性，训练参数量超过 1000 亿的、前所未有的巨大模型已成为可能 (Brown et al., 2020; Lepikhin et al., 2020)。随着模型与数据集不断增大，性能仍没有饱和的迹象。</p>
+<p>然而在计算机视觉中，卷积架构仍然占主导地位 (LeCun et al., 1989; Krizhevsky et al., 2012; He et al., 2016)。受 NLP 成功的启发，多项工作尝试把类 CNN 架构与自注意力结合 (Wang et al., 2018; Carion et al., 2020)，有些则完全替换卷积 (Ramachandran et al., 2019; Wang et al., 2020a)。后一类模型虽然理论上高效，但由于使用了特殊的注意力模式，尚未能在现代硬件加速器上有效扩展。因此在大规模图像识别中，经典的类 ResNet 架构仍是当时最好的方法 (Mahajan et al., 2018; Xie et al., 2020; Kolesnikov et al., 2020)。</p>
+<p>受 Transformer 在 NLP 中扩展成功的启发，我们尝试以尽可能少的修改，把标准 Transformer 直接应用于图像。为此，我们把图像切分成<span class="term" data-tip="patch：把图像划分成的小方块（如 16×16 像素），每个块被当作一个「词」">块</span>（patch），并把这些块的线性嵌入序列作为 Transformer 的输入。图像块的处理方式与 NLP 应用中的 token（词）完全相同。我们把模型以有监督方式训练在图像分类任务上。</p>
+<p>当在 ImageNet 这样的中等规模数据集上、不使用强正则化训练时，这些模型只取得比同规模 ResNet 低几个百分点的中等准确率。这一看似令人沮丧的结果或许在意料之中：Transformer 缺少 CNN 固有的一些<span class="term" data-tip="inductive bias：模型结构里预先假定的规律性（如局部性、平移等变性），能在数据少时帮助学习">归纳偏置</span>，例如平移等变性与局部性，因此在数据量不足时泛化不好。</p>
+<p>然而，如果模型在更大的数据集（1400 万～3 亿图像）上训练，情况就不同了。我们发现<b>大规模训练胜过归纳偏置</b>。我们的 Vision Transformer（ViT）在足够大的规模上预训练、再迁移到数据点较少的任务时取得了出色结果。当在公开的 ImageNet-21k 数据集或内部的 JFT-300M 数据集上预训练后，ViT 在多个图像识别基准上接近或超过了当时最好水平。特别地，最好的模型在 ImageNet 上达到 88.55% 的准确率，在 ImageNet-ReaL 上达到 90.72%，在 CIFAR-100 上达到 94.55%，在包含 19 个任务的 VTAB 套件上达到 77.63%。</p>
+
+<h2 id="s2">2 相关工作</h2>
+<p>Transformer 由 Vaswani et al. (2017) 为机器翻译提出，此后已成为许多 NLP 任务中最好的方法。基于 Transformer 的大型模型通常先在大规模语料上预训练，再针对手头任务微调：BERT (Devlin et al., 2019) 使用去噪自监督预训练任务，而 GPT 系列工作使用语言建模作为预训练任务 (Radford et al., 2018; 2019; Brown et al., 2020)。</p>
+<p>把自注意力朴素地应用于图像，会要求每个像素关注其他所有像素。由于代价随像素数<b>二次</b>增长，这无法扩展到真实的输入尺寸。因此，为了在图像处理中使用 Transformer，过去尝试过若干近似方法。Parmar et al. (2018) 只对每个查询像素的局部邻域而非全局施加自注意力。这类局部多头点积自注意力模块可以完全替换卷积 (Hu et al., 2019; Ramachandran et al., 2019; Zhao et al., 2020)。在另一条路线上，Sparse Transformers (Child et al., 2019) 采用可扩展的全局自注意力近似，以便适用于图像。扩展注意力的另一种方式是把它施加在大小不同的块上 (Weissenborn et al., 2019)，在极端情况下只沿单个轴施加 (Ho et al., 2019; Wang et al., 2020a)。这些专门的注意力架构中有许多在计算机视觉任务上显示出有希望的结果，但要在硬件加速器上高效实现需要复杂的工程。</p>
+<p>与我们最相关的是 Cordonnier et al. (2020) 的模型，它从输入图像中提取 2×2 大小的块并在其上施加完全自注意力。该模型与 ViT 非常相似，但我们的工作更进一步，表明大规模预训练能让普通 Transformer 与当时最好的 CNN 竞争（甚至更好）。此外，Cordonnier et al. (2020) 使用 2×2 像素的小块，使模型只适用于小分辨率图像，而我们也能处理中等分辨率图像。</p>
+<p>把卷积神经网络（CNN）与各种形式的自注意力结合也引起了很多兴趣，例如为图像分类增强特征图 (Bello et al., 2019)，或用自注意力进一步处理 CNN 的输出，例如用于目标检测 (Hu et al., 2018; Carion et al., 2020)、视频处理 (Wang et al., 2018; Sun et al., 2019)、图像分类 (Wu et al., 2020)、无监督目标发现 (Locatello et al., 2020) 或统一的文本—视觉任务 (Chen et al., 2020c; Lu et al., 2019; Li et al., 2019)。</p>
+<p>另一个近期相关模型是 image GPT（iGPT）(Chen et al., 2020a)，它在降低图像分辨率与颜色空间之后把 Transformer 应用于图像像素。该模型以无监督方式作为生成模型训练，得到的表示之后可以微调或线性探测以评估分类性能，在 ImageNet 上达到最高 72% 的准确率。</p>
+<p>我们的工作加入了越来越多在比标准 ImageNet 更大规模上探索图像识别的论文之列。使用额外数据源可以在标准基准上达到当时最好的结果 (Mahajan et al., 2018; Touvron et al., 2019; Xie et al., 2020)。此外，Sun et al. (2017) 研究了 CNN 性能如何随数据集规模扩展，Kolesnikov et al. (2020)、Djolonga et al. (2020) 对从 ImageNet-21k 与 JFT-300M 等大规模数据集进行的 CNN 迁移学习做了经验性探索。我们也聚焦于后两个数据集，但训练的是 Transformer，而不是先前工作使用的基于 ResNet 的模型。</p>
+
+<figure id="fig1"><img src="images/fig1.png" alt="Model overview">
+<figcaption><span class="lab">图 1</span>模型概览。我们把图像切分成固定大小的块，对每个块做线性嵌入，加上位置嵌入，并把得到的向量序列送入标准 Transformer 编码器。为进行分类，我们采用标准做法：在序列中加入一个额外的可学习「分类 token」。Transformer 编码器的图示受 Vaswani et al. (2017) 启发。</figcaption></figure>
+
+<h2 id="s3">3 方法</h2>
+<p>在模型设计上，我们尽可能贴近原始 Transformer (Vaswani et al., 2017)。这种有意简单的设定有一个好处：可扩展的 NLP Transformer 架构及其高效实现几乎可以直接拿来用。</p>
+
+<h3 id="s31">3.1 视觉 Transformer（ViT）</h3>
+<p>模型概览见图 1。标准 Transformer 接收一个一维的 token 嵌入序列作为输入。为处理二维图像，我们把图像 <b>x</b> ∈ ℝ<sup>H×W×C</sup> 重塑为一系列展平的二维块 <b>x</b><sub>p</sub> ∈ ℝ<sup>N×(P²·C)</sup>，其中 (<i>H</i>, <i>W</i>) 是原始图像的分辨率，<i>C</i> 是通道数，(<i>P</i>, <i>P</i>) 是每个图像块的分辨率，<i>N</i> = <i>HW</i>/<i>P</i>² 是得到的块数，它同时也是 Transformer 的有效输入序列长度。Transformer 在所有层中使用恒定的隐向量维度 <i>D</i>，因此我们把块展平并用一个可训练的线性投影映射到 <i>D</i> 维（式 1）。我们把这一投影的输出称为<span class="term" data-tip="patch embedding：把每个图像块展平后经线性层映射成的 D 维向量">块嵌入</span>（patch embedding）。</p>
+<p>与 BERT 的 [class] token 类似，我们在嵌入块序列前面加一个可学习的嵌入（<b>z</b><sub>0</sub><sup>0</sup> = <b>x</b><sub>class</sub>），它在 Transformer 编码器输出端的状态（<b>z</b><sub>L</sub><sup>0</sup>）用作图像表示 <b>y</b>（式 4）。在预训练与微调期间，都在 <b>z</b><sub>L</sub><sup>0</sup> 上接一个分类头。分类头在预训练时是一个带一个隐藏层的 MLP，微调时是单个线性层。</p>
+<p>位置嵌入被加到块嵌入上以保留位置信息。我们使用标准的可学习一维位置嵌入，因为没有观察到使用更先进的二维感知位置嵌入带来显著性能提升（附录 D.4）。得到的嵌入向量序列作为编码器的输入。</p>
+<p>Transformer 编码器 (Vaswani et al., 2017) 由多头自注意力（MSA，见附录 A）与 MLP 块交替组成（式 2、3）。每个块之前施加 LayerNorm（LN），每个块之后施加残差连接 (Wang et al., 2019; Baevski &amp; Auli, 2019)。</p>
+<p>MLP 包含两层，中间是 GELU 非线性。</p>
+
+<div class="eq"><div class="body"><b>z</b><sub>0</sub> = [ <b>x</b><sub>class</sub>; <b>x</b><sub>p</sub><sup>1</sup><b>E</b>; <b>x</b><sub>p</sub><sup>2</sup><b>E</b>; … ; <b>x</b><sub>p</sub><sup>N</sup><b>E</b> ] + <b>E</b><sub>pos</sub>,&nbsp;&nbsp;&nbsp;<b>E</b> ∈ ℝ<sup>(P²·C)×D</sup>, <b>E</b><sub>pos</sub> ∈ ℝ<sup>(N+1)×D</sup></div><div class="no">(1)</div></div>
+<div class="eq"><div class="body"><b>z</b>′<sub>ℓ</sub> = MSA( LN( <b>z</b><sub>ℓ−1</sub> ) ) + <b>z</b><sub>ℓ−1</sub>,&nbsp;&nbsp;&nbsp;ℓ = 1…L</div><div class="no">(2)</div></div>
+<div class="eq"><div class="body"><b>z</b><sub>ℓ</sub> = MLP( LN( <b>z</b>′<sub>ℓ</sub> ) ) + <b>z</b>′<sub>ℓ</sub>,&nbsp;&nbsp;&nbsp;ℓ = 1…L</div><div class="no">(3)</div></div>
+<div class="eq"><div class="body"><b>y</b> = LN( <b>z</b><sub>L</sub><sup>0</sup> )</div><div class="no">(4)</div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">公式变量说明：<br>
+<b>式 (1)</b>　<b>x</b><sub>class</sub> 是额外加入的可学习分类 token 向量；<b>x</b><sub>p</sub><sup>i</sup> 是第 i 个图像块展平后的向量；<b>E</b> 是块嵌入的线性投影矩阵（把 P²·C 维映射到 D 维）；<b>E</b><sub>pos</sub> 是可学习的位置嵌入矩阵；<b>z</b><sub>0</sub> 是送入编码器的输入序列（长度 N+1）。<br>
+<b>式 (2)(3)</b>　<b>LN</b> 为层归一化；<b>MSA</b> 为多头自注意力；<b>MLP</b> 为两层前馈网络；两式中的加法都是残差连接；<b>ℓ</b> 为层下标，共 L 层；<b>z</b>′<sub>ℓ</sub> 是该层注意力子层的输出。<br>
+<b>式 (4)</b>　取第 L 层输出中对应 [class] token 的那个向量（上标 0 表示序列首位），经 LayerNorm 后得到图像表示 <b>y</b>。</p>
+
+<p><b>归纳偏置（Inductive bias）。</b>　我们注意到 Vision Transformer 的图像特定归纳偏置远少于 CNN。在 CNN 中，局部性、二维邻域结构与平移等变性在整模型每一层都被内置。在 ViT 中，只有 MLP 层是局部的、平移等变的，而自注意力层是全局的。二维邻域结构被非常节制地使用：在模型开头把图像切分成块，以及在微调时为适应不同分辨率的图像而调整位置嵌入（见下文）。除此之外，初始化时的位置嵌入不携带任何关于块二维位置的信息，块之间的所有空间关系都必须从零学习。</p>
+<p><b>混合架构（Hybrid Architecture）。</b>　作为原始图像块的替代，输入序列也可以由 CNN 的特征图构成 (LeCun et al., 1989)。在这种混合模型中，块嵌入投影 <b>E</b>（式 1）施加于从 CNN 特征图中提取的块上。作为一个特例，块的空间尺寸可以为 1×1，这意味着输入序列就是简单地把特征图的空间维度展平并投影到 Transformer 维度。分类输入嵌入与位置嵌入的加法如前述。</p>
+
+<h3 id="s32">3.2 微调与更高分辨率</h3>
+<p>通常我们在大数据集上预训练 ViT，再微调到（更小的）下游任务。为此，我们去掉预训练的预测头，接上一个零初始化的 <i>D</i>×<i>K</i> 前馈层，其中 <i>K</i> 是下游类别数。以比预训练更高的分辨率微调往往有益 (Touvron et al., 2019; Kolesnikov et al., 2020)。当输入更高分辨率的图像时，我们保持块大小不变，这会导致有效序列长度变长。Vision Transformer 能处理任意序列长度（受内存限制），但预训练的位置嵌入可能不再有意义。因此我们根据位置嵌入在原图中的位置做二维插值。注意，这种分辨率调整与块提取，是唯一把关于图像二维结构的归纳偏置手动注入 Vision Transformer 的地方。</p>
+
+<h2 id="s4">4 实验</h2>
+<p>我们评估 ResNet、Vision Transformer（ViT）以及混合模型的表示学习能力。为理解每个模型的数据需求，我们在不同规模的数据集上预训练，并评估许多基准任务。在考虑预训练的计算成本时，ViT 表现得非常有利：以更低的预训练成本，在大多数识别基准上达到当时最好水平。最后我们做了一个使用自监督的小实验，表明自监督 ViT 在未来有前景。</p>
+
+<h3 id="s41">4.1 实验设置</h3>
+<p><b>数据集。</b>　为探索模型可扩展性，我们使用 ILSVRC-2012 ImageNet 数据集（1000 类、130 万图像，下文简称 ImageNet）、它的超集 ImageNet-21k（21k 类、1400 万图像）(Deng et al., 2009)，以及 JFT（18k 类、3.03 亿高分辨率图像）(Sun et al., 2017)。我们按 Kolesnikov et al. (2020) 的做法，针对下游任务的测试集对预训练数据集去重。我们把在这些数据集上训练的模型迁移到若干基准任务：ImageNet（使用原始验证标签与清洗后的 ReaL 标签 (Beyer et al., 2020)）、CIFAR-10/100 (Krizhevsky, 2009)、Oxford-IIIT Pets (Parkhi et al., 2012) 与 Oxford Flowers-102 (Nilsback &amp; Zisserman, 2008)。对这些数据集，预处理沿用 Kolesnikov et al. (2020)。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>模型</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>层数</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>隐藏大小 D</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>MLP 大小</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>头数</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>参数量</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ViT-Base</td><td style="border:1px solid var(--line);padding:5px 10px">12</td><td style="border:1px solid var(--line);padding:5px 10px">768</td><td style="border:1px solid var(--line);padding:5px 10px">3072</td><td style="border:1px solid var(--line);padding:5px 10px">12</td><td style="border:1px solid var(--line);padding:5px 10px">86M</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ViT-Large</td><td style="border:1px solid var(--line);padding:5px 10px">24</td><td style="border:1px solid var(--line);padding:5px 10px">1024</td><td style="border:1px solid var(--line);padding:5px 10px">4096</td><td style="border:1px solid var(--line);padding:5px 10px">16</td><td style="border:1px solid var(--line);padding:5px 10px">307M</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ViT-Huge</td><td style="border:1px solid var(--line);padding:5px 10px">32</td><td style="border:1px solid var(--line);padding:5px 10px">1280</td><td style="border:1px solid var(--line);padding:5px 10px">5120</td><td style="border:1px solid var(--line);padding:5px 10px">16</td><td style="border:1px solid var(--line);padding:5px 10px">632M</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 1　Vision Transformer 模型变体的细节。</p>
+
+<p>我们也在 19 任务的 VTAB 分类套件上评估 (Zhai et al., 2019b)。VTAB 评估到多样任务的低数据迁移，每个任务使用 1000 个训练样例。任务分为三组：Natural（自然）——如上述 Pets、CIFAR 等任务；Specialized（专门）——医学与卫星图像；Structured（结构化）——需要几何理解的任务，如定位。</p>
+<p><b>模型变体。</b>　ViT 的配置以 BERT (Devlin et al., 2019) 所用配置为基础，汇总于表 1。「Base」与「Large」模型直接取自 BERT，并新增更大的「Huge」模型。下文用简短记号表示模型规模与输入块大小：例如 ViT-L/16 表示「Large」变体、输入块大小为 16×16。注意 Transformer 的序列长度与块大小的平方成反比，因此块更小的模型计算上更昂贵。</p>
+<p>作为基线 CNN，我们使用 ResNet (He et al., 2016)，但把批归一化层 (Ioffe &amp; Szegedy, 2015) 替换为组归一化 (Wu &amp; He, 2018)，并使用标准化卷积 (Qiao et al., 2019)。这些修改改善了迁移 (Kolesnikov et al., 2020)，我们把修改后的模型记为「ResNet (BiT)」。对混合模型，我们把中间特征图以 1 个「像素」的块大小送入 ViT。为试验不同序列长度，我们或 (i) 取常规 ResNet50 第 4 阶段的输出，或 (ii) 去掉第 4 阶段、在第 3 阶段放入相同层数（保持总层数不变），并取这一扩展后的第 3 阶段输出。方案 (ii) 得到 4 倍长的序列长度，以及更昂贵的 ViT 模型。</p>
+<p><b>训练与微调。</b>　我们训练所有模型（包括 ResNet）时使用 Adam (Kingma &amp; Ba, 2015)，β<sub>1</sub> = 0.9、β<sub>2</sub> = 0.999，批量大小 4096，并施加 0.1 的高权重衰减——我们发现这对所有模型的迁移都有用（附录 D.1 表明，与常见做法不同，在我们的设定中 Adam 对 ResNet 略优于 SGD）。我们使用线性学习率预热与衰减，细节见附录 B.1。微调时我们对所有模型使用带动量的 SGD，批量大小 512，见附录 B.1.1。对表 2 的 ImageNet 结果，我们在更高分辨率上微调：ViT-L/16 用 512，ViT-H/14 用 518，并使用 Polyak &amp; Juditsky (1992) 系数 0.9999 的平均 (Ramachandran et al., 2019; Wang et al., 2020b)。</p>
+<p><b>评价指标。</b>　我们以少样本或微调准确率报告在下游数据集上的结果。微调准确率反映各模型在相应数据集上微调后的性能。少样本准确率通过求解一个正则化最小二乘回归问题得到：把训练图像子集的（冻结）表示映射到 {−1, 1}<sup>K</sup> 目标向量。这一形式让我们能以闭式解精确求解。虽然我们主要关注微调性能，有时也会用线性少样本准确率做快速即时评估，因为微调太昂贵。</p>
+
+<h3 id="s42">4.2 与当时最好水平的比较</h3>
+<p>我们首先把最大的模型 ViT-H/14 与 ViT-L/16 同文献中当时最好的 CNN 比较。第一个比较对象是 Big Transfer（BiT）(Kolesnikov et al., 2020)，它用大型 ResNet 做有监督迁移学习。第二个是 Noisy Student (Xie et al., 2020)，它是在 ImageNet 与去掉标签的 JFT-300M 上做半监督训练的大型 EfficientNet。当时 Noisy Student 是 ImageNet 上最好的方法，BiT-L 在本文报告的其他数据集上最好。所有模型都在 TPUv3 硬件上训练，我们报告预训练每个模型所用的 TPUv3-core-days 数，即训练所用 TPU v3 核数（每芯片 2 核）乘以训练天数。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 8px"></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>本文-JFT<br>(ViT-H/14)</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>本文-JFT<br>(ViT-L/16)</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>本文-I21k<br>(ViT-L/16)</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>BiT-L<br>(ResNet152x4)</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>Noisy Student<br>(EfficientNet-L2)</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet</td><td style="border:1px solid var(--line);padding:5px 8px">88.55 ± 0.04</td><td style="border:1px solid var(--line);padding:5px 8px">87.76 ± 0.03</td><td style="border:1px solid var(--line);padding:5px 8px">85.30 ± 0.02</td><td style="border:1px solid var(--line);padding:5px 8px">87.54 ± 0.02</td><td style="border:1px solid var(--line);padding:5px 8px">88.4/88.5<sup>∗</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet Real</td><td style="border:1px solid var(--line);padding:5px 8px">90.72 ± 0.05</td><td style="border:1px solid var(--line);padding:5px 8px">90.54 ± 0.03</td><td style="border:1px solid var(--line);padding:5px 8px">88.62 ± 0.05</td><td style="border:1px solid var(--line);padding:5px 8px">90.54</td><td style="border:1px solid var(--line);padding:5px 8px">90.55</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-10</td><td style="border:1px solid var(--line);padding:5px 8px">99.50 ± 0.06</td><td style="border:1px solid var(--line);padding:5px 8px">99.42 ± 0.03</td><td style="border:1px solid var(--line);padding:5px 8px">99.15 ± 0.03</td><td style="border:1px solid var(--line);padding:5px 8px">99.37 ± 0.06</td><td style="border:1px solid var(--line);padding:5px 8px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-100</td><td style="border:1px solid var(--line);padding:5px 8px">94.55 ± 0.04</td><td style="border:1px solid var(--line);padding:5px 8px">93.90 ± 0.05</td><td style="border:1px solid var(--line);padding:5px 8px">93.25 ± 0.05</td><td style="border:1px solid var(--line);padding:5px 8px">93.51 ± 0.08</td><td style="border:1px solid var(--line);padding:5px 8px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford-IIIT Pets</td><td style="border:1px solid var(--line);padding:5px 8px">97.56 ± 0.03</td><td style="border:1px solid var(--line);padding:5px 8px">97.32 ± 0.11</td><td style="border:1px solid var(--line);padding:5px 8px">94.67 ± 0.15</td><td style="border:1px solid var(--line);padding:5px 8px">96.62 ± 0.23</td><td style="border:1px solid var(--line);padding:5px 8px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford Flowers-102</td><td style="border:1px solid var(--line);padding:5px 8px">99.68 ± 0.02</td><td style="border:1px solid var(--line);padding:5px 8px">99.74 ± 0.00</td><td style="border:1px solid var(--line);padding:5px 8px">99.61 ± 0.02</td><td style="border:1px solid var(--line);padding:5px 8px">99.63 ± 0.03</td><td style="border:1px solid var(--line);padding:5px 8px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">VTAB（19 任务）</td><td style="border:1px solid var(--line);padding:5px 8px">77.63 ± 0.23</td><td style="border:1px solid var(--line);padding:5px 8px">76.28 ± 0.46</td><td style="border:1px solid var(--line);padding:5px 8px">72.72 ± 0.21</td><td style="border:1px solid var(--line);padding:5px 8px">76.29 ± 1.70</td><td style="border:1px solid var(--line);padding:5px 8px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">TPUv3-core-days</td><td style="border:1px solid var(--line);padding:5px 8px">2.5k</td><td style="border:1px solid var(--line);padding:5px 8px">0.68k</td><td style="border:1px solid var(--line);padding:5px 8px">0.23k</td><td style="border:1px solid var(--line);padding:5px 8px">9.9k</td><td style="border:1px solid var(--line);padding:5px 8px">12.3k</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 2　在流行的图像分类基准上与当时最好水平的比较。我们报告三次微调运行的准确率均值与标准差。在 JFT-300M 上预训练的 Vision Transformer 模型在所有数据集上都优于基于 ResNet 的基线，而预训练所需计算资源显著更少。在较小的公开数据集 ImageNet-21k 上预训练的 ViT 表现也很好。<sup>∗</sup>Touvron et al. (2020) 报告了略作改进的 88.5% 结果。</p>
+
+<p>表 2 给出结果。在 JFT-300M 上预训练的较小模型 ViT-L/16 在所有任务上都优于 BiT-L（后者在同一数据集上预训练），而训练所需的计算资源显著更少。更大的模型 ViT-H/14 进一步提升性能，尤其是在更具挑战性的数据集上——ImageNet、CIFAR-100 与 VTAB 套件。有趣的是，这个模型预训练所用的计算量仍显著少于此前的最好水平。不过我们注意到，预训练效率可能不仅受架构选择影响，也受训练计划、优化器、权重衰减等其他参数影响。我们在 4.4 节对不同架构做了性能与计算量的受控研究。最后，在公开的 ImageNet-21k 数据集上预训练的 ViT-L/16 在大多数数据集上也表现良好，且预训练资源更少：它可以用一块 8 核的标准云 TPUv3 在大约 30 天内训练完成。</p>
+
+<figure id="fig2"><img src="images/fig2.png" alt="Breakdown of VTAB performance">
+<figcaption><span class="lab">图 2</span>VTAB 性能在 Natural、Specialized 与 Structured 三个任务组上的分解。</figcaption></figure>
+
+<p>图 2 把 VTAB 任务分解为各自的组，并与该基准上此前的 SOTA 方法比较：BiT、VIVI——在 ImageNet 与 Youtube 上联合训练的 ResNet (Tschannen et al., 2020)，以及 S4L——在 ImageNet 上的有监督加半监督学习 (Zhai et al., 2019a)。ViT-H/14 在 Natural 与 Structured 任务上优于 BiT-R152x4 及其他方法。在 Specialized 上，前两个模型的表现相似。</p>
+
+<h3 id="s43">4.3 预训练数据的需求</h3>
+<p>Vision Transformer 在大型 JFT-300M 数据集上预训练时表现良好。既然它的视觉归纳偏置比 ResNet 少，数据集规模有多关键？我们做两组实验。</p>
+<p>第一，我们在规模递增的数据集上预训练 ViT：ImageNet、ImageNet-21k、JFT-300M。为提升在较小数据集上的性能，我们优化三个基本正则化参数——权重衰减、dropout 与标签平滑。图 3 给出微调到 ImageNet 后的结果（其他数据集的结果见表 5）。在最小数据集 ImageNet 上预训练时，尽管有（适度的）正则化，ViT-Large 模型仍不如 ViT-Base 模型。用 ImageNet-21k 预训练时，二者表现相近。只有在 JFT-300M 上，我们才看到更大模型的全部好处。图 3 还展示了不同规模 BiT 模型所覆盖的性能区间。BiT CNN 在 ImageNet 上优于 ViT，但随着数据集变大，ViT 反超。</p>
+
+<figure id="fig3"><img src="images/fig3.png" alt="Transfer to ImageNet">
+<figcaption><span class="lab">图 3</span>迁移到 ImageNet。当在小型数据集上预训练时，大型 ViT 模型不如 BiT ResNet（阴影区域）；而在更大的数据集上预训练时它们表现出色。类似地，随着数据集增大，更大的 ViT 变体反超较小的变体。</figcaption></figure>
+
+<figure id="fig4"><img src="images/fig4.png" alt="Linear few-shot evaluation on ImageNet versus pre-training size">
+<figcaption><span class="lab">图 4</span>ImageNet 上的线性少样本评估与预训练规模的关系。预训练数据集较小时 ResNet 表现更好，但比 ViT 更早达到平台期；预训练数据更大时 ViT 表现更好。ViT-b 是隐藏维度全部减半的 ViT-B。</figcaption></figure>
+
+<p>第二，我们在 9M、30M、90M 的随机子集以及完整的 JFT-300M 数据集上训练模型。对较小子集我们不做额外正则化，所有设定使用相同超参数。这样我们评估的是模型的内在性质，而不是正则化的效果。不过我们使用早停，并报告训练期间达到的最好验证准确率。为节省计算，我们报告少样本线性准确率而不是完整微调准确率。图 4 给出结果。在计算成本相当的情况下，Vision Transformer 在较小数据集上比 ResNet 过拟合更严重。例如 ViT-B/32 略快于 ResNet50；它在 9M 子集上表现差得多，但在 90M 以上的子集上更好。ResNet152x2 与 ViT-L/16 同样如此。这一结果强化了一种直觉：卷积归纳偏置对较小数据集有用，但对更大的数据集，直接从数据中学习相关模式就足够了，甚至是有益的。</p>
+<p>总体而言，ImageNet 上的少样本结果（图 4）以及 VTAB 上的低数据结果（表 2）对极低数据迁移来说都显得很有前景。进一步分析 ViT 的少样本性质是未来工作一个令人兴奋的方向。</p>
+
+<h3 id="s44">4.4 规模研究</h3>
+<p>我们通过评估从 JFT-300M 的迁移性能，对不同模型做受控的规模研究。在这一设定下，数据规模不构成模型性能的瓶颈，我们评估各模型性能与预训练成本的关系。模型集合包括：7 个 ResNet——R50x1、R50x2、R101x1、R152x1、R152x2 预训练 7 个 epoch，另有 R152x2 与 R200x3 预训练 14 个 epoch；6 个 Vision Transformer——ViT-B/32、B/16、L/32、L/16 预训练 7 个 epoch，另有 L/16 与 H/14 预训练 14 个 epoch；以及 5 个混合模型——R50+ViT-B/32、B/16、L/32、L/16 预训练 7 个 epoch，另有 R50+ViT-L/16 预训练 14 个 epoch（对混合模型，模型名末尾的数字不是块大小，而是 ResNet 主干的总下采样率）。</p>
+<p>图 5 给出迁移性能与总预训练计算量的关系（计算成本细节见附录 D.5）。各模型的详细结果见附录表 6。可以观察到一些规律。第一，在性能/计算权衡上 Vision Transformer 全面优于 ResNet。ViT 用大约 2–4 倍更少的计算量达到相同性能（在 5 个数据集上平均）。第二，混合模型在较小计算预算下略优于 ViT，但差距在更大模型上消失。这个结果有些出人意料，因为人们可能预期卷积式的局部特征处理在任何规模下都能帮助 ViT。第三，Vision Transformer 在所尝试的范围内似乎没有饱和，这为未来的扩展努力提供了动力。</p>
+
+<figure id="fig5"><img src="images/fig5.png" alt="Performance versus pre-training compute">
+<figcaption><span class="lab">图 5</span>不同架构的性能与预训练计算量的关系：Vision Transformer、ResNet 与混合模型。在相同计算预算下，Vision Transformer 一般优于 ResNet。混合模型在较小模型规模上优于纯 Transformer，但差距在更大模型上消失。</figcaption></figure>
+
+<h3 id="s45">4.5 检视 Vision Transformer</h3>
+<p>为了初步理解 Vision Transformer 如何处理图像数据，我们分析它的内部表示。Vision Transformer 的第一层把展平的块线性投影到更低维空间（式 1）。图 7（左）显示学到的嵌入滤波器的前几个主成分。这些成分看起来像是每个块内部精细结构的低维表示的合理基函数。</p>
+<p>投影之后，一个可学习的位置嵌入被加到块表示上。图 7（中）表明，模型学会了把图像内的距离编码到位置嵌入的相似性中，即更近的块倾向于有更相似的位置嵌入。此外，行列结构也显现出来：同一行/列的块有相似的嵌入。最后，在更大的网格上有时会出现正弦结构（附录 D）。位置嵌入能学会表示二维图像拓扑，这解释了为什么手工设计的二维感知嵌入变体没有带来改进（附录 D.4）。</p>
+<p>自注意力使 ViT 即使在最低层也能整合整幅图像的信息。我们考察网络在多大程度上利用了这一能力。具体地说，我们根据注意力权重计算信息被整合时所跨越的图像空间平均距离（图 7 右）。这一「注意力距离」类似于 CNN 中的感受野大小。</p>
+<p>我们发现有些头在最低层就已经关注图像的大部分区域，说明模型确实利用了全局整合信息的能力。其他注意力头在低层始终只有很小的注意力距离。这种高度局部化的注意力在 Transformer 之前接 ResNet 的混合模型中不太明显（图 7 右），提示它可能与 CNN 中早期卷积层起类似作用。此外，注意力距离随网络深度增加。总体而言，我们发现模型关注的是与分类语义相关的图像区域（图 6）。</p>
+
+<figure id="fig6"><img src="images/fig6.png" alt="Representative examples of attention from the output token to the input space">
+<figcaption><span class="lab">图 6</span>输出 token 到输入空间的注意力代表性示例。细节见附录 D.7。</figcaption></figure>
+
+<figure id="fig7"><img src="images/fig7.png" alt="Filters, position embedding similarity, attention distance">
+<figcaption><span class="lab">图 7</span><b>左</b>：ViT-L/32 对 RGB 值做初始线性嵌入的滤波器。<b>中</b>：ViT-L/32 位置嵌入的相似性。每格显示指定行、列处块的位置嵌入与所有其他块位置嵌入之间的余弦相似度。<b>右</b>：按注意力头与网络深度给出的受关注区域大小。每个点表示某一层 16 个头之一在各图像上的平均注意力距离。细节见附录 D.7。</figcaption></figure>
+
+<h3 id="s46">4.6 自监督</h3>
+<p>Transformer 在 NLP 任务上表现令人印象深刻。然而它们的成功不仅来自出色的可扩展性，也来自大规模自监督预训练 (Devlin et al., 2019; Radford et al., 2018)。我们也对掩蔽块预测作了一次初步探索，模仿 BERT 中使用的掩蔽语言建模任务。借助自监督预训练，我们较小的 ViT-B/16 模型在 ImageNet 上达到 79.9% 的准确率，比从零训练显著提高 2%，但仍比有监督预训练低 4%。更多细节见附录 B.1.2。我们把对比式预训练 (Chen et al., 2020b; He et al., 2020; Bachman et al., 2019; Henaff et al., 2020) 的探索留待未来工作。</p>
+
+<h2 id="s5">5 结论</h2>
+<p>我们探索了把 Transformer 直接应用于图像识别。与计算机视觉中先前使用自注意力的工作不同，除了最初的块提取步骤之外，我们没有在架构中引入图像特定的归纳偏置。相反，我们把图像看作一个块的序列，并用 NLP 中使用的标准 Transformer 编码器处理它。这种简单却可扩展的策略与大规模数据集上的预训练结合时效果出奇地好。因此，Vision Transformer 在许多图像分类数据集上达到或超过了当时最好的水平，而预训练相对便宜。</p>
+<p>尽管这些初步结果令人鼓舞，仍有许多挑战。其一是把 ViT 应用到其他计算机视觉任务，如检测与分割。我们的结果与 Carion et al. (2020) 的结果一起，表明这一方向很有前景。另一个挑战是继续探索自监督预训练方法。我们的初步实验显示自监督预训练带来了改进，但自监督与大规模有监督预训练之间仍有很大差距。最后，进一步扩展 ViT 很可能带来更好的性能。</p>
+<p><b>致谢</b>　本工作于柏林、苏黎世与阿姆斯特丹完成。我们感谢 Google 许多同事的帮助，特别感谢 Andreas Steiner 在基础设施与代码开源方面的关键帮助；Joan Puigcerver 与 Maxim Neumann 在大规模训练基础设施方面的帮助；以及 Dmitry Lepikhin、Aravindh Mahendran、Daniel Keysers、Mario Lučić、Noam Shazeer、Ashish Vaswani 与 Colin Raffel 的有益讨论。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按要求，参考文献整节保留英文原文，未作翻译。</p>
+<div class="refs"><ol>
+<li>Samira Abnar and Willem Zuidema. Quantifying attention flow in transformers. In ACL, 2020.</li>
+<li>Philip Bachman, R Devon Hjelm, and William Buchwalter. Learning representations by maximizing mutual information across views. In NeurIPS, 2019.</li>
+<li>Alexei Baevski and Michael Auli. Adaptive input representations for neural language modeling. In ICLR, 2019.</li>
+<li>I. Bello, B. Zoph, Q. Le, A. Vaswani, and J. Shlens. Attention augmented convolutional networks. In ICCV, 2019.</li>
+<li>Lucas Beyer, Olivier J. Hénaff, Alexander Kolesnikov, Xiaohua Zhai, and Aäron van den Oord. Are we done with imagenet? arXiv, 2020.</li>
+<li>Tom B Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, et al. Language models are few-shot learners. arXiv, 2020.</li>
+<li>Nicolas Carion, Francisco Massa, Gabriel Synnaeve, Nicolas Usunier, Alexander Kirillov, and Sergey Zagoruyko. End-to-end object detection with transformers. In ECCV, 2020.</li>
+<li>Mark Chen, Alec Radford, Rewon Child, Jeff Wu, and Heewoo Jun. Generative pretraining from pixels. In ICML, 2020a.</li>
+<li>Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey E. Hinton. A simple framework for contrastive learning of visual representations. In ICML, 2020b.</li>
+<li>Yen-Chun Chen, Linjie Li, Licheng Yu, Ahmed El Kholy, Faisal Ahmed, Zhe Gan, Yu Cheng, and Jingjing Liu. UNITER: UNiversal Image-TExt Representation Learning. In ECCV, 2020c.</li>
+<li>Rewon Child, Scott Gray, Alec Radford, and Ilya Sutskever. Generating long sequences with sparse transformers. arXiv, 2019.</li>
+<li>Jean-Baptiste Cordonnier, Andreas Loukas, and Martin Jaggi. On the relationship between selfattention and convolutional layers. In ICLR, 2020.</li>
+<li>J. Deng, W. Dong, R. Socher, L. Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In CVPR, 2009.</li>
+<li>Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. BERT: Pre-training of deep bidirectional transformers for language understanding. In NAACL, 2019.</li>
+<li>Josip Djolonga, Jessica Yung, Michael Tschannen, Rob Romijnders, Lucas Beyer, Alexander Kolesnikov, Joan Puigcerver, Matthias Minderer, Alexander D'Amour, Dan Moldovan, Sylvan Gelly, Neil Houlsby, Xiaohua Zhai, and Mario Lucic. On robustness and transferability of convolutional neural networks. arXiv, 2020.</li>
+<li>Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In CVPR, 2016.</li>
+<li>Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick. Momentum contrast for unsupervised visual representation learning. In CVPR, 2020.</li>
+<li>Jonathan Ho, Nal Kalchbrenner, Dirk Weissenborn, and Tim Salimans. Axial attention in multidimensional transformers. arXiv, 2019.</li>
+<li>Han Hu, Jiayuan Gu, Zheng Zhang, Jifeng Dai, and Yichen Wei. Relation networks for object detection. In CVPR, 2018.</li>
+<li>Han Hu, Zheng Zhang, Zhenda Xie, and Stephen Lin. Local relation networks for image recognition. In ICCV, 2019.</li>
+<li>Zilong Huang, Xinggang Wang, Yunchao Wei, Lichao Huang, Humphrey Shi, Wenyu Liu, and Thomas S. Huang. Ccnet: Criss-cross attention for semantic segmentation. In ICCV, 2020.</li>
+<li>Olivier J. Hénaff, Aravind Srinivas, Jeffrey De Fauw, Ali Razavi, Carl Doersch, S. M. Ali Eslami, and Aaron van den Oord. Data-efficient image recognition with contrastive predictive coding. In ICML, 2020.</li>
+<li>Sergey Ioffe and Christian Szegedy. Batch normalization: Accelerating deep network training by reducing internal covariate shift. 2015.</li>
+<li>Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In ICLR, 2015.</li>
+<li>Alexander Kolesnikov, Lucas Beyer, Xiaohua Zhai, Joan Puigcerver, Jessica Yung, Sylvain Gelly, and Neil Houlsby. Big transfer (BiT): General visual representation learning. In ECCV, 2020.</li>
+<li>Alex Krizhevsky. Learning multiple layers of features from tiny images. Technical report, 2009.</li>
+<li>Alex Krizhevsky, Ilya Sutskever, and Geoffrey E. Hinton. Imagenet classification with deep convolutional neural networks. In NIPS, 2012.</li>
+<li>Y. LeCun, B. Boser, J. Denker, D. Henderson, R. Howard, W. Hubbard, and L. Jackel. Backpropagation applied to handwritten zip code recognition. Neural Computation, 1:541–551, 1989.</li>
+<li>Dmitry Lepikhin, HyoukJoong Lee, Yuanzhong Xu, Dehao Chen, Orhan Firat, Yanping Huang, Maxim Krikun, Noam Shazeer, and Zhifeng Chen. Gshard: Scaling giant models with conditional computation and automatic sharding. arXiv, 2020.</li>
+<li>Liunian Harold Li, Mark Yatskar, Da Yin, Cho-Jui Hsieh, and Kai-Wei Chang. VisualBERT: A Simple and Performant Baseline for Vision and Language. In Arxiv, 2019.</li>
+<li>Francesco Locatello, Dirk Weissenborn, Thomas Unterthiner, Aravindh Mahendran, Georg Heigold, Jakob Uszkoreit, Alexey Dosovitskiy, and Thomas Kipf. Object-centric learning with slot attention. arXiv, 2020.</li>
+<li>Jiasen Lu, Dhruv Batra, Devi Parikh, and Stefan Lee. ViLBERT: Pretraining Task-Agnostic Visiolinguistic Representations for Vision-and-Language Tasks. In NeurIPS, 2019.</li>
+<li>Dhruv Mahajan, Ross Girshick, Vignesh Ramanathan, Kaiming He, Manohar Paluri, Yixuan Li, Ashwin Bharambe, and Laurens van der Maaten. Exploring the limits of weakly supervised pretraining. In ECCV, 2018.</li>
+<li>M. Nilsback and A. Zisserman. Automated flower classification over a large number of classes. In ICVGIP, 2008.</li>
+<li>Omkar M. Parkhi, Andrea Vedaldi, Andrew Zisserman, and C. V. Jawahar. Cats and dogs. In CVPR, 2012.</li>
+<li>Niki Parmar, Ashish Vaswani, Jakob Uszkoreit, Lukasz Kaiser, Noam Shazeer, Alexander Ku, and Dustin Tran. Image transformer. In ICML, 2018.</li>
+<li>B. T. Polyak and A. B. Juditsky. Acceleration of stochastic approximation by averaging. SIAM Journal on Control and Optimization, 30(4):838–855, 1992. doi: 10.1137/0330046. URL https://doi.org/10.1137/0330046.</li>
+<li>Siyuan Qiao, Huiyu Wang, Chenxi Liu, Wei Shen, and Alan Yuille. Weight standardization. arXiv preprint arXiv:1903.10520, 2019.</li>
+<li>Alec Radford, Karthik Narasimhan, Tim Salimans, and Ilya Sutskever. Improving language understanding with unsupervised learning. Technical Report, 2018.</li>
+<li>Alec Radford, Jeff Wu, Rewon Child, David Luan, Dario Amodei, and Ilya Sutskever. Language models are unsupervised multitask learners. Technical Report, 2019.</li>
+<li>Prajit Ramachandran, Niki Parmar, Ashish Vaswani, Irwan Bello, Anselm Levskaya, and Jon Shlens. Stand-alone self-attention in vision models. In NeurIPS, 2019.</li>
+<li>Chen Sun, Abhinav Shrivastava, Saurabh Singh, and Abhinav Gupta. Revisiting unreasonable effectiveness of data in deep learning era. In ICCV, 2017.</li>
+<li>Chen Sun, Austin Myers, Carl Vondrick, Kevin Murphy, and Cordelia Schmid. Videobert: A joint model for video and language representation learning. In ICCV, 2019.</li>
+<li>Hugo Touvron, Andrea Vedaldi, Matthijs Douze, and Hervé Jégou. Fixing the train-test resolution discrepancy. In NeurIPS, 2019.</li>
+<li>Hugo Touvron, Andrea Vedaldi, Matthijs Douze, and Hervé Jégou. Fixing the train-test resolution discrepancy: Fixefficientnet. arXiv preprint arXiv:2003.08237, 2020.</li>
+<li>Michael Tschannen, Josip Djolonga, Marvin Ritter, Aravindh Mahendran, Neil Houlsby, Sylvain Gelly, and Mario Lucic. Self-supervised learning of video-induced visual invariances. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), June 2020.</li>
+<li>Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. In NIPS, 2017.</li>
+<li>Huiyu Wang, Yukun Zhu, Bradley Green, Hartwig Adam, Alan Yuille, and Liang-Chieh Chen. Axial-deeplab: Stand-alone axial-attention for panoptic segmentation. In ECCV, 2020a.</li>
+<li>Huiyu Wang, Yukun Zhu, Bradley Green, Hartwig Adam, Alan Yuille, and Liang-Chieh Chen. Axial-deeplab: Stand-alone axial-attention for panoptic segmentation. arXiv preprint arXiv:2003.07853, 2020b.</li>
+<li>Qiang Wang, Bei Li, Tong Xiao, Jingbo Zhu, Changliang Li, Derek F. Wong, and Lidia S. Chao. Learning deep transformer models for machine translation. In ACL, 2019.</li>
+<li>Xiaolong Wang, Ross Girshick, Abhinav Gupta, and Kaiming He. Non-local neural networks. In CVPR, 2018.</li>
+<li>Dirk Weissenborn, Oscar Täckström, and Jakob Uszkoreit. Scaling autoregressive video models. In ICLR, 2019.</li>
+<li>Bichen Wu, Chenfeng Xu, Xiaoliang Dai, Alvin Wan, Peizhao Zhang, Masayoshi Tomizuka, Kurt Keutzer, and Peter Vajda. Visual transformers: Token-based image representation and processing for computer vision. arxiv, 2020.</li>
+<li>Yuxin Wu and Kaiming He. Group normalization. In ECCV, 2018.</li>
+<li>Qizhe Xie, Minh-Thang Luong, Eduard Hovy, and Quoc V. Le. Self-training with noisy student improves imagenet classification. In CVPR, 2020.</li>
+<li>Xiaohua Zhai, Avital Oliver, Alexander Kolesnikov, and Lucas Beyer. S<sup>4</sup>L: Self-Supervised Semi-Supervised Learning. In ICCV, 2019a.</li>
+<li>Xiaohua Zhai, Joan Puigcerver, Alexander Kolesnikov, Pierre Ruyssen, Carlos Riquelme, Mario Lucic, Josip Djolonga, Andre Susano Pinto, Maxim Neumann, Alexey Dosovitskiy, et al. A large-scale study of representation learning with the visual task adaptation benchmark. arXiv preprint arXiv:1910.04867, 2019b.</li>
+<li>Hengshuang Zhao, Jiaya Jia, and Vladlen Koltun. Exploring self-attention for image recognition. In CVPR, 2020.</li>
+</ol></div>
+
+<h2 id="appx">附录</h2>
+
+<h2 id="appa">A 多头自注意力</h2>
+<p>标准的 qkv 自注意力（SA，Vaswani et al. (2017)）是神经架构中常用的构件。对输入序列 <b>z</b> ∈ ℝ<sup>N×D</sup> 中的每个元素，我们计算序列中所有值 <b>v</b> 的加权和。注意力权重 <i>A</i><sub>ij</sub> 基于序列中两个元素之间的成对相似度，以及它们各自的查询 <b>q</b><sup>i</sup> 与键 <b>k</b><sup>j</sup> 表示。</p>
+<div class="eq"><div class="body">[ <b>q</b>, <b>k</b>, <b>v</b> ] = <b>z</b> <b>U</b><sub>qkv</sub>,&nbsp;&nbsp;&nbsp;<b>U</b><sub>qkv</sub> ∈ ℝ<sup>D×3D<sub>h</sub></sup></div><div class="no">(5)</div></div>
+<div class="eq"><div class="body"><i>A</i> = softmax( <b>q</b> <b>k</b><sup>⊤</sup> / √<i>D</i><sub>h</sub> ),&nbsp;&nbsp;&nbsp;<i>A</i> ∈ ℝ<sup>N×N</sup></div><div class="no">(6)</div></div>
+<div class="eq"><div class="body">SA( <b>z</b> ) = <i>A</i> <b>v</b></div><div class="no">(7)</div></div>
+<p>多头自注意力（MSA）是 SA 的扩展：我们并行执行 <i>k</i> 个自注意力运算（称为「头」），并把它们的输出拼接后投影。为在改变 <i>k</i> 时保持计算量与参数量不变，<i>D</i><sub>h</sub>（式 5）通常设为 <i>D</i>/<i>k</i>。</p>
+<div class="eq"><div class="body">MSA( <b>z</b> ) = [ SA<sub>1</sub>(z); SA<sub>2</sub>(z); … ; SA<sub>k</sub>(z) ] <b>U</b><sub>msa</sub>,&nbsp;&nbsp;&nbsp;<b>U</b><sub>msa</sub> ∈ ℝ<sup>k·D<sub>h</sub>×D</sup></div><div class="no">(8)</div></div>
+<p class="hint" style="font-size:13px;margin:14px 0 0">公式变量说明：<b>z</b> 是输入序列（N 个 token，每个 D 维）；<b>U<sub>qkv</sub></b> 是把输入投影成查询、键、值的一组可学习权重（共 3D<sub>h</sub> 维输出）；<b>D<sub>h</sub></b> 是每个头的维度；<b>q k<sup>⊤</sup>/√D<sub>h</sub></b> 得到 N×N 的两两相似度得分，除以 √D<sub>h</sub> 是缩放；<b>softmax</b> 按行归一化得到注意力权重矩阵 <b>A</b>；<b>SA(z) = A v</b> 即用权重对值加权求和；<b>MSA</b> 把 k 个头的输出拼接（维度 k·D<sub>h</sub>）后乘以输出投影 <b>U<sub>msa</sub></b> 映射回 D 维。</p>
+
+<h2 id="appb">B 实验细节</h2>
+<h3 id="appb1">B.1 训练</h3>
+<p>表 3 汇总了我们不同模型的训练设定。我们发现在 ImageNet 上从零训练模型时，强正则化是关键。使用 dropout 时，它施加在每个稠密层之后（qkv 投影除外），以及位置嵌入加到块嵌入之后立刻施加。混合模型使用与其对应 ViT 完全相同的设定训练。最后，所有训练都在分辨率 224 上完成。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>模型</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>数据集</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>Epoch 数</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>基础学习率</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>学习率衰减</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>权重衰减</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>Dropout</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ViT-B/{16,32}</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7</td><td style="border:1px solid var(--line);padding:5px 8px">8 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ViT-L/32</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7</td><td style="border:1px solid var(--line);padding:5px 8px">6 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ViT-L/16</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7/14</td><td style="border:1px solid var(--line);padding:5px 8px">4 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ViT-H/14</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">14</td><td style="border:1px solid var(--line);padding:5px 8px">3 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">R50x{1,2}</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7</td><td style="border:1px solid var(--line);padding:5px 8px">10<sup>−3</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">R101x1</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7</td><td style="border:1px solid var(--line);padding:5px 8px">8 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">R152x{1,2}</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7</td><td style="border:1px solid var(--line);padding:5px 8px">6 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">R50+ViT-B/{16,32}</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7</td><td style="border:1px solid var(--line);padding:5px 8px">8 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">R50+ViT-L/32</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7</td><td style="border:1px solid var(--line);padding:5px 8px">2 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">R50+ViT-L/16</td><td style="border:1px solid var(--line);padding:5px 8px">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">7/14</td><td style="border:1px solid var(--line);padding:5px 8px">4 · 10<sup>−4</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td><td style="border:1px solid var(--line);padding:5px 8px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ViT-B/{16,32}</td><td style="border:1px solid var(--line);padding:5px 8px">ImageNet-21k</td><td style="border:1px solid var(--line);padding:5px 8px">90</td><td style="border:1px solid var(--line);padding:5px 8px">10<sup>−3</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.03</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ViT-L/{16,32}</td><td style="border:1px solid var(--line);padding:5px 8px">ImageNet-21k</td><td style="border:1px solid var(--line);padding:5px 8px">30/90</td><td style="border:1px solid var(--line);padding:5px 8px">10<sup>−3</sup></td><td style="border:1px solid var(--line);padding:5px 8px">linear</td><td style="border:1px solid var(--line);padding:5px 8px">0.03</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ViT-*</td><td style="border:1px solid var(--line);padding:5px 8px">ImageNet</td><td style="border:1px solid var(--line);padding:5px 8px">300</td><td style="border:1px solid var(--line);padding:5px 8px">3 · 10<sup>−3</sup></td><td style="border:1px solid var(--line);padding:5px 8px">cosine</td><td style="border:1px solid var(--line);padding:5px 8px">0.3</td><td style="border:1px solid var(--line);padding:5px 8px">0.1</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 3　训练超参数。所有模型都用批量大小 4096 与 10k 步的学习率预热训练。对 ImageNet，我们发现额外施加全局范数 1 的梯度裁剪有益。训练分辨率为 224。</p>
+
+<h3 id="appb11">B.1.1 微调</h3>
+<p>我们用动量 0.9 的 SGD 微调所有 ViT 模型。我们对学习率做了小规模网格搜索，学习率范围见表 4。为此，我们从训练集中取小子集（Pets 与 Flowers 用 10%，CIFAR 用 2%，ImageNet 用 1%）作为开发集，在其余数据上训练。最终结果我们在整个训练集上训练，并在相应测试数据上评估。微调 ResNet 与混合模型时我们使用完全相同的设定，唯一例外是 ImageNet 上我们在学习率搜索中另加 0.06 这个取值。此外对 ResNet，我们还运行 Kolesnikov et al. (2020) 的设定，并在这次运行与我们的搜索中选最好的结果。最后，若无特别说明，所有微调实验都在 384 分辨率下进行（在与训练不同的分辨率上微调是常见做法 (Kolesnikov et al., 2020)）。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>数据集</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>步数</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>基础学习率</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ImageNet</td><td style="border:1px solid var(--line);padding:5px 10px">20 000</td><td style="border:1px solid var(--line);padding:5px 10px">{0.003, 0.01, 0.03, 0.06}</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">CIFAR100</td><td style="border:1px solid var(--line);padding:5px 10px">10 000</td><td style="border:1px solid var(--line);padding:5px 10px">{0.001, 0.003, 0.01, 0.03}</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">CIFAR10</td><td style="border:1px solid var(--line);padding:5px 10px">10 000</td><td style="border:1px solid var(--line);padding:5px 10px">{0.001, 0.003, 0.01, 0.03}</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Oxford-IIIT Pets</td><td style="border:1px solid var(--line);padding:5px 10px">500</td><td style="border:1px solid var(--line);padding:5px 10px">{0.001, 0.003, 0.01, 0.03}</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Oxford Flowers-102</td><td style="border:1px solid var(--line);padding:5px 10px">500</td><td style="border:1px solid var(--line);padding:5px 10px">{0.001, 0.003, 0.01, 0.03}</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">VTAB（19 任务）</td><td style="border:1px solid var(--line);padding:5px 10px">2 500</td><td style="border:1px solid var(--line);padding:5px 10px">0.01</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 4　微调超参数。所有模型都用余弦学习率衰减、批量大小 512、无权重衰减、全局范数 1 的梯度裁剪微调。若无特别说明，微调分辨率为 384。</p>
+
+<p>把 ViT 模型迁移到另一个数据集时，我们去掉整个头（两个线性层），换成单个零初始化的线性层，其输出维度为目标数据集所需类别数。我们发现这比简单重新初始化最后一层略微更稳健。</p>
+<p>对 VTAB 我们遵循 Kolesnikov et al. (2020) 的协议，对所有任务使用相同超参数设定。我们使用学习率 0.01 并训练 2500 步（表 4）。这一设定是通过对两个学习率和两个调度做小规模搜索、并选择在 200 样例验证集上 VTAB 分数最高的设定得到的。我们遵循 Kolesnikov et al. (2020) 所用的预处理，只是不使用任务特定的输入分辨率。相反，我们发现 Vision Transformer 从高分辨率（384×384）中获益最多，对所有任务都是如此。</p>
+
+<h3 id="appb12">B.1.2 自监督</h3>
+<p>我们在初步的自监督实验中使用掩蔽块预测目标。为此，我们破坏 50% 的块嵌入：或是把它们的嵌入替换为可学习的 [mask] 嵌入（80%）、替换为另一个随机块嵌入（10%），或保持不变（10%）。这一设定与 Devlin et al. (2019) 用于语言的设定非常相似。最后，我们用每个被破坏块的表示预测其 3 位平均颜色（即共 512 种颜色）。</p>
+<p>我们在 JFT 上用批量大小 4096 训练自监督模型 1M 步（约 14 个 epoch）。我们使用 Adam，基础学习率 2 · 10<sup>−4</sup>，预热 10k 步，余弦学习率衰减。作为预训练的预测目标，我们尝试了以下设定：1) 只预测 3 位平均颜色（即 1 个 512 色预测）；2) 并行预测 16×16 块下采样到 4×4 版本、每位 3 位颜色（即 16 个 512 色预测）；3) 用 L2 对整块做回归（即对 3 个 RGB 通道做 256 个回归）。令人意外的是，我们发现这些做法都相当有效，不过 L2 略差。我们只报告方案 1) 的最终结果，因为它在少样本性能上最好。我们也试验了 Devlin et al. (2019) 使用的 15% 破坏率，但在我们的少样本指标上结果也略差。</p>
+<p>最后我们要说明，我们这种掩蔽块预测的实现在 ImageNet 分类上取得类似性能增益时，并不需要那么大量的预训练，也不需要 JFT 这样大的数据集。也就是说，我们观察到预训练 100k 步之后下游性能的收益递减，而在 ImageNet 上预训练时也看到类似增益。</p>
+
+<h2 id="appc">C 补充结果</h2>
+<p>我们报告与正文中图表对应的详细结果。表 5 对应正文图 3，给出在不同规模数据集（ImageNet、ImageNet-21k、JFT-300M）上预训练的各 ViT 模型在多个数据集上的迁移性能<span class="tn" data-tip="译者注：原文脚注 2，见本节末">2</span>。表 6 对应正文图 5，给出不同规模的 ViT、ResNet 与混合模型的迁移性能，以及它们预训练计算成本（exaFLOPs）的估计。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 8px" colspan="2"></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>ViT-B/16</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>ViT-B/32</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>ViT-L/16</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>ViT-L/32</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px"><b>ViT-H/14</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px" rowspan="6">ImageNet</td><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-10</td><td style="border:1px solid var(--line);padding:5px 8px">98.13</td><td style="border:1px solid var(--line);padding:5px 8px">97.77</td><td style="border:1px solid var(--line);padding:5px 8px">97.86</td><td style="border:1px solid var(--line);padding:5px 8px">97.94</td><td style="border:1px solid var(--line);padding:5px 8px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-100</td><td style="border:1px solid var(--line);padding:5px 8px">87.13</td><td style="border:1px solid var(--line);padding:5px 8px">86.31</td><td style="border:1px solid var(--line);padding:5px 8px">86.35</td><td style="border:1px solid var(--line);padding:5px 8px">87.07</td><td style="border:1px solid var(--line);padding:5px 8px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet</td><td style="border:1px solid var(--line);padding:5px 8px">77.91</td><td style="border:1px solid var(--line);padding:5px 8px">73.38</td><td style="border:1px solid var(--line);padding:5px 8px">76.53</td><td style="border:1px solid var(--line);padding:5px 8px">71.16</td><td style="border:1px solid var(--line);padding:5px 8px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet Real</td><td style="border:1px solid var(--line);padding:5px 8px">83.57</td><td style="border:1px solid var(--line);padding:5px 8px">79.56</td><td style="border:1px solid var(--line);padding:5px 8px">82.19</td><td style="border:1px solid var(--line);padding:5px 8px">77.83</td><td style="border:1px solid var(--line);padding:5px 8px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford Flowers-102</td><td style="border:1px solid var(--line);padding:5px 8px">89.49</td><td style="border:1px solid var(--line);padding:5px 8px">85.43</td><td style="border:1px solid var(--line);padding:5px 8px">89.66</td><td style="border:1px solid var(--line);padding:5px 8px">86.36</td><td style="border:1px solid var(--line);padding:5px 8px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford-IIIT-Pets</td><td style="border:1px solid var(--line);padding:5px 8px">93.81</td><td style="border:1px solid var(--line);padding:5px 8px">92.04</td><td style="border:1px solid var(--line);padding:5px 8px">93.64</td><td style="border:1px solid var(--line);padding:5px 8px">91.35</td><td style="border:1px solid var(--line);padding:5px 8px">-</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px" rowspan="6">ImageNet-21k</td><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-10</td><td style="border:1px solid var(--line);padding:5px 8px">98.95</td><td style="border:1px solid var(--line);padding:5px 8px">98.79</td><td style="border:1px solid var(--line);padding:5px 8px">99.16</td><td style="border:1px solid var(--line);padding:5px 8px">99.13</td><td style="border:1px solid var(--line);padding:5px 8px">99.27</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-100</td><td style="border:1px solid var(--line);padding:5px 8px">91.67</td><td style="border:1px solid var(--line);padding:5px 8px">91.97</td><td style="border:1px solid var(--line);padding:5px 8px">93.44</td><td style="border:1px solid var(--line);padding:5px 8px">93.04</td><td style="border:1px solid var(--line);padding:5px 8px">93.82</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet</td><td style="border:1px solid var(--line);padding:5px 8px">83.97</td><td style="border:1px solid var(--line);padding:5px 8px">81.28</td><td style="border:1px solid var(--line);padding:5px 8px">85.15</td><td style="border:1px solid var(--line);padding:5px 8px">80.99</td><td style="border:1px solid var(--line);padding:5px 8px">85.13</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet Real</td><td style="border:1px solid var(--line);padding:5px 8px">88.35</td><td style="border:1px solid var(--line);padding:5px 8px">86.63</td><td style="border:1px solid var(--line);padding:5px 8px">88.40</td><td style="border:1px solid var(--line);padding:5px 8px">85.65</td><td style="border:1px solid var(--line);padding:5px 8px">88.70</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford Flowers-102</td><td style="border:1px solid var(--line);padding:5px 8px">99.38</td><td style="border:1px solid var(--line);padding:5px 8px">99.11</td><td style="border:1px solid var(--line);padding:5px 8px">99.61</td><td style="border:1px solid var(--line);padding:5px 8px">99.19</td><td style="border:1px solid var(--line);padding:5px 8px">99.51</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford-IIIT-Pets</td><td style="border:1px solid var(--line);padding:5px 8px">94.43</td><td style="border:1px solid var(--line);padding:5px 8px">93.02</td><td style="border:1px solid var(--line);padding:5px 8px">94.73</td><td style="border:1px solid var(--line);padding:5px 8px">93.09</td><td style="border:1px solid var(--line);padding:5px 8px">94.82</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px" rowspan="6">JFT-300M</td><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-10</td><td style="border:1px solid var(--line);padding:5px 8px">99.00</td><td style="border:1px solid var(--line);padding:5px 8px">98.61</td><td style="border:1px solid var(--line);padding:5px 8px">99.38</td><td style="border:1px solid var(--line);padding:5px 8px">99.19</td><td style="border:1px solid var(--line);padding:5px 8px">99.50</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">CIFAR-100</td><td style="border:1px solid var(--line);padding:5px 8px">91.87</td><td style="border:1px solid var(--line);padding:5px 8px">90.49</td><td style="border:1px solid var(--line);padding:5px 8px">94.04</td><td style="border:1px solid var(--line);padding:5px 8px">92.52</td><td style="border:1px solid var(--line);padding:5px 8px">94.55</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet</td><td style="border:1px solid var(--line);padding:5px 8px">84.15</td><td style="border:1px solid var(--line);padding:5px 8px">80.73</td><td style="border:1px solid var(--line);padding:5px 8px">87.12</td><td style="border:1px solid var(--line);padding:5px 8px">84.37</td><td style="border:1px solid var(--line);padding:5px 8px">88.04</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet Real</td><td style="border:1px solid var(--line);padding:5px 8px">88.85</td><td style="border:1px solid var(--line);padding:5px 8px">86.27</td><td style="border:1px solid var(--line);padding:5px 8px">89.99</td><td style="border:1px solid var(--line);padding:5px 8px">88.28</td><td style="border:1px solid var(--line);padding:5px 8px">90.33</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford Flowers-102</td><td style="border:1px solid var(--line);padding:5px 8px">99.56</td><td style="border:1px solid var(--line);padding:5px 8px">99.27</td><td style="border:1px solid var(--line);padding:5px 8px">99.56</td><td style="border:1px solid var(--line);padding:5px 8px">99.45</td><td style="border:1px solid var(--line);padding:5px 8px">99.68</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford-IIIT-Pets</td><td style="border:1px solid var(--line);padding:5px 8px">95.80</td><td style="border:1px solid var(--line);padding:5px 8px">93.40</td><td style="border:1px solid var(--line);padding:5px 8px">97.11</td><td style="border:1px solid var(--line);padding:5px 8px">95.83</td><td style="border:1px solid var(--line);padding:5px 8px">97.56</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 5　在以 ImageNet、ImageNet-21k 或 JFT-300M 预训练时，Vision Transformer 在各数据集上的 Top-1 准确率（%）。这些数值对应正文图 3。模型在 384 分辨率下微调。注意 ImageNet 结果没有使用为达到表 2 结果所用的额外技巧（Polyak 平均与 512 分辨率图像）。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>名称</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>Epoch</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>ImageNet</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>ImageNet Real</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>CIFAR-10</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>CIFAR-100</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>Pets</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>Flowers</b></td>
+<td style="border:1px solid var(--line);padding:4px 7px"><b>exaFLOPs</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ViT-B/32</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">80.73</td><td style="border:1px solid var(--line);padding:4px 7px">86.27</td><td style="border:1px solid var(--line);padding:4px 7px">98.61</td><td style="border:1px solid var(--line);padding:4px 7px">90.49</td><td style="border:1px solid var(--line);padding:4px 7px">93.40</td><td style="border:1px solid var(--line);padding:4px 7px">99.27</td><td style="border:1px solid var(--line);padding:4px 7px">55</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ViT-B/16</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">84.15</td><td style="border:1px solid var(--line);padding:4px 7px">88.85</td><td style="border:1px solid var(--line);padding:4px 7px">99.00</td><td style="border:1px solid var(--line);padding:4px 7px">91.87</td><td style="border:1px solid var(--line);padding:4px 7px">95.80</td><td style="border:1px solid var(--line);padding:4px 7px">99.56</td><td style="border:1px solid var(--line);padding:4px 7px">224</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ViT-L/32</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">84.37</td><td style="border:1px solid var(--line);padding:4px 7px">88.28</td><td style="border:1px solid var(--line);padding:4px 7px">99.19</td><td style="border:1px solid var(--line);padding:4px 7px">92.52</td><td style="border:1px solid var(--line);padding:4px 7px">95.83</td><td style="border:1px solid var(--line);padding:4px 7px">99.45</td><td style="border:1px solid var(--line);padding:4px 7px">196</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ViT-L/16</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">86.30</td><td style="border:1px solid var(--line);padding:4px 7px">89.43</td><td style="border:1px solid var(--line);padding:4px 7px">99.38</td><td style="border:1px solid var(--line);padding:4px 7px">93.46</td><td style="border:1px solid var(--line);padding:4px 7px">96.81</td><td style="border:1px solid var(--line);padding:4px 7px">99.66</td><td style="border:1px solid var(--line);padding:4px 7px">783</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ViT-L/16</td><td style="border:1px solid var(--line);padding:4px 7px">14</td><td style="border:1px solid var(--line);padding:4px 7px">87.12</td><td style="border:1px solid var(--line);padding:4px 7px">89.99</td><td style="border:1px solid var(--line);padding:4px 7px">99.38</td><td style="border:1px solid var(--line);padding:4px 7px">94.04</td><td style="border:1px solid var(--line);padding:4px 7px">97.11</td><td style="border:1px solid var(--line);padding:4px 7px">99.56</td><td style="border:1px solid var(--line);padding:4px 7px">1567</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ViT-H/14</td><td style="border:1px solid var(--line);padding:4px 7px">14</td><td style="border:1px solid var(--line);padding:4px 7px">88.08</td><td style="border:1px solid var(--line);padding:4px 7px">90.36</td><td style="border:1px solid var(--line);padding:4px 7px">99.50</td><td style="border:1px solid var(--line);padding:4px 7px">94.71</td><td style="border:1px solid var(--line);padding:4px 7px">97.11</td><td style="border:1px solid var(--line);padding:4px 7px">99.71</td><td style="border:1px solid var(--line);padding:4px 7px">4262</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ResNet50x1</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">77.54</td><td style="border:1px solid var(--line);padding:4px 7px">84.56</td><td style="border:1px solid var(--line);padding:4px 7px">97.67</td><td style="border:1px solid var(--line);padding:4px 7px">86.07</td><td style="border:1px solid var(--line);padding:4px 7px">91.11</td><td style="border:1px solid var(--line);padding:4px 7px">94.26</td><td style="border:1px solid var(--line);padding:4px 7px">50</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ResNet50x2</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">82.12</td><td style="border:1px solid var(--line);padding:4px 7px">87.94</td><td style="border:1px solid var(--line);padding:4px 7px">98.29</td><td style="border:1px solid var(--line);padding:4px 7px">89.20</td><td style="border:1px solid var(--line);padding:4px 7px">93.43</td><td style="border:1px solid var(--line);padding:4px 7px">97.02</td><td style="border:1px solid var(--line);padding:4px 7px">199</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ResNet101x1</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">80.67</td><td style="border:1px solid var(--line);padding:4px 7px">87.07</td><td style="border:1px solid var(--line);padding:4px 7px">98.48</td><td style="border:1px solid var(--line);padding:4px 7px">89.17</td><td style="border:1px solid var(--line);padding:4px 7px">94.08</td><td style="border:1px solid var(--line);padding:4px 7px">95.95</td><td style="border:1px solid var(--line);padding:4px 7px">96</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ResNet152x1</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">81.88</td><td style="border:1px solid var(--line);padding:4px 7px">87.96</td><td style="border:1px solid var(--line);padding:4px 7px">98.82</td><td style="border:1px solid var(--line);padding:4px 7px">90.22</td><td style="border:1px solid var(--line);padding:4px 7px">94.17</td><td style="border:1px solid var(--line);padding:4px 7px">96.94</td><td style="border:1px solid var(--line);padding:4px 7px">141</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ResNet152x2</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">84.97</td><td style="border:1px solid var(--line);padding:4px 7px">89.69</td><td style="border:1px solid var(--line);padding:4px 7px">99.06</td><td style="border:1px solid var(--line);padding:4px 7px">92.05</td><td style="border:1px solid var(--line);padding:4px 7px">95.37</td><td style="border:1px solid var(--line);padding:4px 7px">98.62</td><td style="border:1px solid var(--line);padding:4px 7px">563</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ResNet152x2</td><td style="border:1px solid var(--line);padding:4px 7px">14</td><td style="border:1px solid var(--line);padding:4px 7px">85.56</td><td style="border:1px solid var(--line);padding:4px 7px">89.89</td><td style="border:1px solid var(--line);padding:4px 7px">99.24</td><td style="border:1px solid var(--line);padding:4px 7px">91.92</td><td style="border:1px solid var(--line);padding:4px 7px">95.75</td><td style="border:1px solid var(--line);padding:4px 7px">98.75</td><td style="border:1px solid var(--line);padding:4px 7px">1126</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">ResNet200x3</td><td style="border:1px solid var(--line);padding:4px 7px">14</td><td style="border:1px solid var(--line);padding:4px 7px">87.22</td><td style="border:1px solid var(--line);padding:4px 7px">90.15</td><td style="border:1px solid var(--line);padding:4px 7px">99.34</td><td style="border:1px solid var(--line);padding:4px 7px">93.53</td><td style="border:1px solid var(--line);padding:4px 7px">96.32</td><td style="border:1px solid var(--line);padding:4px 7px">99.04</td><td style="border:1px solid var(--line);padding:4px 7px">3306</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">R50x1+ViT-B/32</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">84.90</td><td style="border:1px solid var(--line);padding:4px 7px">89.15</td><td style="border:1px solid var(--line);padding:4px 7px">99.01</td><td style="border:1px solid var(--line);padding:4px 7px">92.24</td><td style="border:1px solid var(--line);padding:4px 7px">95.75</td><td style="border:1px solid var(--line);padding:4px 7px">99.46</td><td style="border:1px solid var(--line);padding:4px 7px">106</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">R50x1+ViT-B/16</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">85.58</td><td style="border:1px solid var(--line);padding:4px 7px">89.65</td><td style="border:1px solid var(--line);padding:4px 7px">99.14</td><td style="border:1px solid var(--line);padding:4px 7px">92.63</td><td style="border:1px solid var(--line);padding:4px 7px">96.65</td><td style="border:1px solid var(--line);padding:4px 7px">99.40</td><td style="border:1px solid var(--line);padding:4px 7px">274</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">R50x1+ViT-L/32</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">85.68</td><td style="border:1px solid var(--line);padding:4px 7px">89.04</td><td style="border:1px solid var(--line);padding:4px 7px">99.24</td><td style="border:1px solid var(--line);padding:4px 7px">92.93</td><td style="border:1px solid var(--line);padding:4px 7px">96.97</td><td style="border:1px solid var(--line);padding:4px 7px">99.43</td><td style="border:1px solid var(--line);padding:4px 7px">246</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">R50x1+ViT-L/16</td><td style="border:1px solid var(--line);padding:4px 7px">7</td><td style="border:1px solid var(--line);padding:4px 7px">86.60</td><td style="border:1px solid var(--line);padding:4px 7px">89.72</td><td style="border:1px solid var(--line);padding:4px 7px">99.18</td><td style="border:1px solid var(--line);padding:4px 7px">93.64</td><td style="border:1px solid var(--line);padding:4px 7px">97.03</td><td style="border:1px solid var(--line);padding:4px 7px">99.40</td><td style="border:1px solid var(--line);padding:4px 7px">859</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 7px">R50x1+ViT-L/16</td><td style="border:1px solid var(--line);padding:4px 7px">14</td><td style="border:1px solid var(--line);padding:4px 7px">87.12</td><td style="border:1px solid var(--line);padding:4px 7px">89.76</td><td style="border:1px solid var(--line);padding:4px 7px">99.31</td><td style="border:1px solid var(--line);padding:4px 7px">93.89</td><td style="border:1px solid var(--line);padding:4px 7px">97.36</td><td style="border:1px solid var(--line);padding:4px 7px">99.11</td><td style="border:1px solid var(--line);padding:4px 7px">1668</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 6　模型规模实验的详细结果，对应正文图 5。我们给出在若干数据集上的迁移准确率，以及预训练计算量（exaFLOPs）。</p>
+
+<div class="fn">
+<p><sup>2</sup> 注意 ImageNet 预训练模型也会被微调，但仍然是在 ImageNet 上微调。这是因为微调时提高分辨率会改善性能。</p>
+</div>
+
+<h2 id="appd">D 补充分析</h2>
+<h3 id="appd1">D.1 ResNet 上 SGD 与 Adam 的对比</h3>
+<p>ResNet 通常用 SGD 训练，我们使用 Adam 作为优化器相当不寻常。这里我们给出促使我们做这一选择的实验。具体地说，我们比较两个在 JFT 上用 SGD 与 Adam 预训练的 ResNet——50x1 与 152x2——的微调性能。对 SGD，我们使用 Kolesnikov et al. (2020) 推荐的超参数。结果见表 7。Adam 预训练在大多数数据集上以及平均而言都优于 SGD 预训练。这为选择 Adam 作为在 JFT 上预训练 ResNet 的优化器提供了依据。注意这些绝对数字低于 Kolesnikov et al. (2020) 报告的结果，因为我们只预训练 7 个 epoch，而不是 30 个。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 8px" rowspan="2"><b>数据集</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px" colspan="2"><b>ResNet50</b></td>
+<td style="border:1px solid var(--line);padding:5px 8px" colspan="2"><b>ResNet152x2</b></td>
+</tr>
+<tr>
+<td style="border:1px solid var(--line);padding:5px 8px">Adam</td><td style="border:1px solid var(--line);padding:5px 8px">SGD</td>
+<td style="border:1px solid var(--line);padding:5px 8px">Adam</td><td style="border:1px solid var(--line);padding:5px 8px">SGD</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">ImageNet</td><td style="border:1px solid var(--line);padding:5px 8px">77.54</td><td style="border:1px solid var(--line);padding:5px 8px">78.24</td><td style="border:1px solid var(--line);padding:5px 8px">84.97</td><td style="border:1px solid var(--line);padding:5px 8px">84.37</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">CIFAR10</td><td style="border:1px solid var(--line);padding:5px 8px">97.67</td><td style="border:1px solid var(--line);padding:5px 8px">97.46</td><td style="border:1px solid var(--line);padding:5px 8px">99.06</td><td style="border:1px solid var(--line);padding:5px 8px">99.07</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">CIFAR100</td><td style="border:1px solid var(--line);padding:5px 8px">86.07</td><td style="border:1px solid var(--line);padding:5px 8px">85.17</td><td style="border:1px solid var(--line);padding:5px 8px">92.05</td><td style="border:1px solid var(--line);padding:5px 8px">91.06</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford-IIIT Pets</td><td style="border:1px solid var(--line);padding:5px 8px">91.11</td><td style="border:1px solid var(--line);padding:5px 8px">91.00</td><td style="border:1px solid var(--line);padding:5px 8px">95.37</td><td style="border:1px solid var(--line);padding:5px 8px">94.79</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">Oxford Flowers-102</td><td style="border:1px solid var(--line);padding:5px 8px">94.26</td><td style="border:1px solid var(--line);padding:5px 8px">92.06</td><td style="border:1px solid var(--line);padding:5px 8px">98.62</td><td style="border:1px solid var(--line);padding:5px 8px">99.32</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">平均</td><td style="border:1px solid var(--line);padding:5px 8px">89.33</td><td style="border:1px solid var(--line);padding:5px 8px">88.79</td><td style="border:1px solid var(--line);padding:5px 8px">94.01</td><td style="border:1px solid var(--line);padding:5px 8px">93.72</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 7　用 Adam 与 SGD 预训练的 ResNet 模型的微调结果。</p>
+
+<h3 id="appd2">D.2 Transformer 的形状</h3>
+<p>我们对 Transformer 架构不同维度的扩展做了消融，以找出哪些最适合扩展到非常大的模型。图 8 给出不同配置在 ImageNet 上的 5-shot 性能。所有配置都基于一个 8 层、<i>D</i> = 1024、<i>D</i><sub>MLP</sub> = 2048、块大小 32 的 ViT 模型，即所有直线的交点。可以看到，扩展深度带来的改进最大，直到 64 层都清晰可见。不过 16 层之后收益递减已经显现。有趣的是，扩展网络宽度带来的变化似乎最小。减小块大小、从而增大有效序列长度，在没有引入参数的情况下展现出出人意料地稳健的改进。这些发现提示，计算量可能比参数量更能预测性能；若要取舍，扩展时应更重视深度而不是宽度。总体而言，我们发现按比例扩展所有维度能带来稳健的改进。</p>
+<figure id="fig8"><img src="images/fig8.png" alt="Scaling different model dimensions of the Vision Transformer">
+<figcaption><span class="lab">图 8</span>对 Vision Transformer 不同模型维度的规模研究。</figcaption></figure>
+
+<h3 id="appd3">D.3 头的类型与 class token</h3>
+<p>为了尽可能贴近原始 Transformer 模型，我们使用了一个额外的 [class] token 作为图像表示。该 token 的输出随后通过一个小型多层感知机（MLP，单个隐藏层使用 tanh 非线性）转换为类别预测。</p>
+<p>这一设计继承自用于文本的 Transformer 模型，我们在正文中一直使用它。最初我们尝试只用图像块嵌入、对其做全局平均池化（GAP），再接线性分类器——正如 ResNet 最终特征图的做法——但表现很差。不过我们发现，这既不是由于额外的 token，也不是由于 GAP 操作。相反，性能差异完全由对学习率的不同需求解释，见图 9。</p>
+<figure id="fig9"><img src="images/fig9.png" alt="Comparison of class-token and global average pooling classifiers">
+<figcaption><span class="lab">图 9</span>class token 与全局平均池化分类器的比较。两者表现相近，但需要不同的学习率。</figcaption></figure>
+
+<h3 id="appd4">D.4 位置嵌入</h3>
+<p>我们对用位置嵌入编码空间信息的不同方式做了消融。我们尝试了以下情形：</p>
+<ul>
+<li><b>不提供位置信息</b>：把输入视为一袋块。</li>
+<li><b>一维位置嵌入</b>：把输入视为按光栅顺序排列的块序列（本文其他所有实验的默认做法）。</li>
+<li><b>二维位置嵌入</b>：把输入视为二维的块网格。此时学习两组嵌入，分别对应两个轴（X 嵌入与 Y 嵌入），各为 <i>D</i>/2 维。然后根据输入块在网格中的坐标，把 X 与 Y 嵌入拼接得到该块的最终位置嵌入。</li>
+<li><b>相对位置嵌入</b>：用块之间的相对距离而不是绝对位置来编码空间信息。为此我们使用一维相对注意力，在其中定义所有可能块对的相对距离。于是对每一给定对（一个作为查询，另一个作为注意力机制中的键/值），我们有一个偏移 <i>p</i><sub>q</sub> − <i>p</i><sub>k</sub>，每个偏移对应一个嵌入。然后我们运行额外的注意力：使用原始查询（查询的内容），但把相对位置嵌入作为键。我们随后把相对注意力得到的 logits 作为偏置项，在施加 softmax 之前加到主注意力（基于内容的注意力）的 logits 上。</li>
+</ul>
+<p>除了编码空间信息的不同方式，我们还尝试了把这些信息引入模型的不同方式。对一维与二维位置嵌入，我们尝试了三种情形：(1) 在模型 stem 之后、送入 Transformer 编码器之前把位置嵌入加到输入上（本文其他所有实验的默认做法）；(2) 在每一层开头学习并把位置嵌入加到输入上；(3) 在每一层开头把一组学习到的位置嵌入加到输入上（层间共享）。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>位置嵌入</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>默认 / Stem</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>每一层</b></td>
+<td style="border:1px solid var(--line);padding:5px 10px"><b>每一层-共享</b></td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">无位置嵌入</td><td style="border:1px solid var(--line);padding:5px 10px">0.61382</td><td style="border:1px solid var(--line);padding:5px 10px">不适用</td><td style="border:1px solid var(--line);padding:5px 10px">不适用</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">一维位置嵌入</td><td style="border:1px solid var(--line);padding:5px 10px">0.64206</td><td style="border:1px solid var(--line);padding:5px 10px">0.63964</td><td style="border:1px solid var(--line);padding:5px 10px">0.64292</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">二维位置嵌入</td><td style="border:1px solid var(--line);padding:5px 10px">0.64001</td><td style="border:1px solid var(--line);padding:5px 10px">0.64046</td><td style="border:1px solid var(--line);padding:5px 10px">0.64022</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">相对位置嵌入</td><td style="border:1px solid var(--line);padding:5px 10px">0.64032</td><td style="border:1px solid var(--line);padding:5px 10px">不适用</td><td style="border:1px solid var(--line);padding:5px 10px">不适用</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 8　在 ViT-B/16 模型上以 ImageNet 5-shot 线性评估的位置嵌入消融结果。</p>
+
+<p>表 8 汇总了在 ViT-B/16 模型上这一消融研究的结果。可以看到，虽然无位置嵌入的模型与有位置嵌入的模型之间存在很大差距，但不同位置信息编码方式之间几乎没有差别。我们推测，由于我们的 Transformer 编码器在块级而非像素级输入上运算，如何编码空间信息的重要性较低。更准确地说，在块级输入中，空间维度比原始像素级输入小得多，例如 14×14 而非 224×224，因此对这些不同的位置编码策略而言，学习表示该分辨率下的空间关系同样容易。即便如此，网络学到的位置嵌入相似性的具体模式取决于训练超参数（图 10）。</p>
+<figure id="fig10"><img src="images/fig10.png" alt="Position embeddings of models trained with different hyperparameters">
+<figcaption><span class="lab">图 10</span>用不同超参数训练的模型的位置嵌入。</figcaption></figure>
+
+<h3 id="appd5">D.5 实际计算成本</h3>
+<p>我们也关心架构在我们硬件上的真实速度，由于通道宽度、缓存大小等细节，它并不总能被理论 FLOPs 很好地预测。为此，我们对主要关注的模型在 TPUv3 加速器上做推理速度计时；推理与反向传播速度之间只差一个与模型无关的常数因子。</p>
+<p>图 12（左）显示在各种输入尺寸下，一个核心每秒能处理多少张图像。每个点都指在很宽的批量大小范围内测得的峰值性能。可以看到，ViT 随图像尺寸的理论双二次增长，只在最大的模型与最大分辨率上才刚开始显现。</p>
+<p>另一个关心的量是每个模型能装进一个核心的最大批量大小，越大越有利于扩展到大规模数据集。图 12（右）给出同一组模型的这一量。这表明大型 ViT 模型在内存效率上相对 ResNet 模型有明显优势。</p>
+<figure id="fig12"><img src="images/fig12.png" alt="Wall-clock timings and batch sizes">
+<figcaption><span class="lab">图 12</span><b>左</b>：不同架构在各输入尺寸下的真实墙钟时间。ViT 模型的速度与规模相近的 ResNet 相当。<b>右</b>：不同架构在各输入尺寸下能装进单个核心的最大批量大小。ViT 模型显然更省内存。</figcaption></figure>
+
+<h3 id="appd6">D.6 轴向注意力</h3>
+<p>轴向注意力（Axial Attention）(Huang et al., 2020; Ho et al., 2019) 是一种简单而有效的技术，用于在组织为多维张量的大输入上运行自注意力。轴向注意力的总体思想是执行多次注意力运算，每次沿输入张量的单个轴，而不是把一维注意力施加到展平后的输入上。在轴向注意力中，每次注意力沿某一特定轴混合信息，同时保持其他轴上的信息相互独立。沿着这条路线，Wang et al. (2020b) 提出了 AxialResNet 模型，把 ResNet50 中所有 3×3 卷积替换为轴向自注意力，即行注意力与列注意力，并用相对位置编码增强。我们实现了 AxialResNet 作为基线模型<span class="tn" data-tip="译者注：原文脚注 3，见本节末">3</span>。</p>
+<p>此外，我们修改 ViT 使其处理二维形状的输入而不是一维块序列，并引入 Axial Transformer 块：其中不再是「自注意力 + MLP」，而是「行自注意力 + MLP 之后接列自注意力 + MLP」。</p>
+<p>图 13 给出 Axial ResNet、Axial-ViT-B/32 与 Axial-ViT-B/16 在 JFT 上预训练后、在 ImageNet 5-shot 线性上的性能，与预训练计算量（以 FLOPs 数和推理时间（每秒样例数）两种方式衡量）的关系。可以看到，Axial-ViT-B/32 与 Axial-ViT-B/16 在性能上都优于对应的 ViT-B，但代价是更多计算。这是因为在 Axial-ViT 模型中，每个带全局自注意力的 Transformer 块被替换为两个 Axial Transformer 块（一个行自注意力、一个列自注意力）；尽管轴向情形下自注意力所作用的序列长度更小，但每个 Axial-ViT 块多了一个 MLP。对 AxialResNet，尽管它在准确率/计算权衡上看起来合理（图 13 左），其朴素实现在 TPU 上极慢（图 13 右）。</p>
+<figure id="fig13"><img src="images/fig13.png" alt="Performance of Axial-Attention based models">
+<figcaption><span class="lab">图 13</span>基于轴向注意力的模型的性能：ImageNet 5-shot 线性的 top-1 准确率，与它们的速度（以 FLOPs 数表示，左图）与推理时间（右图）的关系。</figcaption></figure>
+<div class="fn">
+<p><sup>3</sup> 我们的实现基于 https://github.com/csrhddlam/axial-deeplab 的开源 PyTorch 实现。在我们的实验中，我们在准确率方面复现了 (Wang et al., 2020b) 报告的结果；但与开源实现类似，我们的实现在 TPU 上非常慢。因此我们无法用它做大规模实验。经过仔细优化的实现或许可以解除这一限制。</p>
+</div>
+
+<h3 id="appd7">D.7 注意力距离</h3>
+<p>为了理解 ViT 如何使用自注意力整合整幅图像的信息，我们分析了不同层注意力权重所跨的平均距离（图 11）。这一「注意力距离」类似于 CNN 中的感受野大小。平均注意力距离在低层各头之间差异很大：有些头关注图像的大部分区域，另一些只关注查询位置附近的小区域。随深度增加，所有头的注意力距离都增大。在网络后半部分，大多数头在 token 之间广泛关注。</p>
+<figure id="fig11"><img src="images/fig11.png" alt="Size of attended area by head and network depth">
+<figcaption><span class="lab">图 11</span>按注意力头与网络深度给出的受关注区域大小。注意力距离在 128 张示例图像上计算：对查询像素与其他所有像素之间的距离按注意力权重加权取平均。每个点表示某一层 16 个头之一在各图像上的平均注意力距离。图像宽度为 224 像素。</figcaption></figure>
+
+<h3 id="appd8">D.8 注意力图</h3>
+<p>为计算输出 token 到输入空间的注意力图（图 6 与图 14），我们使用了 Attention Rollout (Abnar &amp; Zuidema, 2020)。简言之，我们把 ViT-L/16 在所有头上的注意力权重取平均，然后递归地把所有层的权重矩阵相乘。这解释了注意力在所有层上跨 token 的混合。</p>
+<figure id="fig14"><img src="images/fig14.png" alt="Further example attention maps">
+<figcaption><span class="lab">图 14</span>与图 6 类似的更多注意力图示例（随机选取）。</figcaption></figure>
+
+<h3 id="appd9">D.9 ObjectNet 结果</h3>
+<p>我们也按 Kolesnikov et al. (2020) 的评估设置，在 ObjectNet 基准上评估旗舰模型 ViT-H/14，得到 82.1% 的 top-5 准确率与 61.7% 的 top-1 准确率。</p>
+
+<h3 id="appd10">D.10 VTAB 分解</h3>
+<p>表 9 给出在每个 VTAB-1k 任务上取得的分数。</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:11.5px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:4px 6px"></td>
+<td style="border:1px solid var(--line);padding:4px 6px">Caltech101</td>
+<td style="border:1px solid var(--line);padding:4px 6px">CIFAR-100</td>
+<td style="border:1px solid var(--line);padding:4px 6px">DTD</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Flowers102</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Pets</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Sun397</td>
+<td style="border:1px solid var(--line);padding:4px 6px">SVHN</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Camelyon</td>
+<td style="border:1px solid var(--line);padding:4px 6px">EuroSAT</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Resisc45</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Retinopathy</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Clevr-Count</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Clevr-Dist</td>
+<td style="border:1px solid var(--line);padding:4px 6px">DMLab</td>
+<td style="border:1px solid var(--line);padding:4px 6px">dSpr-Loc</td>
+<td style="border:1px solid var(--line);padding:4px 6px">dSpr-Ori</td>
+<td style="border:1px solid var(--line);padding:4px 6px">KITTI-Dist</td>
+<td style="border:1px solid var(--line);padding:4px 6px">sNORB-Azim</td>
+<td style="border:1px solid var(--line);padding:4px 6px">sNORB-Elev</td>
+<td style="border:1px solid var(--line);padding:4px 6px">Mean</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:4px 6px">ViT-H/14 (JFT)</td><td style="border:1px solid var(--line);padding:4px 6px">95.3</td><td style="border:1px solid var(--line);padding:4px 6px">85.5</td><td style="border:1px solid var(--line);padding:4px 6px">75.2</td><td style="border:1px solid var(--line);padding:4px 6px">99.7</td><td style="border:1px solid var(--line);padding:4px 6px">97.2</td><td style="border:1px solid var(--line);padding:4px 6px">65.0</td><td style="border:1px solid var(--line);padding:4px 6px">88.9</td><td style="border:1px solid var(--line);padding:4px 6px">83.3</td><td style="border:1px solid var(--line);padding:4px 6px">96.7</td><td style="border:1px solid var(--line);padding:4px 6px">91.4</td><td style="border:1px solid var(--line);padding:4px 6px">76.6</td><td style="border:1px solid var(--line);padding:4px 6px">91.7</td><td style="border:1px solid var(--line);padding:4px 6px">63.8</td><td style="border:1px solid var(--line);padding:4px 6px">53.1</td><td style="border:1px solid var(--line);padding:4px 6px">79.4</td><td style="border:1px solid var(--line);padding:4px 6px">63.3</td><td style="border:1px solid var(--line);padding:4px 6px">84.5</td><td style="border:1px solid var(--line);padding:4px 6px">33.2</td><td style="border:1px solid var(--line);padding:4px 6px">51.2</td><td style="border:1px solid var(--line);padding:4px 6px">77.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 6px">ViT-L/16 (JFT)</td><td style="border:1px solid var(--line);padding:4px 6px">95.4</td><td style="border:1px solid var(--line);padding:4px 6px">81.9</td><td style="border:1px solid var(--line);padding:4px 6px">74.3</td><td style="border:1px solid var(--line);padding:4px 6px">99.7</td><td style="border:1px solid var(--line);padding:4px 6px">96.7</td><td style="border:1px solid var(--line);padding:4px 6px">63.5</td><td style="border:1px solid var(--line);padding:4px 6px">87.4</td><td style="border:1px solid var(--line);padding:4px 6px">83.6</td><td style="border:1px solid var(--line);padding:4px 6px">96.5</td><td style="border:1px solid var(--line);padding:4px 6px">89.7</td><td style="border:1px solid var(--line);padding:4px 6px">77.1</td><td style="border:1px solid var(--line);padding:4px 6px">86.4</td><td style="border:1px solid var(--line);padding:4px 6px">63.1</td><td style="border:1px solid var(--line);padding:4px 6px">49.7</td><td style="border:1px solid var(--line);padding:4px 6px">74.5</td><td style="border:1px solid var(--line);padding:4px 6px">60.5</td><td style="border:1px solid var(--line);padding:4px 6px">82.2</td><td style="border:1px solid var(--line);padding:4px 6px">36.2</td><td style="border:1px solid var(--line);padding:4px 6px">51.1</td><td style="border:1px solid var(--line);padding:4px 6px">76.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 6px">ViT-L/16 (I21k)</td><td style="border:1px solid var(--line);padding:4px 6px">90.8</td><td style="border:1px solid var(--line);padding:4px 6px">84.1</td><td style="border:1px solid var(--line);padding:4px 6px">74.1</td><td style="border:1px solid var(--line);padding:4px 6px">99.3</td><td style="border:1px solid var(--line);padding:4px 6px">92.7</td><td style="border:1px solid var(--line);padding:4px 6px">61.0</td><td style="border:1px solid var(--line);padding:4px 6px">80.9</td><td style="border:1px solid var(--line);padding:4px 6px">82.5</td><td style="border:1px solid var(--line);padding:4px 6px">95.6</td><td style="border:1px solid var(--line);padding:4px 6px">85.2</td><td style="border:1px solid var(--line);padding:4px 6px">75.3</td><td style="border:1px solid var(--line);padding:4px 6px">70.3</td><td style="border:1px solid var(--line);padding:4px 6px">56.1</td><td style="border:1px solid var(--line);padding:4px 6px">41.9</td><td style="border:1px solid var(--line);padding:4px 6px">74.7</td><td style="border:1px solid var(--line);padding:4px 6px">64.9</td><td style="border:1px solid var(--line);padding:4px 6px">79.9</td><td style="border:1px solid var(--line);padding:4px 6px">30.5</td><td style="border:1px solid var(--line);padding:4px 6px">41.7</td><td style="border:1px solid var(--line);padding:4px 6px">72.7</td></tr>
+</table></div>
+<p class="hint" style="font-size:12.5px;margin:0 0 20px">表 9　各 VTAB-1k 任务上的性能分解。</p>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　模型概览：切块 → 线性嵌入 → 加位置嵌入 → 标准 Transformer 编码器（2 节）</li>
+<li><a href="#fig2">图 2</a>　VTAB 性能在 Natural / Specialized / Structured 三组的分解（4.2 节）</li>
+<li><a href="#fig3">图 3</a>　迁移到 ImageNet：预训练数据集规模的影响（4.3 节）</li>
+<li><a href="#fig4">图 4</a>　ImageNet 线性少样本评估与预训练规模的关系（4.3 节）</li>
+<li><a href="#fig5">图 5</a>　性能与预训练计算量：ViT / ResNet / 混合模型（4.4 节）</li>
+<li><a href="#fig6">图 6</a>　输出 token 到输入空间的注意力示例（4.5 节）</li>
+<li><a href="#fig7">图 7</a>　嵌入滤波器、位置嵌入相似性与注意力距离（4.5 节）</li>
+<li><a href="#fig8">图 8</a>　Transformer 不同模型维度的规模研究（附录 D.2）</li>
+<li><a href="#fig9">图 9</a>　class token 与全局平均池化分类器的比较（附录 D.3）</li>
+<li><a href="#fig10">图 10</a>　不同超参数训练所得模型的位置嵌入（附录 D.4）</li>
+<li><a href="#fig11">图 11</a>　按注意力头与网络深度的受关注区域大小（附录 D.7）</li>
+<li><a href="#fig12">图 12</a>　各架构的实际墙钟时间与最大单核批量大小（附录 D.5）</li>
+<li><a href="#fig13">图 13</a>　轴向注意力模型的性能与速度（附录 D.6）</li>
+<li><a href="#fig14">图 14</a>　更多注意力图示例（附录 D.8）</li>
+</ol>
+<p style="margin-top:10px">表 1 模型变体（4.1 节）、表 2 与当时最好水平的比较（4.2 节）、表 3 训练超参数、表 4 微调超参数（附录 B.1–B.1.1）、表 5 不同预训练规模下的 Top-1 准确率、表 6 规模实验详细结果（附录 C）、表 7 ResNet 上 Adam 与 SGD 的对比（附录 D.1）、表 8 位置嵌入消融（附录 D.4）、表 9 VTAB-1k 分解（附录 D.10）已在正文中直接排出。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译；原文脚注按位置保留并译出。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

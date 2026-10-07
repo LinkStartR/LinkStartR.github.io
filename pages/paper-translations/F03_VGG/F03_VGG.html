@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用于大规模图像识别的超深卷积网络 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">用于大规模图像识别的超深卷积网络</span><span>Simonyan 和 Zisserman，2015 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 卷积网络配置</a>
+<a class="sub" href="#s21">2.1 架构</a>
+<a class="sub" href="#s22">2.2 配置</a>
+<a class="sub" href="#s23">2.3 讨论</a>
+<a href="#s3">3 分类框架</a>
+<a class="sub" href="#s31">3.1 训练</a>
+<a class="sub" href="#s32">3.2 测试</a>
+<a class="sub" href="#s33">3.3 实现细节</a>
+<a href="#s4">4 分类实验</a>
+<a class="sub" href="#s41">4.1 单尺度评估</a>
+<a class="sub" href="#s42">4.2 多尺度评估</a>
+<a class="sub" href="#s43">4.3 多裁剪评估</a>
+<a class="sub" href="#s44">4.4 ConvNet 融合</a>
+<a class="sub" href="#s45">4.5 与当时最好水平的比较</a>
+<a href="#s5">5 结论</a>
+<a href="#sack">致谢</a>
+<a href="#appA">附录 A　定位</a>
+<a class="sub" href="#appA1">A.1 定位 ConvNet</a>
+<a class="sub" href="#appA2">A.2 定位实验</a>
+<a href="#appB">附录 B　超深特征的泛化</a>
+<a href="#appC">附录 C　论文修订</a>
+<hr>
+<a href="#refs">参考文献</a>
+<hr>
+<a href="#figs">表格索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 用于大规模图像识别的超深卷积网络 | Simonyan 和 Zisserman，2015 · 中文翻译-->
+<h1 class="doc">用于大规模图像识别的超深卷积网络<span class="en">Very Deep Convolutional Networks for Large-Scale Image Recognition</span></h1>
+<p class="meta">Karen Simonyan · Andrew Zisserman（牛津大学工程科学系，视觉几何组 VGG）<br>arXiv:1409.1556 · ICLR 2015 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>本文研究卷积网络深度对大规模图像识别准确率的影响。我们的主要贡献是对「用极小的 3×3 卷积滤波器、逐步加深」的网络做了一次彻底的评估，结果表明：把深度推到 16–19 个带权重的层，可以相对此前的配置取得显著提升。这些发现是我们参加 ImageNet Challenge 2014 的基础，团队据此在定位（localisation）与分类两个赛道分别获得第一和第二名。我们还表明，我们的表示能很好地泛化到其他数据集，并在那些数据集上取得最好结果。我们公开了两个性能最好的 ConvNet 模型，以方便后续对深度视觉表示的研究。</p>
+</div>
+
+<h2 id="s1">1 引言</h2>
+<p>卷积网络（ConvNet）近来在大规模图像与视频识别上取得了巨大成功（Krizhevsky 等, 2012; Zeiler &amp; Fergus, 2013; Sermanet 等, 2014; Simonyan &amp; Zisserman, 2014），这得益于大规模的公开图像库（如 ImageNet（Deng 等, 2009））以及高性能计算系统（如 GPU 或大规模分布式集群（Dean 等, 2012））。在深度视觉识别架构的推进中，ImageNet 大规模视觉识别挑战赛（ILSVRC）（Russakovsky 等, 2014）扮演了重要角色：它作为试验场，见证了几代大规模图像分类系统，从高维浅层特征编码（Perronnin 等, 2010）（ILSVRC-2011 冠军）一直到深度 ConvNet（Krizhevsky 等, 2012）（ILSVRC-2012 冠军）。</p>
+<p>随着 ConvNet 在计算机视觉领域逐渐变成常规工具，人们做了许多尝试来改进 Krizhevsky 等（2012）的原始架构，以求获得更好的准确率。例如，ILSVRC-2013 上表现最好的提交（Zeiler &amp; Fergus, 2013; Sermanet 等, 2014）在第一卷积层使用了更小的感受野窗口和更小的步长。另一条改进路线则是把网络在整个图像上、在多个尺度上做稠密（densely）训练与测试（Sermanet 等, 2014; Howard, 2014）。本文关注 ConvNet 架构设计中另一个重要方面——它的深度。为此，我们固定架构中的其他参数，通过增加更多卷积层来稳步加深网络；之所以可行，是因为所有层都使用极小的 3×3 卷积滤波器。</p>
+<p>结果，我们得到了准确率显著更高的 ConvNet 架构：它们不仅在 ILSVRC 的分类与定位任务上达到当时最好水平，也适用于其他图像识别数据集——即使只是作为相对简单的流程的一部分（例如用线性 SVM 对深度特征做分类、不做微调），也能取得出色表现。我们公开了两个性能最好的模型<sup>1</sup>，以便后续研究。</p>
+<p>本文其余部分安排如下。第 2 节描述我们的 ConvNet 配置；第 3 节给出图像分类训练与评估的细节，第 4 节在 ILSVRC 分类任务上比较各个配置，第 5 节总结全文。为完整起见，我们在附录 A 中描述并评估我们的 ILSVRC-2014 物体定位系统，在附录 B 中讨论超深特征对其他数据集的泛化，附录 C 列出论文的主要修订。</p>
+
+<h2 id="s2">2 卷积网络配置</h2>
+<p>为了在公平的设置下衡量「加深 ConvNet」带来的改进，我们所有 ConvNet 层配置都依照同样的原则设计，灵感来自 Ciresan 等（2011）与 Krizhevsky 等（2012）。本节先描述我们 ConvNet 配置的通用布局（2.1 节），再详细给出评估中使用的具体配置（2.2 节），随后在 2.3 节讨论我们的设计选择并与此前工作比较。</p>
+
+<h3 id="s21">2.1 架构</h3>
+<p>训练时，ConvNet 的输入是固定大小的 224×224 RGB 图像。我们唯一做的预处理，是从每个像素中减去在训练集上算出的 RGB 均值。图像经过一串卷积（conv.）层，其中我们使用感受野极小的滤波器：3×3（这是能捕捉「左/右、上/下、中心」这一概念的最小尺寸）。在其中一个配置中，我们还使用 1×1 卷积滤波器，它可以看作对输入通道做线性变换（其后接非线性）。卷积步长固定为 1 个像素；卷积层输入的空间填充（padding）使得卷积后空间分辨率保持不变，即 3×3 卷积层的填充为 1 个像素。空间池化由 5 个最大池化层完成，它们跟在部分卷积层之后（并非所有卷积层后面都跟最大池化）。最大池化在 2×2 像素窗口上进行，步长为 2。</p>
+<p>一堆卷积层（在不同架构中深度不同）之后接三个全连接（FC）层：前两个各有 4096 个通道，第三个执行 1000 类 ILSVRC 分类，因而包含 1000 个通道（每类一个）。最后一层是 soft-max 层。全连接层的配置在所有网络中相同。</p>
+<p>所有隐藏层都配备修正（ReLU（Krizhevsky 等, 2012））非线性。我们注意到，除一个网络外，我们的网络都不含局部响应归一化（LRN）（Krizhevsky 等, 2012）：如第 4 节所示，这种归一化在 ILSVRC 数据集上并不改善性能，反而增加内存消耗与计算时间。在用到 LRN 层的地方，其参数取自（Krizhevsky 等, 2012）。</p>
+
+<h3 id="s22">2.2 配置</h3>
+<p>本文评估的 ConvNet 配置见表 1，每列一个。下文我们按名称（A–E）指代这些网络。所有配置都遵循 2.1 节的通用设计，只在深度上不同：从网络 A 的 11 个带权重的层（8 个卷积层 + 3 个 FC 层）到网络 E 的 19 个带权重的层（16 个卷积层 + 3 个 FC 层）。卷积层的宽度（通道数）相当小，第一层从 64 开始，每经过一次最大池化就翻一倍，直到达到 512。</p>
+<p>表 2 报告了各配置的参数数量。尽管深度很大，我们网络的权重数量并不大于一个卷积层更宽、感受野更大的较浅网络（（Sermanet 等, 2014）中有 144M 个权重）。</p>
+<div style="overflow-x:auto">
+<style>
+#t1{border-collapse:collapse;font-size:12.5px;margin:16px 0}
+#t1 td{border:1px solid var(--line);padding:5px 8px;vertical-align:top}
+#t1 td.c{text-align:center}
+</style>
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table id="t1">
+<tr><td colspan="6" class="c"><b>ConvNet 配置</b></td></tr>
+<tr><td class="c"><b>A</b></td><td class="c"><b>A-LRN</b></td><td class="c"><b>B</b></td><td class="c"><b>C</b></td><td class="c"><b>D</b></td><td class="c"><b>E</b></td></tr>
+<tr><td class="c">11 权重层</td><td class="c">11 权重层</td><td class="c">13 权重层</td><td class="c">16 权重层</td><td class="c">16 权重层</td><td class="c">19 权重层</td></tr>
+<tr><td colspan="6" class="c">输入（224 × 224 RGB 图像）</td></tr>
+<tr><td>conv3-64</td><td>conv3-64 <b>LRN</b></td><td>conv3-64<br><b>conv3-64</b></td><td>conv3-64<br>conv3-64</td><td>conv3-64<br>conv3-64</td><td>conv3-64<br>conv3-64</td></tr>
+<tr><td colspan="6" class="c">maxpool</td></tr>
+<tr><td>conv3-128</td><td>conv3-128</td><td>conv3-128<br><b>conv3-128</b></td><td>conv3-128<br>conv3-128</td><td>conv3-128<br>conv3-128</td><td>conv3-128<br>conv3-128</td></tr>
+<tr><td colspan="6" class="c">maxpool</td></tr>
+<tr><td>conv3-256<br>conv3-256</td><td>conv3-256<br>conv3-256</td><td>conv3-256<br><b>conv3-256</b></td><td>conv3-256<br>conv3-256<br><b>conv1-256</b></td><td>conv3-256<br>conv3-256<br><b>conv3-256</b></td><td>conv3-256<br>conv3-256<br>conv3-256<br><b>conv3-256</b></td></tr>
+<tr><td colspan="6" class="c">maxpool</td></tr>
+<tr><td>conv3-512<br>conv3-512</td><td>conv3-512<br>conv3-512</td><td>conv3-512<br><b>conv3-512</b></td><td>conv3-512<br>conv3-512<br><b>conv1-512</b></td><td>conv3-512<br>conv3-512<br><b>conv3-512</b></td><td>conv3-512<br>conv3-512<br>conv3-512<br><b>conv3-512</b></td></tr>
+<tr><td colspan="6" class="c">maxpool</td></tr>
+<tr><td>conv3-512<br>conv3-512</td><td>conv3-512<br>conv3-512</td><td>conv3-512<br><b>conv3-512</b></td><td>conv3-512<br>conv3-512<br><b>conv1-512</b></td><td>conv3-512<br>conv3-512<br><b>conv3-512</b></td><td>conv3-512<br>conv3-512<br>conv3-512<br><b>conv3-512</b></td></tr>
+<tr><td colspan="6" class="c">maxpool</td></tr>
+<tr><td colspan="6" class="c">FC-4096</td></tr>
+<tr><td colspan="6" class="c">FC-4096</td></tr>
+<tr><td colspan="6" class="c">FC-1000</td></tr>
+<tr><td colspan="6" class="c">soft-max</td></tr>
+</table></div>
+
+<p style="font-size:13.5px;color:#565d67">表 1　ConvNet 配置（按列给出）。配置深度从左（A）到右（E）递增，因为不断加入新层（新增层在原文中以粗体标出）。卷积层参数记作「conv⟨感受野大小⟩-⟨通道数⟩」。为简洁起见未标出 ReLU 激活函数。</p>
+<p style="font-size:13.5px;color:#565d67">表 2　参数数量（单位：百万）。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:14px;margin:8px 0 24px">
+<tr><td style="border:1px solid var(--line);padding:6px 14px"><b>网络</b></td><td style="border:1px solid var(--line);padding:6px 14px">A, A-LRN</td><td style="border:1px solid var(--line);padding:6px 14px">B</td><td style="border:1px solid var(--line);padding:6px 14px">C</td><td style="border:1px solid var(--line);padding:6px 14px">D</td><td style="border:1px solid var(--line);padding:6px 14px">E</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 14px">参数数量</td><td style="border:1px solid var(--line);padding:6px 14px">133</td><td style="border:1px solid var(--line);padding:6px 14px">133</td><td style="border:1px solid var(--line);padding:6px 14px">134</td><td style="border:1px solid var(--line);padding:6px 14px">138</td><td style="border:1px solid var(--line);padding:6px 14px">144</td></tr>
+</table></div>
+</div>
+
+<h3 id="s23">2.3 讨论</h3>
+<p>我们的 ConvNet 配置与 ILSVRC-2012（Krizhevsky 等, 2012）和 ILSVRC-2013（Zeiler &amp; Fergus, 2013; Sermanet 等, 2014）竞赛中表现最好的参赛方案相当不同。我们不是在前几个卷积层使用相对大的感受野（例如（Krizhevsky 等, 2012）的 11×11、步长 4，或（Zeiler &amp; Fergus, 2013; Sermanet 等, 2014）的 7×7、步长 2），而是在整个网络中使用极小的 3×3 感受野，在每个像素上与输入做卷积（步长为 1）。很容易看出：两个 3×3 卷积层堆叠（中间没有空间池化）的有效感受野是 5×5；三个这样的层则有 7×7 的有效感受野。那么，用例如三个 3×3 卷积层的堆叠替代单个 7×7 层，我们得到了什么？第一，我们引入了三个非线性修正层而不是一个，使决策函数更具判别力。第二，我们减少了参数数量：假设一个三层 3×3 卷积堆叠的输入和输出都是 C 个通道，该堆叠由 3(3<sup>2</sup>C<sup>2</sup>) = 27C<sup>2</sup> 个权重参数化；而单个 7×7 卷积层需要 7<sup>2</sup>C<sup>2</sup> = 49C<sup>2</sup> 个参数，也就是多 81%。这可以看作对 7×7 卷积滤波器施加了一种正则化，迫使它们通过 3×3 滤波器（中间注入非线性）分解。</p>
+<p>加入 1×1 卷积层（配置 C，表 1）是一种在不影响卷积层感受野的前提下增加决策函数非线性的方式。尽管在我们的情形中 1×1 卷积本质上只是到同维空间的线性投影（输入与输出通道数相同），修正函数仍引入了额外非线性。需要指出的是，1×1 卷积层近来已被 Lin 等（2014）的「Network in Network」架构使用。</p>
+<p>小尺寸卷积滤波器此前已被 Ciresan 等（2011）使用，但他们的网络比我们浅得多，也没有在大规模 ILSVRC 数据集上评估。Goodfellow 等（2014）把深度 ConvNet（11 个带权重的层）用于街景门牌号识别，表明加深能带来更好的性能。GoogLeNet（Szegedy 等, 2014）是 ILSVRC-2014 分类任务表现最好的参赛方案之一，与我们的工作独立开发，但相似之处在于它也基于超深 ConvNet（22 个带权重的层）与小卷积滤波器（除了 3×3，他们还使用 1×1 和 5×5 卷积）。不过他们的网络拓扑比我们更复杂，并且在前几层更激进地降低特征图的空间分辨率以减少计算量。如 4.5 节所示，在单网络分类准确率上，我们的模型优于 Szegedy 等（2014）的模型。</p>
+<h2 id="s3">3 分类框架</h2>
+<p>上一节给出了网络配置的细节，本节描述分类 ConvNet 训练与评估的细节。</p>
+
+<h3 id="s31">3.1 训练</h3>
+<p>ConvNet 的训练流程总体上遵循 Krizhevsky 等（2012）（不同之处在于输入裁剪取自多尺度训练图像，见下文）。具体而言，训练通过小批量梯度下降（基于反向传播（LeCun 等, 1989））加动量来优化多项逻辑回归目标。批量大小设为 256，动量 0.9。训练通过权重衰减（L<sub>2</sub> 惩罚乘子设为 5 · 10<sup>−4</sup>）以及前两个全连接层的 dropout 正则化（dropout 比例 0.5）来正则化。学习率初始设为 10<sup>−2</sup>，之后每当验证集准确率不再提升就除以 10。学习率总共衰减 3 次，训练在 370K 次迭代（74 个 epoch）后停止。我们猜测：尽管与（Krizhevsky 等, 2012）相比我们的网络参数更多、深度更大，但它们需要更少的 epoch 就收敛，原因是：(a) 更大的深度与更小的卷积滤波器尺寸带来了隐式正则化；(b) 某些层做了预初始化。</p>
+<p>网络权重的初始化很重要，因为糟糕的初始化会由于深度网络中梯度的不稳定而让学习停滞。为绕开这个问题，我们先训练配置 A（表 1）——它足够浅，可以随机初始化地训练。随后训练更深的架构时，我们用网络 A 的层来初始化前四个卷积层与最后三个全连接层（中间层随机初始化）。我们没有为预初始化的层降低学习率，允许它们在学习中变化。对于随机初始化（在适用处），我们从零均值、方差 10<sup>−2</sup> 的正态分布中采样权重。偏置初始化为零。值得一提的是，论文提交之后我们发现，使用 Glorot &amp; Bengio（2010）的随机初始化流程就可以不做预训练地初始化权重。</p>
+<p>为了得到固定大小的 224×224 ConvNet 输入图像，我们从缩放后的训练图像中随机裁剪（每次 SGD 迭代每张图裁一个）。为进一步增强训练集，裁剪图像还会做随机水平翻转与随机 RGB 颜色偏移（Krizhevsky 等, 2012）。训练图像缩放方式见下文。</p>
+<p><b>训练图像尺寸。</b>设 S 为各向同性缩放后训练图像的最短边，ConvNet 输入从该图像中裁出（我们也把 S 称为训练尺度）。裁剪尺寸固定为 224×224，而 S 原则上可以取任何不小于 224 的值：当 S = 224 时，裁剪会捕捉整幅图像的统计量，完全覆盖训练图像的最短边；当 S ≫ 224 时，裁剪只对应图像的一小部分，包含一个小物体或物体的一个部分。</p>
+<p>我们考虑两种设定训练尺度 S 的方式。第一种是固定 S，对应单尺度训练（注意，采样裁剪中的图像内容仍然可以体现多尺度的图像统计量）。实验中我们评估了在两个固定尺度上训练的模型：S = 256（此前工作广泛使用（Krizhevsky 等, 2012; Zeiler &amp; Fergus, 2013; Sermanet 等, 2014））与 S = 384。给定一个 ConvNet 配置，我们先以 S = 256 训练网络。为加快 S = 384 网络的训练，它用 S = 256 预训练得到的权重初始化，并使用更小的初始学习率 10<sup>−3</sup>。</p>
+<p>设定 S 的第二种方式是多尺度训练：每张训练图像各自按从某一范围 [S<sub>min</sub>, S<sub>max</sub>] 中随机采样的 S 缩放（我们使用 S<sub>min</sub> = 256、S<sub>max</sub> = 512）。由于图像中的物体尺寸各异，在训练中考虑到这一点是有益的。这也可以看作通过尺度抖动（scale jittering）做训练集增强：训练单个模型识别大范围尺度上的物体。出于速度考虑，我们训练多尺度模型的方式是对同配置的单尺度模型（以固定 S = 384 预训练）做全层微调。</p>
+
+<h3 id="s32">3.2 测试</h3>
+<p>测试时，给定训练好的 ConvNet 与一张输入图像，分类方式如下。首先把图像各向同性地缩放到预先设定的最短边，记为 Q（我们也把它称为测试尺度）。注意 Q 不一定等于训练尺度 S（如第 4 节所示，对每个 S 使用多个 Q 值会带来更好的性能）。然后，以类似（Sermanet 等, 2014）的方式把网络稠密地施加到缩放后的测试图像上。具体而言，先把全连接层转换为卷积层（第一个 FC 层转为 7×7 卷积层，后两个 FC 层转为 1×1 卷积层）。得到的全卷积网络随后被施加到整张（未裁剪的）图像上。结果是一张类别得分图，其通道数等于类别数，空间分辨率可变、取决于输入图像大小。最后，为得到该图像固定大小的类别得分向量，对类别得分图做空间平均（sum-pooling）。我们还通过对图像做水平翻转来增强测试集：把原图与翻转图像的 soft-max 类别后验平均，得到该图像的最终得分。</p>
+<p>由于全卷积网络是施加在整张图像上的，测试时无需采样多个裁剪（Krizhevsky 等, 2012），而后者效率较低，因为每个裁剪都需要重新计算网络。与此同时，像 Szegedy 等（2014）那样使用大量裁剪可以提高准确率，因为与全卷积网络相比，它对输入图像做了更细的采样。此外，由于卷积边界条件不同，多裁剪评估与稠密评估是互补的：把 ConvNet 施加到一个裁剪上时，卷积后的特征图用零填充；而在稠密评估的情形下，同一个裁剪的填充天然来自图像的相邻部分（这既源于卷积也源于空间池化），这显著增大了网络的整体感受野，从而捕捉到更多上下文。虽然我们认为实践中多个裁剪带来的计算时间增加不足以抵偿潜在的准确率收益，为便于参考，我们也用每尺度 50 个裁剪（5×5 规则网格加 2 次翻转）评估网络，3 个尺度共 150 个裁剪，与 Szegedy 等（2014）使用的 4 个尺度 144 个裁剪相当。</p>
+
+<h3 id="s33">3.3 实现细节</h3>
+<p>我们的实现基于公开的 C++ Caffe 工具箱（Jia, 2013）（从 2013 年 12 月的分支出发），但包含若干重要修改，使我们能够在单机多块 GPU 上训练与评估，也能在多个尺度上对全尺寸（未裁剪）图像做训练与评估（如上所述）。多 GPU 训练利用数据并行：把每个训练图像批次切分成若干 GPU 批次，在各 GPU 上并行处理。各 GPU 批次梯度算完后取平均，得到整个批次的梯度。梯度计算在各 GPU 之间是同步的，因此结果与在单块 GPU 上训练完全相同。</p>
+<p>虽然近来提出了更复杂的 ConvNet 训练加速方法（Krizhevsky, 2014），它们针对网络不同层使用模型并行与数据并行，但我们发现，我们概念上简单得多的方案在一台现成的 4-GPU 系统上相对单 GPU 已经带来 3.75 倍的加速。在配备四块 NVIDIA Titan Black GPU 的系统上，训练单个网络需要 2–3 周，视架构而定。</p>
+
+<h2 id="s4">4 分类实验</h2>
+<p><b>数据集。</b>本节展示上述 ConvNet 架构在 ILSVRC-2012 数据集（用于 ILSVRC 2012–2014 挑战赛）上取得的图像分类结果。该数据集包含 1000 类的图像，分为三个集合：训练集（1.3M 张图像）、验证集（50K 张图像）与测试集（100K 张图像，类别标签未公开）。分类性能用两个指标衡量：top-1 与 top-5 误差。前者是多类分类误差，即被错误分类的图像比例；后者是 ILSVRC 采用的主要评价标准，计算的是「真实类别不在预测的前 5 类之中」的图像比例。</p>
+<p>大多数实验我们用验证集作为测试集。某些实验也在测试集上进行，并作为「VGG」团队提交给 ILSVRC-2014 竞赛的官方 ILSVRC 服务器（Russakovsky 等, 2014）。</p>
+
+<h3 id="s41">4.1 单尺度评估</h3>
+<p>我们先在单一尺度上评估 2.2 节所述层配置的各个 ConvNet 模型的性能。测试图像尺寸设定如下：固定 S 时取 Q = S；S ∈ [S<sub>min</sub>, S<sub>max</sub>] 抖动时取 Q = 0.5(S<sub>min</sub> + S<sub>max</sub>)。结果见表 3。</p>
+<p>首先，我们注意到使用局部响应归一化（A-LRN 网络）相比没有任何归一化层的模型 A 并无改善。因此我们在更深的架构（B–E）中不再使用归一化。</p>
+<p>其次，我们观察到分类误差随 ConvNet 深度增加而下降：从 A 的 11 层到 E 的 19 层。值得注意的是，尽管深度相同，配置 C（含三个 1×1 卷积层）的表现不如在网络中全程使用 3×3 卷积层的配置 D。这表明：额外的非线性确实有帮助（C 优于 B），但用具有非平凡感受野的卷积滤波器捕捉空间上下文同样重要（D 优于 C）。当深度达到 19 层时，我们架构的误差率趋于饱和，但对更大的数据集，更深的模型也许仍有益处。我们还将网络 B 与一个含五个 5×5 卷积层的浅层网络做了比较：后者由 B 把每一对 3×3 卷积层替换为单个 5×5 卷积层得到（按 2.3 节的说明，两者感受野相同）。测得该浅层网络的 top-1 误差比 B 高 7%（在中心裁剪上），这确认了「带小滤波器的深层网络优于带更大滤波器的浅层网络」。</p>
+<p>最后，训练时的尺度抖动（S ∈ [256; 512]）带来的结果显著优于在固定最短边（S = 256 或 S = 384）图像上训练的结果，尽管测试时只用单一尺度。这确认了用尺度抖动做训练集增强确实有助于捕捉多尺度图像统计量。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2">ConvNet 配置（表 1）</td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="2">图像最短边</td>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2">top-1 验证误差 (%)</td>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2">top-5 验证误差 (%)</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">训练 (S)</td><td style="border:1px solid var(--line);padding:5px 10px">测试 (Q)</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">A</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">29.6</td><td style="border:1px solid var(--line);padding:5px 10px">10.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">A-LRN</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">29.7</td><td style="border:1px solid var(--line);padding:5px 10px">10.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">B</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">28.7</td><td style="border:1px solid var(--line);padding:5px 10px">9.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" rowspan="3">C</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">28.1</td><td style="border:1px solid var(--line);padding:5px 10px">9.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">28.1</td><td style="border:1px solid var(--line);padding:5px 10px">9.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">[256;512]</td><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">27.3</td><td style="border:1px solid var(--line);padding:5px 10px">8.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" rowspan="3">D</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">27.0</td><td style="border:1px solid var(--line);padding:5px 10px">8.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">26.8</td><td style="border:1px solid var(--line);padding:5px 10px">8.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">[256;512]</td><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">25.6</td><td style="border:1px solid var(--line);padding:5px 10px">8.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" rowspan="3">E</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">27.3</td><td style="border:1px solid var(--line);padding:5px 10px">9.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">26.9</td><td style="border:1px solid var(--line);padding:5px 10px">8.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">[256;512]</td><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">25.5</td><td style="border:1px solid var(--line);padding:5px 10px">8.0</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 3　ConvNet 在单一测试尺度下的性能。</p>
+
+<h3 id="s42">4.2 多尺度评估</h3>
+<p>在单一尺度上评估完 ConvNet 模型后，我们接下来考察测试时尺度抖动的效果。它指的是把模型跑在测试图像的若干缩放版本上（对应不同的 Q 值），再对得到的类别后验取平均。考虑到训练与测试尺度差异过大会导致性能下降，用固定 S 训练的模型在三个与训练尺度接近的测试图像尺寸上评估：Q = {S − 32, S, S + 32}。与此同时，训练时的尺度抖动让网络在测试时能应用于更宽的尺度范围，因此用可变 S ∈ [S<sub>min</sub>; S<sub>max</sub>] 训练的模型在更大的尺寸范围上评估：Q = {S<sub>min</sub>, 0.5(S<sub>min</sub> + S<sub>max</sub>), S<sub>max</sub>}。</p>
+<p>表 4 的结果表明，测试时的尺度抖动带来更好的性能（与表 3 中同一模型在单尺度上评估相比）。和之前一样，最深的配置（D 和 E）表现最好，且尺度抖动优于用固定最短边 S 训练。我们在验证集上最好的单网络性能是 top-1/top-5 误差 24.8%/7.5%（表 4 中以粗体标出）。在测试集上，配置 E 达到 7.3% 的 top-5 误差。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2">ConvNet 配置（表 1）</td>
+<td style="border:1px solid var(--line);padding:5px 10px" colspan="2">图像最短边</td>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2">top-1 验证误差 (%)</td>
+<td style="border:1px solid var(--line);padding:5px 10px" rowspan="2">top-5 验证误差 (%)</td>
+</tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">训练 (S)</td><td style="border:1px solid var(--line);padding:5px 10px">测试 (Q)</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">B</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">224,256,288</td><td style="border:1px solid var(--line);padding:5px 10px">28.2</td><td style="border:1px solid var(--line);padding:5px 10px">9.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" rowspan="3">C</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">224,256,288</td><td style="border:1px solid var(--line);padding:5px 10px">27.7</td><td style="border:1px solid var(--line);padding:5px 10px">9.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">352,384,416</td><td style="border:1px solid var(--line);padding:5px 10px">27.8</td><td style="border:1px solid var(--line);padding:5px 10px">9.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">[256; 512]</td><td style="border:1px solid var(--line);padding:5px 10px">256,384,512</td><td style="border:1px solid var(--line);padding:5px 10px">26.3</td><td style="border:1px solid var(--line);padding:5px 10px">8.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" rowspan="3">D</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">224,256,288</td><td style="border:1px solid var(--line);padding:5px 10px">26.6</td><td style="border:1px solid var(--line);padding:5px 10px">8.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">352,384,416</td><td style="border:1px solid var(--line);padding:5px 10px">26.5</td><td style="border:1px solid var(--line);padding:5px 10px">8.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">[256; 512]</td><td style="border:1px solid var(--line);padding:5px 10px">256,384,512</td><td style="border:1px solid var(--line);padding:5px 10px"><b>24.8</b></td><td style="border:1px solid var(--line);padding:5px 10px"><b>7.5</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" rowspan="3">E</td><td style="border:1px solid var(--line);padding:5px 10px">256</td><td style="border:1px solid var(--line);padding:5px 10px">224,256,288</td><td style="border:1px solid var(--line);padding:5px 10px">26.9</td><td style="border:1px solid var(--line);padding:5px 10px">8.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">384</td><td style="border:1px solid var(--line);padding:5px 10px">352,384,416</td><td style="border:1px solid var(--line);padding:5px 10px">26.7</td><td style="border:1px solid var(--line);padding:5px 10px">8.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">[256; 512]</td><td style="border:1px solid var(--line);padding:5px 10px">256,384,512</td><td style="border:1px solid var(--line);padding:5px 10px"><b>24.8</b></td><td style="border:1px solid var(--line);padding:5px 10px"><b>7.5</b></td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 4　ConvNet 在多个测试尺度下的性能。</p>
+
+<h3 id="s43">4.3 多裁剪评估</h3>
+<p>表 5 中我们将稠密 ConvNet 评估与多裁剪评估做了比较（细节见 3.2 节）。我们还通过平均两者的 softmax 输出来考察这两种评估技术的互补性。可以看到，使用多个裁剪略优于稠密评估，而且两种方法确实是互补的——它们的组合优于其中任何一种。如上所述，我们猜测这是由于两者对卷积边界条件的处理不同。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ConvNet 配置（表 1）</td><td style="border:1px solid var(--line);padding:6px 12px">评估方法</td><td style="border:1px solid var(--line);padding:6px 12px">top-1 验证误差 (%)</td><td style="border:1px solid var(--line);padding:6px 12px">top-5 验证误差 (%)</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px" rowspan="3">D</td><td style="border:1px solid var(--line);padding:6px 12px">稠密</td><td style="border:1px solid var(--line);padding:6px 12px">24.8</td><td style="border:1px solid var(--line);padding:6px 12px">7.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">多裁剪</td><td style="border:1px solid var(--line);padding:6px 12px">24.6</td><td style="border:1px solid var(--line);padding:6px 12px">7.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">多裁剪 &amp; 稠密</td><td style="border:1px solid var(--line);padding:6px 12px">24.4</td><td style="border:1px solid var(--line);padding:6px 12px">7.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px" rowspan="3">E</td><td style="border:1px solid var(--line);padding:6px 12px">稠密</td><td style="border:1px solid var(--line);padding:6px 12px">24.8</td><td style="border:1px solid var(--line);padding:6px 12px">7.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">多裁剪</td><td style="border:1px solid var(--line);padding:6px 12px">24.6</td><td style="border:1px solid var(--line);padding:6px 12px">7.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">多裁剪 &amp; 稠密</td><td style="border:1px solid var(--line);padding:6px 12px">24.4</td><td style="border:1px solid var(--line);padding:6px 12px">7.1</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 5　ConvNet 评估技术比较。所有实验中训练尺度 S 都从 [256; 512] 采样，并考虑三个测试尺度 Q：{256, 384, 512}。</p>
+
+<h3 id="s44">4.4 ConvNet 融合</h3>
+<p>到目前为止，我们评估的是单个 ConvNet 模型的性能。在这部分实验中，我们通过平均多个模型的 soft-max 类别后验来组合它们的输出。由于模型之间的互补性，这会提升性能，也是 2012 年（Krizhevsky 等, 2012）与 2013 年（Zeiler &amp; Fergus, 2013; Sermanet 等, 2014）ILSVRC 顶尖参赛方案采用的做法。</p>
+<p>结果见表 6。到 ILSVRC 提交时，我们只训练了单尺度网络，以及一个多尺度模型 D（只微调全连接层而非全部层）。由此得到的 7 网络集成在 ILSVRC 测试集上误差为 7.3%。提交之后，我们考虑只组合两个性能最好的多尺度模型（配置 D 与 E）的集成，把测试误差降到 7.0%（稠密评估）和 6.8%（稠密 + 多裁剪组合评估）。作为参照，我们性能最好的单模型达到 7.1% 的误差（模型 E，表 5）。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 10px" rowspan="2">组合的 ConvNet 模型</td><td style="border:1px solid var(--line);padding:5px 10px" colspan="3">误差</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">top-1 验证</td><td style="border:1px solid var(--line);padding:5px 10px">top-5 验证</td><td style="border:1px solid var(--line);padding:5px 10px">top-5 测试</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="4"><b>ILSVRC 提交</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">(D/256/224,256,288), (D/384/352,384,416), (D/[256;512]/256,384,512)<br>(C/256/224,256,288), (C/384/352,384,416)<br>(E/256/224,256,288), (E/384/352,384,416)</td><td style="border:1px solid var(--line);padding:5px 10px">24.7</td><td style="border:1px solid var(--line);padding:5px 10px">7.5</td><td style="border:1px solid var(--line);padding:5px 10px">7.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px" colspan="4"><b>提交之后</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">(D/[256;512]/256,384,512), (E/[256;512]/256,384,512)，稠密评估</td><td style="border:1px solid var(--line);padding:5px 10px">24.0</td><td style="border:1px solid var(--line);padding:5px 10px">7.1</td><td style="border:1px solid var(--line);padding:5px 10px">7.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">(D/[256;512]/256,384,512), (E/[256;512]/256,384,512)，多裁剪</td><td style="border:1px solid var(--line);padding:5px 10px">23.9</td><td style="border:1px solid var(--line);padding:5px 10px">7.2</td><td style="border:1px solid var(--line);padding:5px 10px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">(D/[256;512]/256,384,512), (E/[256;512]/256,384,512)，多裁剪 &amp; 稠密评估</td><td style="border:1px solid var(--line);padding:5px 10px">23.7</td><td style="border:1px solid var(--line);padding:5px 10px">6.8</td><td style="border:1px solid var(--line);padding:5px 10px">6.8</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 6　多个 ConvNet 融合的结果。</p>
+
+<h3 id="s45">4.5 与当时最好水平的比较</h3>
+<p>最后，我们在表 7 中把结果与当时的最好水平比较。在 ILSVRC-2014 挑战赛（Russakovsky 等, 2014）的分类任务中，我们的「VGG」团队用 7 个模型的集成取得 7.3% 的测试误差，获得第 2 名。提交之后，我们用 2 个模型的集成把误差率降到 6.8%。</p>
+<p>如表 7 所示，我们的超深 ConvNet 显著优于上一代模型——后者在 ILSVRC-2012 与 ILSVRC-2013 竞赛中取得了最好结果。我们的结果与分类任务的冠军（GoogLeNet，6.7% 误差）相比也很有竞争力，并且大幅优于 ILSVRC-2013 的获胜提交 Clarifai，后者使用外部训练数据时达到 11.2%、不使用外部数据时为 11.7%。这一点相当可观，因为我们的最好结果只是组合了两个模型——远少于大多数 ILSVRC 提交所用的模型数量。在单网络性能上，我们的架构取得最好结果（7.0% 测试误差），比单个 GoogLeNet 好 0.9%。值得注意的是，我们没有偏离 LeCun 等（1989）的经典 ConvNet 架构，而是通过大幅加深来改进它。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px">方法</td><td style="border:1px solid var(--line);padding:5px 9px">top-1 验证误差 (%)</td><td style="border:1px solid var(--line);padding:5px 9px">top-5 验证误差 (%)</td><td style="border:1px solid var(--line);padding:5px 9px">top-5 测试误差 (%)</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VGG（2 网络，多裁剪 &amp; 稠密评估）</td><td style="border:1px solid var(--line);padding:5px 9px">23.7</td><td style="border:1px solid var(--line);padding:5px 9px">6.8</td><td style="border:1px solid var(--line);padding:5px 9px">6.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VGG（1 网络，多裁剪 &amp; 稠密评估）</td><td style="border:1px solid var(--line);padding:5px 9px">24.4</td><td style="border:1px solid var(--line);padding:5px 9px">7.1</td><td style="border:1px solid var(--line);padding:5px 9px">7.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VGG（ILSVRC 提交，7 网络，稠密评估）</td><td style="border:1px solid var(--line);padding:5px 9px">24.7</td><td style="border:1px solid var(--line);padding:5px 9px">7.5</td><td style="border:1px solid var(--line);padding:5px 9px">7.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GoogLeNet（Szegedy 等, 2014）（1 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px" colspan="2">7.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GoogLeNet（Szegedy 等, 2014）（7 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px" colspan="2">6.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">MSRA（He 等, 2014）（11 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">8.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">MSRA（He 等, 2014）（1 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">27.9</td><td style="border:1px solid var(--line);padding:5px 9px">9.1</td><td style="border:1px solid var(--line);padding:5px 9px">9.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Clarifai（Russakovsky 等, 2014）（多网络）</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">11.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Clarifai（Russakovsky 等, 2014）（1 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">12.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Zeiler &amp; Fergus（2013）（6 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">36.0</td><td style="border:1px solid var(--line);padding:5px 9px">14.7</td><td style="border:1px solid var(--line);padding:5px 9px">14.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Zeiler &amp; Fergus（2013）（1 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">37.5</td><td style="border:1px solid var(--line);padding:5px 9px">16.0</td><td style="border:1px solid var(--line);padding:5px 9px">16.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">OverFeat（Sermanet 等, 2014）（7 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">34.0</td><td style="border:1px solid var(--line);padding:5px 9px">13.2</td><td style="border:1px solid var(--line);padding:5px 9px">13.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">OverFeat（Sermanet 等, 2014）（1 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">35.7</td><td style="border:1px solid var(--line);padding:5px 9px">14.2</td><td style="border:1px solid var(--line);padding:5px 9px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Krizhevsky 等（2012）（5 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">38.1</td><td style="border:1px solid var(--line);padding:5px 9px">16.4</td><td style="border:1px solid var(--line);padding:5px 9px">16.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Krizhevsky 等（2012）（1 网络）</td><td style="border:1px solid var(--line);padding:5px 9px">40.7</td><td style="border:1px solid var(--line);padding:5px 9px">18.2</td><td style="border:1px solid var(--line);padding:5px 9px">—</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 7　与 ILSVRC 分类当时最好水平的比较。我们的方法记为「VGG」。只报告不使用外部训练数据得到的结果。</p>
+
+<h2 id="s5">5 结论</h2>
+<p>本文评估了用于大规模图像分类的超深卷积网络（最多 19 个带权重的层）。结果表明：表示的深度对分类准确率有益，而且使用传统 ConvNet 架构（LeCun 等, 1989; Krizhevsky 等, 2012）、把深度大幅提高，就可以在 ImageNet 挑战赛数据集上达到当时最好性能。在附录中我们还表明，我们的模型能很好地泛化到大量任务与数据集，与围绕较浅图像表示构建的更复杂识别流程相当或更好。我们的结果再次确认了深度在视觉表示中的重要性。</p>
+
+<h2 id="sack">致谢</h2>
+<p>本工作由 ERC 资助项目 VisRec（编号 228180）支持。我们感谢 NVIDIA 公司捐赠本研究所用的 GPU。</p>
+
+<h2 id="appA">附录 A　定位</h2>
+<p>正文中我们考察了 ILSVRC 挑战赛的分类任务，并对不同深度的 ConvNet 架构做了彻底评估。本节转向挑战赛的定位（localisation）任务——我们在 2014 年以 25.3% 的误差赢得了它。它可以看作物体检测的一个特例：对 top-5 类别中的每一个都应预测一个物体边界框，而不论该类实际有多少个物体。为此我们采用 Sermanet 等（2014）（ILSVRC-2013 定位挑战赛冠军）的做法，并做若干修改。我们的方法在 A.1 节描述、A.2 节评估。</p>
+
+<h3 id="appA1">A.1 定位 ConvNet</h3>
+<p>为做物体定位，我们使用一个超深 ConvNet，其中最后一个全连接层预测边界框位置而非类别得分。边界框用一个 4 维向量表示，存储其中心坐标、宽度与高度。还有一点可以选择：边界框预测是在所有类别间共享（单类回归，single-class regression, SCR（Sermanet 等, 2014）），还是按类别各自给出（逐类回归，per-class regression, PCR）。前者情形下最后一层是 4 维，后者则是 4000 维（因为数据集中有 1000 个类别）。除最后一个边界框预测层之外，我们使用 ConvNet 架构 D（表 1）——它包含 16 个带权重的层，在分类任务中被发现性能最好（第 4 节）。</p>
+<p><b>训练。</b>定位 ConvNet 的训练与分类 ConvNet 类似（3.1 节）。主要区别是我们把逻辑回归目标换成欧氏损失，它惩罚预测边界框参数与真实值的偏差。我们训练了两个定位模型，各自在单一尺度上：S = 256 与 S = 384（受时间限制，我们的 ILSVRC-2014 提交没有使用训练尺度抖动）。训练用相应尺度上训练好的分类模型初始化，初始学习率设为 10<sup>−3</sup>。我们探索了微调所有层与只微调前两个全连接层（如（Sermanet 等, 2014））两种做法。最后一个全连接层随机初始化、从头训练。</p>
+<p><b>测试。</b>我们考虑两种测试协议。第一种用于在验证集上比较不同的网络改动，只考虑真实类别的边界框预测（以排除分类误差的影响）。边界框通过把网络仅施加到图像的中心裁剪上获得。</p>
+<p>第二种是完整规模的测试流程，基于把定位 ConvNet 稠密地施加到整张图像上，与分类任务类似（3.2 节）。区别在于：最后一层的输出不是类别得分图，而是一组边界框预测。为得到最终预测，我们采用 Sermanet 等（2014）的贪心合并流程：先合并空间上接近的预测（对它们的坐标取平均），再依据从分类 ConvNet 获得的类别得分为它们打分。当使用多个定位 ConvNet 时，我们先取其边界框预测集合的并集，再在并集上运行合并流程。我们没有使用 Sermanet 等（2014）的多池化偏移技术——它能提高边界框预测的空间分辨率，可进一步改善结果。</p>
+
+<h3 id="appA2">A.2 定位实验</h3>
+<p>本节先确定性能最好的定位设置（用第一种测试协议），再在完整场景下评估它（第二种协议）。定位误差按 ILSVRC 标准（Russakovsky 等, 2014）衡量，即：当预测边界框与真实边界框的交并比（IoU）高于 0.5 时，认为该预测正确。</p>
+<p><b>设置比较。</b>如表 8 所示，逐类回归（PCR）优于与类别无关的单类回归（SCR），这与 Sermanet 等（2014）的发现不同——在他们那里 PCR 不如 SCR。我们还注意到，为定位任务微调所有层的结果明显优于只微调全连接层（如（Sermanet 等, 2014））。这些实验中图像最短边设为 S = 384；S = 256 的结果表现出相同行为，为简洁起见不再列出。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">微调的层</td><td style="border:1px solid var(--line);padding:6px 12px">回归类型</td><td style="border:1px solid var(--line);padding:6px 12px">真实类别定位误差</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px" rowspan="2">第 1、2 个 FC</td><td style="border:1px solid var(--line);padding:6px 12px">SCR</td><td style="border:1px solid var(--line);padding:6px 12px">36.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">PCR</td><td style="border:1px solid var(--line);padding:6px 12px">34.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">全部层</td><td style="border:1px solid var(--line);padding:6px 12px">PCR</td><td style="border:1px solid var(--line);padding:6px 12px">33.1</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 8　在简化测试协议下不同改动的定位误差：边界框由单张图像的中心裁剪预测，并使用真实类别。除最后一层外所有 ConvNet 层都采用配置 D（表 1），最后一层执行单类回归（SCR）或逐类回归（PCR）。</p>
+<p><b>完整规模评估。</b>确定了最好的定位设置（PCR，微调所有层）之后，我们把它用在完整场景中：top-5 类别标签由我们性能最好的分类系统预测（4.5 节），多个稠密计算的边界框预测用 Sermanet 等（2014）的方法合并。如表 9 所示，把定位 ConvNet 施加到整张图像上，相比只使用中心裁剪（表 8）大幅改善了结果，尽管这里用的是 top-5 预测类别标签而非真实类别。与分类任务（第 4 节）类似，在多个尺度上测试并组合多个网络的预测能进一步提升性能。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px" colspan="2">图像最短边</td><td style="border:1px solid var(--line);padding:6px 12px" colspan="2">top-5 定位误差 (%)</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">训练 (S)</td><td style="border:1px solid var(--line);padding:6px 12px">测试 (Q)</td><td style="border:1px solid var(--line);padding:6px 12px">验证集</td><td style="border:1px solid var(--line);padding:6px 12px">测试集</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">256</td><td style="border:1px solid var(--line);padding:6px 12px">256</td><td style="border:1px solid var(--line);padding:6px 12px">29.5</td><td style="border:1px solid var(--line);padding:6px 12px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">384</td><td style="border:1px solid var(--line);padding:6px 12px">384</td><td style="border:1px solid var(--line);padding:6px 12px">28.2</td><td style="border:1px solid var(--line);padding:6px 12px">26.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">384</td><td style="border:1px solid var(--line);padding:6px 12px">352,384</td><td style="border:1px solid var(--line);padding:6px 12px">27.5</td><td style="border:1px solid var(--line);padding:6px 12px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px" colspan="2">融合：256/256 与 384/352,384</td><td style="border:1px solid var(--line);padding:6px 12px">26.9</td><td style="border:1px solid var(--line);padding:6px 12px">25.3</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 9　定位误差。</p>
+<p><b>与当时最好水平的比较。</b>表 10 中我们把最好的定位结果与当时的最好水平比较。以 25.3% 的测试误差，我们的「VGG」团队赢得了 ILSVRC-2014 的定位挑战赛（Russakovsky 等, 2014）。值得注意的是，我们的结果明显优于 ILSVRC-2013 冠军 Overfeat（Sermanet 等, 2014），尽管我们用的尺度更少、也没有采用他们的分辨率增强技术。我们预计，若把该技术纳入我们的方法，定位性能还能更好。这说明我们的超深 ConvNet 带来了性能进步——用更简单的定位方法、但更强的表示，我们取得了更好的结果。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">方法</td><td style="border:1px solid var(--line);padding:6px 12px">top-5 验证误差 (%)</td><td style="border:1px solid var(--line);padding:6px 12px">top-5 测试误差 (%)</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG</td><td style="border:1px solid var(--line);padding:6px 12px">26.9</td><td style="border:1px solid var(--line);padding:6px 12px">25.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">GoogLeNet（Szegedy 等, 2014）</td><td style="border:1px solid var(--line);padding:6px 12px">—</td><td style="border:1px solid var(--line);padding:6px 12px">26.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">OverFeat（Sermanet 等, 2014）</td><td style="border:1px solid var(--line);padding:6px 12px">30.0</td><td style="border:1px solid var(--line);padding:6px 12px">29.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">Krizhevsky 等（2012）</td><td style="border:1px solid var(--line);padding:6px 12px">—</td><td style="border:1px solid var(--line);padding:6px 12px">34.2</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 10　与 ILSVRC 定位当时最好水平的比较。我们的方法记为「VGG」。</p>
+
+<h2 id="appB">附录 B　超深特征的泛化</h2>
+<p>前面几节讨论了在 ILSVRC 数据集上训练与评估超深 ConvNet。本节中，我们把在 ILSVRC 上预训练好的 ConvNet 当作特征提取器，用在其他更小的数据集上——在那里，从头训练大模型会因过拟合而不可行。近来这种用法受到很多关注（Zeiler &amp; Fergus, 2013; Donahue 等, 2013; Razavian 等, 2014; Chatfield 等, 2014），因为事实证明，在 ILSVRC 上学到的深度图像表示能很好地泛化到其他数据集，远超手工设计的表示。沿着这条路线，我们考察自己的模型是否能比当时最好方法中使用的较浅模型带来更好的性能。在这项评估中，我们考虑在 ILSVRC 上分类性能最好的两个模型（第 4 节）——配置「Net-D」与「Net-E」（我们已公开它们）。</p>
+<p>为了把在 ILSVRC 上预训练的 ConvNet 用于其他数据集的图像分类，我们去掉最后一个全连接层（它执行 1000 类 ILSVRC 分类），把倒数第二层的 4096 维激活值当作图像特征，并在多个位置与尺度上做聚合。得到的图像描述子做 L<sub>2</sub> 归一化，再与在目标数据集上训练的线性 SVM 分类器结合。为简单起见，预训练的 ConvNet 权重保持固定（不做微调）。</p>
+<p>特征聚合的方式与我们的 ILSVRC 评估流程（3.2 节）类似。即：先把图像缩放到最短边等于 Q，再把网络稠密地施加到整个图像平面上（当所有带权重的层都按卷积方式处理时可以做到）。随后对得到的特征图做全局平均池化，产生一个 4096 维图像描述子。该描述子再与水平翻转图像的描述子取平均。如 4.2 节所示，多尺度评估是有益的，因此我们在若干尺度 Q 上提取特征。得到的多尺度特征既可以堆叠，也可以在各尺度间池化。堆叠允许后续分类器学习如何在一系列尺度上最优地组合图像统计量；但代价是描述子维度增加。我们会在下文实验中回到这一设计选择的讨论。我们还评估了两个网络所算特征的后期融合（late fusion），做法是把它们各自的图像描述子堆叠起来。</p>
+<p><b>VOC-2007 与 VOC-2012 上的图像分类。</b>我们首先在 PASCAL VOC-2007 与 VOC-2012 基准（Everingham 等, 2015）的图像分类任务上评估。这两个数据集分别包含 10K 与 22.5K 张图像，每张图像标注了一个或多个标签，对应 20 个物体类别。VOC 组织者提供了预先划定的训练、验证与测试数据划分（VOC-2012 的测试数据不公开，改为提供官方评估服务器）。识别性能用各类平均精度均值（mAP）衡量。</p>
+<p>值得注意的是，通过考察 VOC-2007 与 VOC-2012 验证集上的表现，我们发现：用平均法聚合多尺度图像描述子，与用堆叠法聚合的表现相近。我们猜测原因是：在 VOC 数据集中物体出现在各种各样的尺度上，因此并不存在某个特定的、分类器可利用的尺度语义。由于平均法有「不膨胀描述子维度」的好处，我们得以在很宽的尺度范围内聚合图像描述子：Q ∈ {256, 384, 512, 640, 768}。不过值得一提的是，相对较小的范围 {256, 384, 512} 提升相当有限（0.3%）。</p>
+<p>测试集性能报告并与其他方法比较于表 11。我们的网络「Net-D」与「Net-E」在 VOC 数据集上表现相同，二者组合略有提升。在基于 ILSVRC 数据集预训练的图像表示中，我们的方法创下新的最好水平，比 Chatfield 等（2014）此前的最好结果高出 6% 以上。需要指出的是，Wei 等（2014）的方法在 VOC-2012 上 mAP 高 1%，但它是预训练在扩展的 2000 类 ILSVRC 数据集上——其中包含额外 1000 个与 VOC 数据集语义接近的类别；它还受益于与「物体检测辅助的分类流程」的融合。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px">方法</td><td style="border:1px solid var(--line);padding:5px 9px">VOC-2007（平均 AP）</td><td style="border:1px solid var(--line);padding:5px 9px">VOC-2012（平均 AP）</td><td style="border:1px solid var(--line);padding:5px 9px">Caltech-101（平均类别召回）</td><td style="border:1px solid var(--line);padding:5px 9px">Caltech-256（平均类别召回）</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Zeiler &amp; Fergus（2013）</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">79.0</td><td style="border:1px solid var(--line);padding:5px 9px">86.5 ± 0.5</td><td style="border:1px solid var(--line);padding:5px 9px">74.2 ± 0.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Chatfield 等（2014）</td><td style="border:1px solid var(--line);padding:5px 9px">82.4</td><td style="border:1px solid var(--line);padding:5px 9px">83.2</td><td style="border:1px solid var(--line);padding:5px 9px">88.4 ± 0.6</td><td style="border:1px solid var(--line);padding:5px 9px">77.6 ± 0.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">He 等（2014）</td><td style="border:1px solid var(--line);padding:5px 9px">82.4</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">93.4 ± 0.5</td><td style="border:1px solid var(--line);padding:5px 9px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Wei 等（2014）</td><td style="border:1px solid var(--line);padding:5px 9px">81.5（85.2*）</td><td style="border:1px solid var(--line);padding:5px 9px">81.7（90.3*）</td><td style="border:1px solid var(--line);padding:5px 9px">—</td><td style="border:1px solid var(--line);padding:5px 9px">—</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VGG Net-D（16 层）</td><td style="border:1px solid var(--line);padding:5px 9px">89.3</td><td style="border:1px solid var(--line);padding:5px 9px">89.0</td><td style="border:1px solid var(--line);padding:5px 9px">91.8 ± 1.0</td><td style="border:1px solid var(--line);padding:5px 9px">85.0 ± 0.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VGG Net-E（19 层）</td><td style="border:1px solid var(--line);padding:5px 9px">89.3</td><td style="border:1px solid var(--line);padding:5px 9px">89.0</td><td style="border:1px solid var(--line);padding:5px 9px">92.3 ± 0.5</td><td style="border:1px solid var(--line);padding:5px 9px">85.1 ± 0.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VGG Net-D &amp; Net-E</td><td style="border:1px solid var(--line);padding:5px 9px">89.7</td><td style="border:1px solid var(--line);padding:5px 9px">89.3</td><td style="border:1px solid var(--line);padding:5px 9px">92.7 ± 0.5</td><td style="border:1px solid var(--line);padding:5px 9px">86.2 ± 0.3</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 11　与 VOC-2007、VOC-2012、Caltech-101、Caltech-256 图像分类当时最好水平的比较。我们的模型记为「VGG」。标 * 的结果使用在扩展 ILSVRC 数据集（2000 类）上预训练的 ConvNet 得到。</p>
+<p><b>Caltech-101 与 Caltech-256 上的图像分类。</b>本节我们在 Caltech-101（Fei-Fei 等, 2004）与 Caltech-256（Griffin 等, 2007）图像分类基准上评估超深特征。Caltech-101 包含 9K 张图像、标注为 102 类（101 个物体类别加一个背景类）；Caltech-256 更大，有 31K 张图像与 257 类。这些数据集上的标准评估协议是：生成若干随机划分的训练/测试数据，并报告各划分上的平均识别性能，用平均类别召回衡量（以补偿每类测试图像数量不同）。遵循 Chatfield 等（2014）、Zeiler &amp; Fergus（2013）、He 等（2014），在 Caltech-101 上我们生成 3 个随机划分，每个划分每类含 30 张训练图像、最多 50 张测试图像。在 Caltech-256 上我们也生成 3 个划分，每个划分每类 60 张训练图像（其余用于测试）。每个划分中用 20% 的训练图像作为验证集来选择超参数。</p>
+<p>我们发现，与 VOC 不同，在 Caltech 数据集上，对多尺度描述子做堆叠优于平均或最大池化。这可以解释为：在 Caltech 图像中，物体通常占据整幅图像，因此多尺度图像特征在语义上是不同的（捕捉整个物体 vs. 物体部件），堆叠让分类器能够利用这种尺度特异的表示。我们使用了三个尺度 Q ∈ {256, 384, 512}。</p>
+<p>我们的模型之间以及与当时最好水平的比较见表 11。可以看到，更深的 19 层 Net-E 优于 16 层 Net-D，二者组合进一步改善性能。在 Caltech-101 上，我们的表示与 He 等（2014）的方法相当，但后者在 VOC-2007 上明显不如我们的网络。在 Caltech-256 上，我们的特征大幅超过当时最好水平（Chatfield 等, 2014）（高出 8.6%）。</p>
+<p><b>VOC-2012 上的动作分类。</b>我们还把性能最好的图像表示（Net-D 与 Net-E 特征的堆叠）用在 PASCAL VOC-2012 动作分类任务上（Everingham 等, 2015）——该任务要求在给定「执行动作的人」的边界框的情况下，从单张图像预测动作类别。数据集包含 4.6K 张训练图像、标注为 11 类。与 VOC-2012 物体分类任务类似，性能用 mAP 衡量。我们考虑两种训练设置：(i) 在整幅图像上计算 ConvNet 特征，忽略所提供的边界框；(ii) 在整幅图像上以及在所提供的边界框上分别计算特征，并把它们堆叠得到最终表示。结果与其他方法的比较见表 12。</p>
+<p>我们的表示即使不使用所提供的边界框，也在 VOC 动作分类任务上达到当时最好水平；同时使用图像与边界框时结果进一步提升。与其他方法不同，我们没有引入任何任务特定的启发式规则，而是依靠超深卷积特征的表示能力。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">方法</td><td style="border:1px solid var(--line);padding:6px 12px">VOC-2012（平均 AP）</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">（Oquab 等, 2014）</td><td style="border:1px solid var(--line);padding:6px 12px">70.2*</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">（Gkioxari 等, 2014）</td><td style="border:1px solid var(--line);padding:6px 12px">73.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">（Hoai, 2014）</td><td style="border:1px solid var(--line);padding:6px 12px">76.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG Net-D &amp; Net-E，仅图像</td><td style="border:1px solid var(--line);padding:6px 12px">79.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG Net-D &amp; Net-E，图像与边界框</td><td style="border:1px solid var(--line);padding:6px 12px">84.0</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 12　与 VOC-2012 单图像动作分类当时最好水平的比较。我们的模型记为「VGG」。标 * 的结果使用在扩展 ILSVRC 数据集（1512 类）上预训练的 ConvNet 得到。</p>
+<p><b>其他识别任务。</b>自从我们的模型公开发布以来，研究社区已把它们积极用于大量图像识别任务，并持续优于更浅的表示。例如 Girshick 等（2014）把 Krizhevsky 等（2012）的 ConvNet 换成我们的 16 层模型，取得了物体检测的最好结果。在用 Krizhevsky 等（2012）较浅架构的场合所观察到的类似增益，也出现在语义分割（Long 等, 2014）、图像描述生成（Kiros 等, 2014; Karpathy &amp; Fei-Fei, 2014）以及纹理与材质识别（Cimpoi 等, 2014; Bell 等, 2014）中。</p>
+
+<h2 id="appC">附录 C　论文修订</h2>
+<p>这里列出论文的主要修订，概述实质性改动，以方便读者。</p>
+<ul>
+<li><b>v1</b>　初始版本。给出 ILSVRC 提交之前所做的实验。</li>
+<li><b>v2</b>　加入提交之后的 ILSVRC 实验，使用尺度抖动做训练集增强，性能得到提升。</li>
+<li><b>v3</b>　加入在 PASCAL VOC 与 Caltech 图像分类数据集上的泛化实验（附录 B）。这些实验所用模型已公开。</li>
+<li><b>v4</b>　论文转换为 ICLR-2015 投稿格式。还加入了分类的多裁剪实验。</li>
+<li><b>v6</b>　ICLR-2015 会议论文的最终版（camera-ready）。加入网络 B 与一个浅层网络的比较，以及 PASCAL VOC 动作分类基准上的结果。</li>
+</ul>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按约定，参考文献条目保留英文原文，不作翻译（便于与原文及检索工具对照）。</p>
+<div class="refs"><ol>
+<li>Bell, S., Upchurch, P., Snavely, N., and Bala, K. Material recognition in the wild with the materials in context database. CoRR, abs/1412.0623, 2014.</li>
+<li>Chatfield, K., Simonyan, K., Vedaldi, A., and Zisserman, A. Return of the devil in the details: Delving deep into convolutional nets. In Proc. BMVC., 2014.</li>
+<li>Cimpoi, M., Maji, S., and Vedaldi, A. Deep convolutional filter banks for texture recognition and segmentation. CoRR, abs/1411.6836, 2014.</li>
+<li>Ciresan, D. C., Meier, U., Masci, J., Gambardella, L. M., and Schmidhuber, J. Flexible, high performance convolutional neural networks for image classification. In IJCAI, pp. 1237–1242, 2011.</li>
+<li>Dean, J., Corrado, G., Monga, R., Chen, K., Devin, M., Mao, M., Ranzato, M., Senior, A., Tucker, P., Yang, K., Le, Q. V., and Ng, A. Y. Large scale distributed deep networks. In NIPS, pp. 1232–1240, 2012.</li>
+<li>Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., and Fei-Fei, L. Imagenet: A large-scale hierarchical image database. In Proc. CVPR, 2009.</li>
+<li>Donahue, J., Jia, Y., Vinyals, O., Hoffman, J., Zhang, N., Tzeng, E., and Darrell, T. Decaf: A deep convolutional activation feature for generic visual recognition. CoRR, abs/1310.1531, 2013.</li>
+<li>Everingham, M., Eslami, S. M. A., Van Gool, L., Williams, C., Winn, J., and Zisserman, A. The Pascal visual object classes challenge: A retrospective. IJCV, 111(1):98–136, 2015.</li>
+<li>Fei-Fei, L., Fergus, R., and Perona, P. Learning generative visual models from few training examples: An incremental bayesian approach tested on 101 object categories. In IEEE CVPR Workshop of Generative Model Based Vision, 2004.</li>
+<li>Girshick, R. B., Donahue, J., Darrell, T., and Malik, J. Rich feature hierarchies for accurate object detection and semantic segmentation. CoRR, abs/1311.2524v5, 2014. Published in Proc. CVPR, 2014.</li>
+<li>Gkioxari, G., Girshick, R., and Malik, J. Actions and attributes from wholes and parts. CoRR, abs/1412.2604, 2014.</li>
+<li>Glorot, X. and Bengio, Y. Understanding the difficulty of training deep feedforward neural networks. In Proc. AISTATS, volume 9, pp. 249–256, 2010.</li>
+<li>Goodfellow, I. J., Bulatov, Y., Ibarz, J., Arnoud, S., and Shet, V. Multi-digit number recognition from street view imagery using deep convolutional neural networks. In Proc. ICLR, 2014.</li>
+<li>Griffin, G., Holub, A., and Perona, P. Caltech-256 object category dataset. Technical Report 7694, California Institute of Technology, 2007.</li>
+<li>He, K., Zhang, X., Ren, S., and Sun, J. Spatial pyramid pooling in deep convolutional networks for visual recognition. CoRR, abs/1406.4729v2, 2014.</li>
+<li>Hoai, M. Regularized max pooling for image categorization. In Proc. BMVC., 2014.</li>
+<li>Howard, A. G. Some improvements on deep convolutional neural network based image classification. In Proc. ICLR, 2014.</li>
+<li>Jia, Y. Caffe: An open source convolutional architecture for fast feature embedding. http://caffe.berkeleyvision.org/, 2013.</li>
+<li>Karpathy, A. and Fei-Fei, L. Deep visual-semantic alignments for generating image descriptions. CoRR, abs/1412.2306, 2014.</li>
+<li>Kiros, R., Salakhutdinov, R., and Zemel, R. S. Unifying visual-semantic embeddings with multimodal neural language models. CoRR, abs/1411.2539, 2014.</li>
+<li>Krizhevsky, A. One weird trick for parallelizing convolutional neural networks. CoRR, abs/1404.5997, 2014.</li>
+<li>Krizhevsky, A., Sutskever, I., and Hinton, G. E. ImageNet classification with deep convolutional neural networks. In NIPS, pp. 1106–1114, 2012.</li>
+<li>LeCun, Y., Boser, B., Denker, J. S., Henderson, D., Howard, R. E., Hubbard, W., and Jackel, L. D. Backpropagation applied to handwritten zip code recognition. Neural Computation, 1(4):541–551, 1989.</li>
+<li>Lin, M., Chen, Q., and Yan, S. Network in network. In Proc. ICLR, 2014.</li>
+<li>Long, J., Shelhamer, E., and Darrell, T. Fully convolutional networks for semantic segmentation. CoRR, abs/1411.4038, 2014.</li>
+<li>Oquab, M., Bottou, L., Laptev, I., and Sivic, J. Learning and Transferring Mid-Level Image Representations using Convolutional Neural Networks. In Proc. CVPR, 2014.</li>
+<li>Perronnin, F., Sánchez, J., and Mensink, T. Improving the Fisher kernel for large-scale image classification. In Proc. ECCV, 2010.</li>
+<li>Razavian, A., Azizpour, H., Sullivan, J., and Carlsson, S. CNN Features off-the-shelf: an Astounding Baseline for Recognition. CoRR, abs/1403.6382, 2014.</li>
+<li>Russakovsky, O., Deng, J., Su, H., Krause, J., Satheesh, S., Ma, S., Huang, Z., Karpathy, A., Khosla, A., Bernstein, M., Berg, A. C., and Fei-Fei, L. ImageNet large scale visual recognition challenge. CoRR, abs/1409.0575, 2014.</li>
+<li>Sermanet, P., Eigen, D., Zhang, X., Mathieu, M., Fergus, R., and LeCun, Y. OverFeat: Integrated Recognition, Localization and Detection using Convolutional Networks. In Proc. ICLR, 2014.</li>
+<li>Simonyan, K. and Zisserman, A. Two-stream convolutional networks for action recognition in videos. CoRR, abs/1406.2199, 2014. Published in Proc. NIPS, 2014.</li>
+<li>Szegedy, C., Liu, W., Jia, Y., Sermanet, P., Reed, S., Anguelov, D., Erhan, D., Vanhoucke, V., and Rabinovich, A. Going deeper with convolutions. CoRR, abs/1409.4842, 2014.</li>
+<li>Wei, Y., Xia, W., Huang, J., Ni, B., Dong, J., Zhao, Y., and Yan, S. CNN: Single-label to multi-label. CoRR, abs/1406.5726, 2014.</li>
+<li>Zeiler, M. D. and Fergus, R. Visualizing and understanding convolutional networks. CoRR, abs/1311.2901, 2013. Published in Proc. ECCV, 2014.</li>
+</ol></div>
+
+<h2 id="figs">表格索引</h2>
+<div class="refs"><ol>
+<li>表 1　ConvNet 配置（A–E，正文 2.2 节）</li>
+<li>表 2　各配置的参数数量</li>
+<li>表 3　单测试尺度下的性能（4.1 节）</li>
+<li>表 4　多测试尺度下的性能（4.2 节）</li>
+<li>表 5　评估技术比较：稠密 / 多裁剪 / 两者组合（4.3 节）</li>
+<li>表 6　多网络融合结果（4.4 节）</li>
+<li>表 7　与 ILSVRC 分类当时最好水平的比较（4.5 节）</li>
+<li>表 8　定位：不同改动的误差（附录 A.2）</li>
+<li>表 9　定位：尺度与融合（附录 A.2）</li>
+<li>表 10　与 ILSVRC 定位当时最好水平的比较（附录 A.2）</li>
+<li>表 11　VOC / Caltech 分类上的比较（附录 B）</li>
+<li>表 12　VOC-2012 动作分类上的比较（附录 B）</li>
+</ol>
+<p style="margin-top:10px">本文（arXiv v6 / ICLR 2015）没有编号插图，全部 12 个图表条目均为表格，已按表格形式排在各对应小节中，因此本页不含插图。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。原文不含插图，故本页未附 <code>images/</code> 目录。参考文献保留原文，未作翻译。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

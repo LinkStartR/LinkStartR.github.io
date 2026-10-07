@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用于图像识别的深度残差学习 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">用于图像识别的深度残差学习</span><span>He 等，2015 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 相关工作</a>
+<a href="#s3">3 深度残差学习</a>
+<a class="sub" href="#s31">3.1 残差学习</a>
+<a class="sub" href="#s32">3.2 通过捷径做恒等映射</a>
+<a class="sub" href="#s33">3.3 网络架构</a>
+<a class="sub" href="#s34">3.4 实现</a>
+<a href="#s4">4 实验</a>
+<a class="sub" href="#s41">4.1 ImageNet 分类</a>
+<a class="sub" href="#s42">4.2 CIFAR-10 与分析</a>
+<a class="sub" href="#s43">4.3 PASCAL 与 MS COCO 上的目标检测</a>
+<hr>
+<a href="#refs">参考文献</a>
+<a href="#appA">附录 A　目标检测基线</a>
+<a class="sub" href="#appA1">PASCAL VOC</a>
+<a class="sub" href="#appA2">MS COCO</a>
+<a href="#appB">附录 B　目标检测的改进</a>
+<a class="sub" href="#appB1">MS COCO</a>
+<a class="sub" href="#appB2">PASCAL VOC</a>
+<a class="sub" href="#appB3">ImageNet 检测</a>
+<a href="#appC">附录 C　ImageNet 定位</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 用于图像识别的深度残差学习 | He 等，2015 · 中文翻译-->
+<h1 class="doc">用于图像识别的深度残差学习<span class="en">Deep Residual Learning for Image Recognition</span></h1>
+<p class="meta">Kaiming He · Xiangyu Zhang · Shaoqing Ren · Jian Sun（微软亚洲研究院）<br>arXiv:1512.03385 · CVPR 2016 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>更深的神经网络更难训练。我们提出一个残差学习框架，用来缓解「比以前深得多的网络」的训练难题。我们把层显式地重新表述为：学习相对于层输入的残差函数，而不是学习没有参照的函数。我们提供了充分的经验证据，表明这些残差网络更容易优化，并且能从大幅增加的深度中获得准确率收益。在 ImageNet 数据集上，我们评估了深度高达 152 层的残差网络——比 VGG 网络深 8 倍，但复杂度仍更低。这些残差网络的<span class="term" data-tip="ensemble：把多个模型的预测组合起来，通常比单个模型更准">集成</span>在 ImageNet 测试集上取得 3.57% 的误差，夺得 ILSVRC 2015 分类任务第一名。我们还在 CIFAR-10 上给出了 100 层与 1000 层网络的分析。</p>
+<p>表示的深度对许多视觉识别任务都至关重要。仅仅因为我们的表示极其深，就在 COCO 目标检测数据集上取得了 28% 的相对提升。深度残差网络是我们提交 ILSVRC &amp; COCO 2015 竞赛的基础，我们还赢得了 ImageNet 检测、ImageNet 定位、COCO 检测与 COCO 分割这几项任务的第一名。</p>
+</div>
+
+<h2 id="s1">1 引言</h2>
+<p>深度卷积神经网络（LeCun 等, 1989; Krizhevsky 等, 2012）为图像分类带来了一系列突破（Krizhevsky 等, 2012; Zeiler &amp; Fergus, 2014; Sermanet 等, 2014）。深度网络以端到端的多层方式自然地整合低/中/高层特征与分类器，而特征的「层级」可以通过堆叠层数（深度）来丰富。近期证据（Simonyan &amp; Zisserman, 2015; Szegedy 等, 2015）表明网络深度至关重要：在 ImageNet 数据集（Russakovsky 等, 2014）上领先的结果（Simonyan &amp; Zisserman, 2015; Szegedy 等, 2015; He 等, 2015b; Ioffe &amp; Szegedy, 2015）都利用了「很深」的模型，深度从 16 层（Simonyan &amp; Zisserman, 2015）到 30 层（Ioffe &amp; Szegedy, 2015）。许多其他不平凡的视觉识别任务（Girshick 等, 2014; He 等, 2014; Girshick, 2015; Ren 等, 2015; Long 等, 2015）也从很深的模型中大受裨益。</p>
+<figure id="fig1"><img src="images/fig1.png" alt="Figure 1"><figcaption><span class="lab">图 1</span>在 CIFAR-10 上，20 层与 56 层「普通」（plain）网络的训练误差（左）与测试误差（右）。更深的网络训练误差更高，测试误差也因而更高。ImageNet 上有类似现象，见图 4。</figcaption></figure>
+<p>受深度重要性的驱动，一个问题随之而来：学习更好的网络，是否就像堆叠更多层那么简单？回答这个问题的一个障碍，是臭名昭著的<span class="term" data-tip="vanishing/exploding gradients：梯度在反向传播中逐层衰减到接近 0，或逐层放大到溢出，导致训练一开始就无法收敛">梯度消失/爆炸</span>问题（Bengio 等, 1994; Glorot &amp; Bengio, 2010），它从一开始就妨碍收敛。不过这个问题已在很大程度上被归一化初始化（LeCun 等, 1998; Glorot &amp; Bengio, 2010; Saxe 等, 2013; He 等, 2015b）与中间归一化层（Ioffe &amp; Szegedy, 2015）缓解，使数十层的网络能够用带反向传播的随机梯度下降（SGD）开始收敛。</p>
+<p>当更深的网络能够开始收敛时，一个<b>退化</b>（degradation）问题暴露出来：随着网络深度增加，准确率先是饱和（这也许不奇怪），接着迅速下降。出乎意料的是，这种退化并不是过拟合造成的；给一个已经足够深的模型再加更多层，反而带来更高的训练误差，如（He &amp; Sun, 2015; Srivastava 等, 2015）所报告、并被我们的实验充分验证。图 1 给出了一个典型例子。</p>
+<p>（训练准确率的）退化说明：并非所有系统都一样容易优化。让我们考虑一个较浅的架构，以及一个在它之上加更多层的更深对应物。对更深的模型而言，存在一个<b>构造性</b>的解：新增的层是恒等映射，其余层从已学好的较浅模型复制而来。这个构造解的存在说明：更深的模型不应比它的较浅对应物产生更高的训练误差。但实验表明，我们手头现有的求解器无法找到与构造解相当（或更好）的解（或无法在可行时间内做到）。</p>
+<figure id="fig2"><img src="images/fig2.png" alt="Figure 2"><figcaption><span class="lab">图 2</span>残差学习：一个基本模块（building block）。</figcaption></figure>
+<p>本文通过引入深度残差学习框架来解决退化问题。我们不是指望每几个堆叠层直接拟合一个期望的底层映射，而是显式地让这些层去拟合一个残差映射。形式上，记期望的底层映射为 <i>H</i>(x)，我们让堆叠的非线性层去拟合另一个映射 <i>F</i>(x) := <i>H</i>(x) − x。原始映射由此改写为 <i>F</i>(x) + x。我们假设：优化残差映射比优化原本那个没有参照的映射更容易。极端情况下，如果恒等映射是最优的，那么把残差压到零，会比用一堆非线性层去拟合一个恒等映射更容易。</p>
+<p>(x) + x 的形式可以用带「<span class="term" data-tip="shortcut connections：跨过一层或多层、把信息直接传到后面的连接，这里即恒等捷径">捷径连接</span>」（shortcut connections）的前馈神经网络实现（图 2）。捷径连接（Bishop, 1995; Ripley, 1996; Venables &amp; Ripley, 1999）是那些跳过一层或多层的连接。在我们的情形中，捷径连接只做恒等映射，其输出被加到堆叠层的输出上（图 2）。恒等捷径既不增加额外参数，也不增加计算复杂度。整个网络仍然可以用带反向传播的 SGD 端到端训练，并且可以用常见库（例如 Caffe（Jia 等, 2014））轻松实现，无需修改求解器。</p>
+<p>我们在 ImageNet（Russakovsky 等, 2014）上给出充分的实验来展示退化问题并评估我们的方法。我们表明：1）我们极深的残差网络容易优化，而对应的「普通」网络（仅仅堆叠层）在深度增加时反而呈现更高的训练误差；2）我们的深度残差网络能轻松地从大幅增加的深度中获得准确率收益，结果显著优于以前的网络。</p>
+<p>类似现象也出现在 CIFAR-10 数据集（Krizhevsky, 2009）上，说明这些优化困难以及我们方法的效应并不只是某个特定数据集的特点。我们在该数据集上成功训练了 100 层以上的模型，并探索了 1000 层以上的模型。</p>
+<p>在 ImageNet 分类数据集（Russakovsky 等, 2014）上，我们用极深的残差网络取得了出色结果。我们的 152 层残差网络是 ImageNet 上迄今出现过的最深网络，而复杂度仍低于 VGG 网络（Simonyan &amp; Zisserman, 2015）。我们的集成在 ImageNet 测试集上取得 3.57% 的 top-5 误差，赢得 ILSVRC 2015 分类竞赛第一名。这些极深的表示在其他识别任务上也有出色的泛化性能，并让我们进一步赢得以下任务的第一名：ImageNet 检测、ImageNet 定位、COCO 检测以及 COCO 分割。这些有力证据说明残差学习原则是通用的，我们预期它也能用于其他视觉与非视觉问题。</p>
+
+<h2 id="s2">2 相关工作</h2>
+<p><b>残差表示。</b>在图像识别中，VLAD（Jégou 等, 2012）是一种用「相对于字典的残差向量」来编码的表示，而 Fisher Vector（Perronnin &amp; Dance, 2007）可以表述为 VLAD 的概率版本（Jégou 等, 2012）。二者都是用于图像检索与分类的强大浅层表示（Chatfield 等, 2011; Vedaldi &amp; Fulkerson, 2008）。在向量量化中，编码残差向量（Jégou 等, 2011）被证明比编码原始向量更有效。</p>
+<p>在低层视觉与计算机图形学中，为求解偏微分方程（PDE），广泛使用的<span class="term" data-tip="Multigrid：多重网格法，在不同粗细尺度上交替求解，每个子问题只负责相邻两个尺度之间的残差解">多重网格法</span>（Briggs 等, 2000）把系统重述为多个尺度上的子问题，每个子问题负责「较粗尺度与较细尺度之间的残差解」。多重网格的替代方案是<span class="term" data-tip="hierarchical basis preconditioning：用表示两个尺度之间残差向量的变量作为基，改善问题的条件数">层次基预条件</span>（Szeliski, 1990; 2006），它依赖的变量表示两个尺度之间的残差向量。已有工作（Briggs 等, 2000; Szeliski, 1990; 2006）表明，这些求解器比「不了解解的残差本质」的标准求解器收敛快得多。这些方法说明：一个好的重述或预条件可以简化优化。</p>
+<p><b>捷径连接。</b>引出捷径连接（Bishop, 1995; Ripley, 1996; Venables &amp; Ripley, 1999）的实践与理论已被研究了很久。训练多层感知机（MLP）的一个早期做法，是加一个从网络输入连到输出的线性层（Ripley, 1996; Venables &amp; Ripley, 1999）。在（Szegedy 等, 2015; Lee 等, 2014）中，若干中间层直接连到辅助分类器上，以应对梯度消失/爆炸。（Schraudolph, 1998a; 1998b; Raiko 等, 2012; Vatanen 等, 2013）提出了对层的响应、梯度与传播误差做中心化的方法，通过捷径连接实现。在（Szegedy 等, 2015）中，一个「inception」层由一个捷径分支与若干更深的分支组成。</p>
+<p>与我们的工作同时，「highway networks」（Srivastava 等, 2015; 2015b）提出了带<span class="term" data-tip="gating functions：门控函数，用数据相关的权重决定信息通过多少，类似 LSTM 的门">门控函数</span>（Hochreiter &amp; Schmidhuber, 1997）的捷径连接。这些门是数据相关且带参数的，而我们的恒等捷径没有参数。当门控捷径「关闭」（趋近于零）时，highway networks 中的层表示的是非残差函数。相反，我们的表述始终学习残差函数；我们的恒等捷径从不关闭，所有信息始终被传递，只是额外学习残差函数。此外，highway networks 并未展示出在深度极大增加时（例如超过 100 层）的准确率增益。</p>
+
+<h2 id="s3">3 深度残差学习</h2>
+<h3 id="s31">3.1 残差学习</h3>
+<p>让我们把 <i>H</i>(x) 看作由若干堆叠层（不一定是整个网络）要拟合的底层映射，x 表示这些层中第一层的输入。如果有人假设多个非线性层可以渐近地逼近复杂函数<sup>2</sup>，那么等价地，也就可以假设它们能渐近地逼近残差函数，即 <i>H</i>(x) − x（假定输入与输出维度相同）。所以，与其指望堆叠层去逼近 <i>H</i>(x)，我们显式地让这些层去逼近一个残差函数 <i>F</i>(x) := <i>H</i>(x) − x。原函数于是变成 <i>F</i>(x) + x。尽管两种形式（如所假设的）都应能渐近逼近目标函数，但学习的难易程度可能不同。</p>
+<p>这一重述的动机来自退化问题中那些反直觉的现象（图 1 左）。如引言所讨论：如果新增的层可以被构造成恒等映射，更深的模型训练误差就不应大于较浅的对应物。退化问题说明，求解器可能难以用多个非线性层逼近恒等映射。有了残差学习的重述，如果恒等映射是最优的，求解器只需把多个非线性层的权重推向零，就能逼近恒等映射。</p>
+<p>真实情形下，恒等映射不太可能是最优的，但我们的重述或许有助于对问题做<span class="term" data-tip="precondition：类比数值线性代数中的预条件，把问题改写成更容易求解的等价形式">预条件</span>。如果最优函数更接近恒等映射而不是零映射，那么求解器应该更容易以「相对于恒等映射的扰动」来找到它，而不是把它当成一个新函数去学。我们通过实验（图 7）表明，学到的残差函数总体上响应很小，说明恒等映射提供了合理的预条件。</p>
+
+<h3 id="s32">3.2 通过捷径做恒等映射</h3>
+<p>我们对每几个堆叠层都采用残差学习。一个基本模块如图 2 所示。形式上，本文考虑的基本模块定义为：</p>
+<div class="eq"><div class="body">y = <i>F</i>(x, {<i>W<sub>i</sub></i>}) + x<div class="no" style="margin-left:16px">(1)</div></div></div>
+<p>这里 x 与 y 是所考虑层的输入与输出向量。函数 <i>F</i>(x, {<i>W<sub>i</sub></i>}) 表示要学习的残差映射。对于图 2 中那个含两层的例子，<i>F</i> = <i>W</i><sub>2</sub>σ(<i>W</i><sub>1</sub>x)，其中 σ 表示 ReLU（Nair &amp; Hinton, 2010），为简化记号省略了偏置。<i>F</i> + x 这一操作由一个捷径连接与逐元素相加来完成。我们在相加之后再加一个非线性（即 σ(y)，见图 2）。</p>
+<p>式 (1) 中的捷径连接既不引入额外参数，也不引入计算复杂度。这在实践上有吸引力，对我们的普通网络与残差网络之间的比较也很重要。我们可以公平地比较普通/残差网络：它们同时具有相同的参数数量、深度、宽度与计算代价（除了可忽略的逐元素相加）。</p>
+<p>式 (1) 中 x 与 <i>F</i> 的维度必须相同。如果不是（例如改变输入/输出通道数时），我们可以用捷径连接做一个线性投影 <i>W<sub>s</sub></i> 来匹配维度：</p>
+<div class="eq"><div class="body">y = <i>F</i>(x, {<i>W<sub>i</sub></i>}) + <i>W<sub>s</sub></i>x<div class="no" style="margin-left:16px">(2)</div></div></div>
+<p>我们也可以在式 (1) 中使用方阵 <i>W<sub>s</sub></i>。但我们将通过实验表明：恒等映射已足以解决退化问题，而且更经济，因此 <i>W<sub>s</sub></i> 只在需要匹配维度时才使用。</p>
+<p>残差函数 <i>F</i> 的形式是灵活的。本文实验涉及含两层或三层的 <i>F</i>（图 5），更多层也是可能的。但如果 <i>F</i> 只有一层，式 (1) 就近似一个线性层：y = <i>W</i><sub>1</sub>x + x，我们没有观察到它的优势。</p>
+<p>我们还要指出：尽管上述记号为了简单起见写的是全连接层，它们同样适用于卷积层。函数 <i>F</i>(x, {<i>W<sub>i</sub></i>}) 可以表示多个卷积层。逐元素相加在两个特征图上按通道逐一进行。</p>
+
+<h3 id="s33">3.3 网络架构</h3>
+<p>我们测试了各种普通/残差网络，并观察到一致的现象。为便于讨论，下面描述两个用于 ImageNet 的模型。</p>
+<p><b>普通网络。</b>我们的普通基线（图 3 中）主要受 VGG 网络（Simonyan &amp; Zisserman, 2015）（图 3 左）的理念启发。卷积层大多使用 3×3 滤波器，并遵循两条简单设计规则：(i) 对相同的输出特征图尺寸，各层拥有相同的滤波器数量；(ii) 如果特征图尺寸减半，滤波器数量就翻倍，以保持每层的时间复杂度不变。我们直接用步长为 2 的卷积层做下采样。网络以全局平均池化层和一个 1000 路带 softmax 的全连接层结束。图 3（中）中带权重的层总数为 34。</p>
+<p>值得注意的是，我们的模型比 VGG 网络（Simonyan &amp; Zisserman, 2015）（图 3 左）滤波器更少、复杂度更低。我们 34 层的基线有 36 亿 FLOPs（乘加），只有 VGG-19（196 亿 FLOPs）的 18%。</p>
+<figure id="fig3"><img src="images/fig3.png" alt="Figure 3"><figcaption><span class="lab">图 3</span>用于 ImageNet 的示例网络架构。左：VGG-19 模型（Simonyan &amp; Zisserman, 2015）（196 亿 FLOPs），作为参照。中：34 个参数层的普通网络（36 亿 FLOPs）。右：34 个参数层的残差网络（36 亿 FLOPs）。虚线捷径用于增加维度。表 1 给出了更多细节与其他变体。</figcaption></figure>
+<p><b>残差网络。</b>在上述普通网络的基础上，我们插入捷径连接（图 3 右），把它变成对应的残差版本。当输入与输出维度相同时，恒等捷径（式 (1)）可以直接使用（图 3 中的实线捷径）。当维度增加时（图 3 中的虚线捷径），我们考虑两种选择：(A) 捷径仍然做恒等映射，对增加的维度用额外的零项填充。这一选项不引入额外参数；(B) 使用式 (2) 的投影捷径来匹配维度（由 1×1 卷积实现）。两种选择下，当捷径跨越两个尺寸的特征图时，都以步长 2 执行。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 8px">层名</td><td style="border:1px solid var(--line);padding:5px 8px">输出尺寸</td><td style="border:1px solid var(--line);padding:5px 8px">18 层</td><td style="border:1px solid var(--line);padding:5px 8px">34 层</td><td style="border:1px solid var(--line);padding:5px 8px">50 层</td><td style="border:1px solid var(--line);padding:5px 8px">101 层</td><td style="border:1px solid var(--line);padding:5px 8px">152 层</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">conv1</td><td style="border:1px solid var(--line);padding:5px 8px">112×112</td><td style="border:1px solid var(--line);padding:5px 8px" colspan="5">7×7, 64，步长 2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px" rowspan="2">conv2_x</td><td style="border:1px solid var(--line);padding:5px 8px" rowspan="2">56×56</td><td style="border:1px solid var(--line);padding:5px 8px" colspan="5">3×3 最大池化，步长 2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 64; 3×3, 64] × 2</td><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 64; 3×3, 64] × 3</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 64; 3×3, 64; 1×1, 256] × 3</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 64; 3×3, 64; 1×1, 256] × 3</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 64; 3×3, 64; 1×1, 256] × 3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">conv3_x</td><td style="border:1px solid var(--line);padding:5px 8px">28×28</td><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 128; 3×3, 128] × 2</td><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 128; 3×3, 128] × 4</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 128; 3×3, 128; 1×1, 512] × 4</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 128; 3×3, 128; 1×1, 512] × 4</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 128; 3×3, 128; 1×1, 512] × 8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">conv4_x</td><td style="border:1px solid var(--line);padding:5px 8px">14×14</td><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 256; 3×3, 256] × 2</td><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 256; 3×3, 256] × 6</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 256; 3×3, 256; 1×1, 1024] × 6</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 256; 3×3, 256; 1×1, 1024] × 23</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 256; 3×3, 256; 1×1, 1024] × 36</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px">conv5_x</td><td style="border:1px solid var(--line);padding:5px 8px">7×7</td><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 512; 3×3, 512] × 2</td><td style="border:1px solid var(--line);padding:5px 8px">[3×3, 512; 3×3, 512] × 3</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 512; 3×3, 512; 1×1, 2048] × 3</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 512; 3×3, 512; 1×1, 2048] × 3</td><td style="border:1px solid var(--line);padding:5px 8px">[1×1, 512; 3×3, 512; 1×1, 2048] × 3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px"></td><td style="border:1px solid var(--line);padding:5px 8px">1×1</td><td style="border:1px solid var(--line);padding:5px 8px" colspan="5">平均池化，1000 维全连接层，softmax</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 8px" colspan="2">FLOPs</td><td style="border:1px solid var(--line);padding:5px 8px">1.8×10<sup>9</sup></td><td style="border:1px solid var(--line);padding:5px 8px">3.6×10<sup>9</sup></td><td style="border:1px solid var(--line);padding:5px 8px">3.8×10<sup>9</sup></td><td style="border:1px solid var(--line);padding:5px 8px">7.6×10<sup>9</sup></td><td style="border:1px solid var(--line);padding:5px 8px">11.3×10<sup>9</sup></td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 1　用于 ImageNet 的架构。基本模块以方括号给出（另见图 5），并标出堆叠的模块数量。下采样由 conv3_1、conv4_1、conv5_1 以步长 2 完成。</p>
+
+<h3 id="s34">3.4 实现</h3>
+<p>我们在 ImageNet 上的实现遵循（Krizhevsky 等, 2012; Simonyan &amp; Zisserman, 2015）的做法。图像按其短边在 [256, 480] 中随机采样来缩放，以做尺度增强（Simonyan &amp; Zisserman, 2015）。从图像或其水平翻转中随机取 224×224 的裁剪，并减去逐像素均值（Krizhevsky 等, 2012）。使用（Krizhevsky 等, 2012）中的标准颜色增强。我们按（Ioffe &amp; Szegedy, 2015）在每个卷积之后、激活之前插入批归一化（BN）。我们按（He 等, 2015b）初始化权重，并从头训练所有普通/残差网络。我们使用小批量大小为 256 的 SGD。学习率从 0.1 开始，每当误差进入平台期就除以 10，模型最多训练 60×10<sup>4</sup> 次迭代。我们使用 0.0001 的权重衰减与 0.9 的动量。遵循（Ioffe &amp; Szegedy, 2015）的做法，我们不使用 dropout（Hinton 等, 2012）。</p>
+<p>测试时，为做比较研究我们采用标准的 10-crop 测试（Krizhevsky 等, 2012）。为取得最好结果，我们采用（Simonyan &amp; Zisserman, 2015; He 等, 2015b）中的全卷积形式，并对多个尺度上的分数取平均（图像被缩放到短边为 224、256、384、480、640）。</p>
+
+<h2 id="s4">4 实验</h2>
+<h3 id="s41">4.1 ImageNet 分类</h3>
+<p>我们在由 1000 类构成的 ImageNet 2012 分类数据集（Russakovsky 等, 2014）上评估我们的方法。模型在 128 万张训练图像上训练，在 5 万张验证图像上评估。我们还在 10 万张测试图像上取得最终结果，由测试服务器报告。我们评估 top-1 与 top-5 误差率。</p>
+<p><b>普通网络。</b>我们先评估 18 层与 34 层的普通网络。34 层普通网络见图 3（中），18 层普通网络形式类似。详细架构见表 1。</p>
+<p>表 2 的结果显示，更深的 34 层普通网络验证误差高于更浅的 18 层普通网络。为揭示原因，图 4（左）比较了二者在训练过程中的训练/验证误差。我们观察到了退化问题——34 层普通网络在<em>整个</em>训练过程中训练误差都更高，尽管 18 层普通网络的解空间是 34 层的子空间。</p>
+<figure id="fig4"><img src="images/fig4.png" alt="Figure 4"><figcaption><span class="lab">图 4</span>在 ImageNet 上训练。细曲线表示训练误差，粗曲线表示中心裁剪的验证误差。左：18 层与 34 层普通网络。右：18 层与 34 层 ResNet。在这张图中，残差网络与其普通对应物相比没有额外参数。</figcaption></figure>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px"></td><td style="border:1px solid var(--line);padding:6px 12px">普通网络</td><td style="border:1px solid var(--line);padding:6px 12px">ResNet</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">18 层</td><td style="border:1px solid var(--line);padding:6px 12px">27.94</td><td style="border:1px solid var(--line);padding:6px 12px">27.88</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">34 层</td><td style="border:1px solid var(--line);padding:6px 12px">28.54</td><td style="border:1px solid var(--line);padding:6px 12px">25.03</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 2　ImageNet 验证集上的 top-1 误差（%，10-crop 测试）。这里的 ResNet 与其普通对应物相比没有额外参数。图 4 展示了训练过程。</p>
+<p>我们认为这种优化困难不太可能是梯度消失造成的。这些普通网络用 BN（Ioffe &amp; Szegedy, 2015）训练，这保证了前向传播的信号具有非零方差。我们也验证了反向传播的梯度在 BN 下呈现健康的范数。所以前向与后向信号都没有消失。事实上，34 层普通网络仍能达到有竞争力的准确率（表 3），说明求解器在一定程度上是有效的。我们猜测，深层普通网络可能收敛速率呈指数级低，从而影响训练误差的下降<sup>3</sup>。这类优化困难的原因留待将来研究。</p>
+<p><b>残差网络。</b>接下来我们评估 18 层与 34 层残差网络（ResNet）。基线架构与上述普通网络相同，只是按图 3（右）为每对 3×3 滤波器加了一个捷径连接。在第一次比较（表 2 与图 4 右）中，我们对所有捷径使用恒等映射、对增加维度使用零填充（选项 A）。所以它们与其普通对应物相比没有额外参数。</p>
+<p>从表 2 与图 4 我们有三点主要观察。第一，残差学习把这个局面反转了——34 层 ResNet 优于 18 层 ResNet（好 2.8%）。更重要的是，34 层 ResNet 呈现明显更低的训练误差，并且能泛化到验证数据。这说明在此设置下退化问题得到很好解决，我们成功地从未增加的深度中获得了准确率收益。</p>
+<p>第二，与其普通对应物相比，34 层 ResNet 把 top-1 误差降低了 3.5%（表 2），这来自成功降低的训练误差（图 4 右 vs. 左）。这一比较验证了残差学习在极深系统中的有效性。</p>
+<p>最后我们还注意到，18 层的普通/残差网络准确率相当（表 2），但 18 层 ResNet 收敛更快（图 4 右 vs. 左）。当网络「并非过分深」（这里是 18 层）时，当前的 SGD 求解器仍能为普通网络找到好解。这种情形下，ResNet 通过在早期阶段提供更快的收敛来缓解优化难度。</p>
+<p><b>恒等捷径 vs. 投影捷径。</b>我们已经表明，无参数的恒等捷径有助于训练。接下来我们考察投影捷径（式 (2)）。表 3 中我们比较三个选项：(A) 增加维度时用零填充捷径，所有捷径都无参数（与表 2、图 4 右相同）；(B) 增加维度时用投影捷径，其他捷径是恒等；(C) 所有捷径都是投影。</p>
+<figure id="fig5"><img src="images/fig5.png" alt="Figure 5"><figcaption><span class="lab">图 5</span>用于 ImageNet 的更深残差函数 <i>F</i>。左：ResNet-34 中如图 3 所示的基本模块（作用在 56×56 特征图上）。右：ResNet-50/101/152 使用的「bottleneck」基本模块。</figcaption></figure>
+<p>表 3 显示，三个选项都明显优于普通对应物。B 略优于 A。我们认为这是因为 A 中零填充的维度确实没有残差学习。C 比 B 略好，我们把这归因于许多（十三个）投影捷径引入的额外参数。但 A/B/C 之间的差异很小，说明投影捷径对解决退化问题并非必需。因此在本文余下部分我们不用选项 C，以减少内存/时间复杂度和模型大小。恒等捷径对于不增加下面引入的 bottleneck 架构的复杂度尤为重要。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">模型</td><td style="border:1px solid var(--line);padding:6px 12px">top-1 误差</td><td style="border:1px solid var(--line);padding:6px 12px">top-5 误差</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG-16（Simonyan &amp; Zisserman, 2015）</td><td style="border:1px solid var(--line);padding:6px 12px">28.07</td><td style="border:1px solid var(--line);padding:6px 12px">9.33</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">GoogLeNet（Szegedy 等, 2015）</td><td style="border:1px solid var(--line);padding:6px 12px">—</td><td style="border:1px solid var(--line);padding:6px 12px">9.15</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">PReLU-net（He 等, 2015b）</td><td style="border:1px solid var(--line);padding:6px 12px">24.27</td><td style="border:1px solid var(--line);padding:6px 12px">7.38</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">plain-34</td><td style="border:1px solid var(--line);padding:6px 12px">28.54</td><td style="border:1px solid var(--line);padding:6px 12px">10.02</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-34 A</td><td style="border:1px solid var(--line);padding:6px 12px">25.03</td><td style="border:1px solid var(--line);padding:6px 12px">7.76</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-34 B</td><td style="border:1px solid var(--line);padding:6px 12px">24.52</td><td style="border:1px solid var(--line);padding:6px 12px">7.46</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-34 C</td><td style="border:1px solid var(--line);padding:6px 12px">24.19</td><td style="border:1px solid var(--line);padding:6px 12px">7.40</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-50</td><td style="border:1px solid var(--line);padding:6px 12px">22.85</td><td style="border:1px solid var(--line);padding:6px 12px">6.71</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-101</td><td style="border:1px solid var(--line);padding:6px 12px">21.75</td><td style="border:1px solid var(--line);padding:6px 12px">6.05</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-152</td><td style="border:1px solid var(--line);padding:6px 12px">21.43</td><td style="border:1px solid var(--line);padding:6px 12px">5.71</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 3　ImageNet 验证集上的误差率（%，10-crop 测试）。VGG-16 基于我们的测试。ResNet-50/101/152 采用选项 B，即只在增加维度时使用投影。</p>
+<p><b>更深的 bottleneck 架构。</b>接下来描述我们用于 ImageNet 的更深网络。出于对我们能负担的训练时间的考虑，我们把基本模块改成 bottleneck 设计<sup>4</sup>。对每个残差函数，我们用 3 层堆叠而不是 2 层（图 5）。这三层是 1×1、3×3、1×1 卷积，其中 1×1 层负责先降维再升维（恢复），使 3×3 层成为一个输入/输出维度更小的 bottleneck。图 5 给出一个例子，两种设计的时间复杂度相近。</p>
+<p>无参数的恒等捷径对 bottleneck 架构尤为重要。如果把图 5（右）的恒等捷径换成投影，可以证明时间复杂度与模型大小都会翻倍，因为捷径连接到两个高维端。所以恒等捷径使 bottleneck 设计成为更高效的模型。</p>
+<p><b>50 层 ResNet：</b>我们把 34 层网络中的每个 2 层模块替换为这个 3 层 bottleneck 模块，得到 50 层 ResNet（表 1）。增加维度时使用选项 B。该模型有 38 亿 FLOPs。</p>
+<p><b>101 层与 152 层 ResNet：</b>我们通过使用更多 3 层模块来构造 101 层与 152 层 ResNet（表 1）。值得注意的是，尽管深度大幅增加，152 层 ResNet（113 亿 FLOPs）的复杂度仍低于 VGG-16/19（153/196 亿 FLOPs）。</p>
+<p>50/101/152 层 ResNet 比 34 层的准确率高出可观幅度（表 3、表 4）。我们没有观察到退化问题，因此从大幅增加的深度中获得了显著的准确率收益。深度的好处在所有评价指标上都有体现（表 3、表 4）。</p>
+<p><b>与当时最好方法的比较。</b>表 4 中我们与之前最好的单模型结果比较。我们的 34 层 ResNet 基线已达到很有竞争力的准确率。我们的 152 层 ResNet 单模型 top-5 验证误差为 4.49%。这一单模型结果优于此前所有集成结果（表 5）。我们组合六个不同深度的模型构成集成（提交时只包含两个 152 层模型）。这在测试集上带来 3.57% 的 top-5 误差（表 5）。该提交赢得 ILSVRC 2015 第一名。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">方法</td><td style="border:1px solid var(--line);padding:6px 12px">top-1 误差</td><td style="border:1px solid var(--line);padding:6px 12px">top-5 误差</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG（Simonyan &amp; Zisserman, 2015）（ILSVRC'14）</td><td style="border:1px solid var(--line);padding:6px 12px">—</td><td style="border:1px solid var(--line);padding:6px 12px">8.43<sup>†</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">GoogLeNet（Szegedy 等, 2015）（ILSVRC'14）</td><td style="border:1px solid var(--line);padding:6px 12px">—</td><td style="border:1px solid var(--line);padding:6px 12px">7.89</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG（Simonyan &amp; Zisserman, 2015）（v5）</td><td style="border:1px solid var(--line);padding:6px 12px">24.4</td><td style="border:1px solid var(--line);padding:6px 12px">7.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">PReLU-net（He 等, 2015b）</td><td style="border:1px solid var(--line);padding:6px 12px">21.59</td><td style="border:1px solid var(--line);padding:6px 12px">5.71</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">BN-inception（Ioffe &amp; Szegedy, 2015）</td><td style="border:1px solid var(--line);padding:6px 12px">21.99</td><td style="border:1px solid var(--line);padding:6px 12px">5.81</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-34 B</td><td style="border:1px solid var(--line);padding:6px 12px">21.84</td><td style="border:1px solid var(--line);padding:6px 12px">5.71</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-34 C</td><td style="border:1px solid var(--line);padding:6px 12px">21.53</td><td style="border:1px solid var(--line);padding:6px 12px">5.60</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-50</td><td style="border:1px solid var(--line);padding:6px 12px">20.74</td><td style="border:1px solid var(--line);padding:6px 12px">5.25</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-101</td><td style="border:1px solid var(--line);padding:6px 12px">19.87</td><td style="border:1px solid var(--line);padding:6px 12px">4.60</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-152</td><td style="border:1px solid var(--line);padding:6px 12px">19.38</td><td style="border:1px solid var(--line);padding:6px 12px">4.49</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 4　ImageNet 验证集上单模型结果的误差率（%）（标 † 的一项报告的是测试集）。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">方法</td><td style="border:1px solid var(--line);padding:6px 12px">top-5 误差（测试集）</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG（Simonyan &amp; Zisserman, 2015）（ILSVRC'14）</td><td style="border:1px solid var(--line);padding:6px 12px">7.32</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">GoogLeNet（Szegedy 等, 2015）（ILSVRC'14）</td><td style="border:1px solid var(--line);padding:6px 12px">6.66</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG（Simonyan &amp; Zisserman, 2015）（v5）</td><td style="border:1px solid var(--line);padding:6px 12px">6.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">PReLU-net（He 等, 2015b）</td><td style="border:1px solid var(--line);padding:6px 12px">4.94</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">BN-inception（Ioffe &amp; Szegedy, 2015）</td><td style="border:1px solid var(--line);padding:6px 12px">4.82</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet（ILSVRC'15）</td><td style="border:1px solid var(--line);padding:6px 12px">3.57</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 5　集成的误差率（%）。top-5 误差为 ImageNet 测试集上的结果，由测试服务器报告。</p>
+
+<h3 id="s42">4.2 CIFAR-10 与分析</h3>
+<p>我们在 CIFAR-10 数据集（Krizhevsky, 2009）上做了更多研究。它包含 10 个类别的 5 万张训练图像与 1 万张测试图像。我们给出在训练集上训练、在测试集上评估的实验。我们的关注点是极深网络的行为，而不是刷新最好结果，因此有意使用如下简单架构。</p>
+<p>普通/残差架构遵循图 3（中/右）的形式。网络输入是 32×32 图像，减去逐像素均值。第一层是 3×3 卷积。然后我们使用 6n 层 3×3 卷积的堆叠，分别作用在尺寸为 32、16、8 的特征图上，每种特征图尺寸用 2n 层。滤波器数量分别是 16、32、64。下采样由步长为 2 的卷积完成。网络以全局平均池化、10 路全连接层与 softmax 结束。总共有 6n+2 个堆叠的带权重层。下表总结该架构：</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">输出特征图尺寸</td><td style="border:1px solid var(--line);padding:6px 12px">32×32</td><td style="border:1px solid var(--line);padding:6px 12px">16×16</td><td style="border:1px solid var(--line);padding:6px 12px">8×8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">层数</td><td style="border:1px solid var(--line);padding:6px 12px">1 + 2n</td><td style="border:1px solid var(--line);padding:6px 12px">2n</td><td style="border:1px solid var(--line);padding:6px 12px">2n</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">滤波器数量</td><td style="border:1px solid var(--line);padding:6px 12px">16</td><td style="border:1px solid var(--line);padding:6px 12px">32</td><td style="border:1px solid var(--line);padding:6px 12px">64</td></tr>
+</table></div>
+</div>
+<p>使用捷径连接时，它们连接到成对的 3×3 层上（共 3n 个捷径）。在这个数据集上我们所有情形都使用恒等捷径（即选项 A），因此我们的残差模型与普通对应物具有完全相同的深度、宽度与参数数量。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 10px">方法</td><td style="border:1px solid var(--line);padding:5px 10px">层数</td><td style="border:1px solid var(--line);padding:5px 10px">参数量</td><td style="border:1px solid var(--line);padding:5px 10px">误差 (%)</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Maxout（Goodfellow 等, 2013）</td><td style="border:1px solid var(--line);padding:5px 10px">—</td><td style="border:1px solid var(--line);padding:5px 10px">—</td><td style="border:1px solid var(--line);padding:5px 10px">9.38</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">NIN（Lin 等, 2013）</td><td style="border:1px solid var(--line);padding:5px 10px">—</td><td style="border:1px solid var(--line);padding:5px 10px">—</td><td style="border:1px solid var(--line);padding:5px 10px">8.81</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">DSN（Lee 等, 2014）</td><td style="border:1px solid var(--line);padding:5px 10px">—</td><td style="border:1px solid var(--line);padding:5px 10px">—</td><td style="border:1px solid var(--line);padding:5px 10px">8.22</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">FitNet（Romero 等, 2015）</td><td style="border:1px solid var(--line);padding:5px 10px">19</td><td style="border:1px solid var(--line);padding:5px 10px">2.5M</td><td style="border:1px solid var(--line);padding:5px 10px">8.39</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Highway（Srivastava 等, 2015; 2015b）</td><td style="border:1px solid var(--line);padding:5px 10px">19</td><td style="border:1px solid var(--line);padding:5px 10px">2.3M</td><td style="border:1px solid var(--line);padding:5px 10px">7.54（7.72±0.16）</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">Highway（Srivastava 等, 2015; 2015b）</td><td style="border:1px solid var(--line);padding:5px 10px">32</td><td style="border:1px solid var(--line);padding:5px 10px">1.25M</td><td style="border:1px solid var(--line);padding:5px 10px">8.80</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ResNet</td><td style="border:1px solid var(--line);padding:5px 10px">20</td><td style="border:1px solid var(--line);padding:5px 10px">0.27M</td><td style="border:1px solid var(--line);padding:5px 10px">8.75</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ResNet</td><td style="border:1px solid var(--line);padding:5px 10px">32</td><td style="border:1px solid var(--line);padding:5px 10px">0.46M</td><td style="border:1px solid var(--line);padding:5px 10px">7.51</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ResNet</td><td style="border:1px solid var(--line);padding:5px 10px">44</td><td style="border:1px solid var(--line);padding:5px 10px">0.66M</td><td style="border:1px solid var(--line);padding:5px 10px">7.17</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ResNet</td><td style="border:1px solid var(--line);padding:5px 10px">56</td><td style="border:1px solid var(--line);padding:5px 10px">0.85M</td><td style="border:1px solid var(--line);padding:5px 10px">6.97</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ResNet</td><td style="border:1px solid var(--line);padding:5px 10px">110</td><td style="border:1px solid var(--line);padding:5px 10px">1.7M</td><td style="border:1px solid var(--line);padding:5px 10px">6.43（6.61±0.16）</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">ResNet</td><td style="border:1px solid var(--line);padding:5px 10px">1202</td><td style="border:1px solid var(--line);padding:5px 10px">19.4M</td><td style="border:1px solid var(--line);padding:5px 10px">7.93</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 6　CIFAR-10 测试集上的分类误差。所有方法都使用了数据增强。对 ResNet-110，我们运行 5 次并给出「最好（均值±标准差）」，与（Srivastava 等, 2015b）一致。</p>
+<p>我们使用 0.0001 的权重衰减与 0.9 的动量，采用（He 等, 2015b）的权重初始化与 BN（Ioffe &amp; Szegedy, 2015），但不使用 dropout。这些模型以 128 的小批量大小在两块 GPU 上训练。学习率从 0.1 开始，在 32k 与 48k 次迭代时除以 10，在 64k 次迭代时终止训练（该设置由 45k/5k 的训练/验证划分确定）。训练时我们采用（Lee 等, 2014）中简单的数据增强：每边填充 4 个像素，从填充后的图像或其水平翻转中随机取 32×32 裁剪。测试时我们只评估原始 32×32 图像的单视图。</p>
+<p>我们比较 n = {3, 5, 7, 9}，得到 20、32、44、56 层的网络。图 6（左）展示了普通网络的行为。深层普通网络深受深度增加之害，越深训练误差越高。这一现象与 ImageNet（图 4 左）以及 MNIST（见（Srivastava 等, 2015））上类似，说明这类优化困难是一个根本性问题。</p>
+<p>图 6（中）展示了 ResNet 的行为。同样与 ImageNet 情形（图 4 右）类似，我们的 ResNet 成功克服了优化困难，并在深度增加时表现出准确率收益。</p>
+<figure id="fig6"><img src="images/fig6.png" alt="Figure 6"><figcaption><span class="lab">图 6</span>CIFAR-10 上的训练。虚线表示训练误差，粗线表示测试误差。左：普通网络（plain-110 的误差高于 60%，未显示）。中：ResNet。右：110 层与 1202 层的 ResNet。</figcaption></figure>
+<p>我们进一步探索 n = 18，得到 110 层 ResNet。这一情形下我们发现初始学习率 0.1 略大、无法开始收敛<sup>5</sup>。于是我们用 0.01 先做热身训练，直到训练误差低于 80%（约 400 次迭代），再回到 0.1 继续训练。其余学习率安排与之前相同。这个 110 层网络收敛良好（图 6 中）。它的参数比其他深而瘦的网络（例如 FitNet（Romero 等, 2015）与 Highway（Srivastava 等, 2015））更少（表 6），却处在最好结果之列（6.43%，表 6）。</p>
+<figure id="fig7"><img src="images/fig7.png" alt="Figure 7"><figcaption><span class="lab">图 7</span>CIFAR-10 上各层响应的标准差（std）。响应是每个 3×3 层的输出，取在 BN 之后、非线性之前。上：各层按原始顺序排列。下：响应按降序排列。</figcaption></figure>
+<p><b>层响应分析。</b>图 7 展示了各层响应的标准差（std）。响应是每个 3×3 层的输出，取在 BN 之后、其他非线性（ReLU/相加）之前。对 ResNet 而言，这一分析揭示了残差函数的响应强度。图 7 显示 ResNet 的响应总体上小于其普通对应物。这些结果支持我们的基本动机（3.1 节）：残差函数可能总体上比非残差函数更接近零。我们还注意到，更深的 ResNet 响应幅度更小，这从图 7 中 ResNet-20、56 与 110 的比较可以看出。层数更多时，ResNet 的单个层倾向于更少地改动信号。</p>
+<p><b>探索 1000 层以上。</b>我们探索了一个超过 1000 层的极端深模型。我们设 n = 200，得到 1202 层网络，按上述方式训练。我们的方法没有表现出优化困难，这个 10<sup>3</sup> 层网络能够达到训练误差 &lt;0.1%（图 6 右）。它的测试误差仍然相当好（7.93%，表 6）。</p>
+<p>但对这类极端深的模型仍有未解问题。这个 1202 层网络的测试结果比我们的 110 层网络更差，尽管两者的训练误差相近。我们认为这是过拟合造成的。对这个不大的数据集而言，1202 层网络可能大得没有必要（19.4M 参数）。在该数据集上取得最好结果的做法（Goodfellow 等, 2013; Lin 等, 2013; Lee 等, 2014; Romero 等, 2015）都使用了 maxout（Goodfellow 等, 2013）或 dropout（Hinton 等, 2012）这样的强正则化。本文不使用 maxout/dropout，只是通过设计「深而瘦」的架构来施加正则化，以免偏离对优化困难的关注。但结合更强的正则化可能会改善结果，这留待将来研究。</p>
+
+<h3 id="s43">4.3 PASCAL 与 MS COCO 上的目标检测</h3>
+<p>我们的方法在其他识别任务上有良好的泛化性能。表 7 与表 8 展示了 PASCAL VOC 2007/2012（Everingham 等, 2010）与 COCO（Lin 等, 2014）上的目标检测基线结果。我们采用 Faster R-CNN（Ren 等, 2015）作为检测方法。这里我们关心的是「用 ResNet-101 替换 VGG-16（Simonyan &amp; Zisserman, 2015）」带来的改进。两个模型所用检测实现（见附录）完全相同，因此增益只能归因于更好的网络。最值得注意的是，在颇具挑战的 COCO 数据集上，我们在 COCO 的标准指标（mAP@[.5, .95]）上获得 6.0% 的提升，即 28% 的相对改进。这一增益完全来自学到的表示。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">训练数据</td><td style="border:1px solid var(--line);padding:6px 12px">07+12</td><td style="border:1px solid var(--line);padding:6px 12px">07++12</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">测试数据</td><td style="border:1px solid var(--line);padding:6px 12px">VOC 07 测试集</td><td style="border:1px solid var(--line);padding:6px 12px">VOC 12 测试集</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG-16</td><td style="border:1px solid var(--line);padding:6px 12px">73.2</td><td style="border:1px solid var(--line);padding:6px 12px">70.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-101</td><td style="border:1px solid var(--line);padding:6px 12px">76.4</td><td style="border:1px solid var(--line);padding:6px 12px">73.8</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 7　使用基线 Faster R-CNN 在 PASCAL VOC 2007/2012 测试集上的目标检测 mAP（%）。更好的结果另见表 10 与表 11。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px">指标</td><td style="border:1px solid var(--line);padding:6px 12px">mAP@.5</td><td style="border:1px solid var(--line);padding:6px 12px">mAP@[.5, .95]</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG-16</td><td style="border:1px solid var(--line);padding:6px 12px">41.5</td><td style="border:1px solid var(--line);padding:6px 12px">21.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">ResNet-101</td><td style="border:1px solid var(--line);padding:6px 12px">48.4</td><td style="border:1px solid var(--line);padding:6px 12px">27.2</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 8　使用基线 Faster R-CNN 在 COCO 验证集上的目标检测 mAP（%）。更好的结果另见表 9。</p>
+<p>基于深度残差网络，我们在 ILSVRC &amp; COCO 2015 竞赛的几个赛道中赢得第一名：ImageNet 检测、ImageNet 定位、COCO 检测与 COCO 分割。细节见附录。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按约定，参考文献条目保留英文原文，不作翻译（便于与原文及检索工具对照）。</p>
+<div class="refs"><ol>
+<li>Y. Bengio, P. Simard, and P. Frasconi. Learning long-term dependencies with gradient descent is difficult. IEEE Transactions on Neural Networks, 5(2):157–166, 1994.</li>
+<li>C. M. Bishop. Neural networks for pattern recognition. Oxford university press, 1995.</li>
+<li>W. L. Briggs, S. F. McCormick, et al. A Multigrid Tutorial. Siam, 2000.</li>
+<li>K. Chatfield, V. Lempitsky, A. Vedaldi, and A. Zisserman. The devil is in the details: an evaluation of recent feature encoding methods. In BMVC, 2011.</li>
+<li>M. Everingham, L. Van Gool, C. K. Williams, J. Winn, and A. Zisserman. The Pascal Visual Object Classes (VOC) Challenge. IJCV, pages 303–338, 2010.</li>
+<li>S. Gidaris and N. Komodakis. Object detection via a multi-region &amp; semantic segmentation-aware cnn model. In ICCV, 2015.</li>
+<li>R. Girshick. Fast R-CNN. In ICCV, 2015.</li>
+<li>R. Girshick, J. Donahue, T. Darrell, and J. Malik. Rich feature hierarchies for accurate object detection and semantic segmentation. In CVPR, 2014.</li>
+<li>X. Glorot and Y. Bengio. Understanding the difficulty of training deep feedforward neural networks. In AISTATS, 2010.</li>
+<li>I. J. Goodfellow, D. Warde-Farley, M. Mirza, A. Courville, and Y. Bengio. Maxout networks. arXiv:1302.4389, 2013.</li>
+<li>K. He and J. Sun. Convolutional neural networks at constrained time cost. In CVPR, 2015.</li>
+<li>K. He, X. Zhang, S. Ren, and J. Sun. Spatial pyramid pooling in deep convolutional networks for visual recognition. In ECCV, 2014.</li>
+<li>K. He, X. Zhang, S. Ren, and J. Sun. Delving deep into rectifiers: Surpassing human-level performance on imagenet classification. In ICCV, 2015b.</li>
+<li>G. E. Hinton, N. Srivastava, A. Krizhevsky, I. Sutskever, and R. R. Salakhutdinov. Improving neural networks by preventing coadaptation of feature detectors. arXiv:1207.0580, 2012.</li>
+<li>S. Hochreiter and J. Schmidhuber. Long short-term memory. Neural computation, 9(8):1735–1780, 1997.</li>
+<li>S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep network training by reducing internal covariate shift. In ICML, 2015.</li>
+<li>H. Jegou, M. Douze, and C. Schmid. Product quantization for nearest neighbor search. TPAMI, 33, 2011.</li>
+<li>H. Jegou, F. Perronnin, M. Douze, J. Sanchez, P. Perez, and C. Schmid. Aggregating local image descriptors into compact codes. TPAMI, 2012.</li>
+<li>Y. Jia, E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick, S. Guadarrama, and T. Darrell. Caffe: Convolutional architecture for fast feature embedding. arXiv:1408.5093, 2014.</li>
+<li>A. Krizhevsky. Learning multiple layers of features from tiny images. Tech Report, 2009.</li>
+<li>A. Krizhevsky, I. Sutskever, and G. Hinton. Imagenet classification with deep convolutional neural networks. In NIPS, 2012.</li>
+<li>Y. LeCun, B. Boser, J. S. Denker, D. Henderson, R. E. Howard, W. Hubbard, and L. D. Jackel. Backpropagation applied to handwritten zip code recognition. Neural computation, 1989.</li>
+<li>Y. LeCun, L. Bottou, G. B. Orr, and K.-R. Muller. Efficient backprop. In Neural Networks: Tricks of the Trade, pages 9–50. Springer, 1998.</li>
+<li>C.-Y. Lee, S. Xie, P. Gallagher, Z. Zhang, and Z. Tu. Deeply supervised nets. arXiv:1409.5185, 2014.</li>
+<li>M. Lin, Q. Chen, and S. Yan. Network in network. arXiv:1312.4400, 2013.</li>
+<li>T.-Y. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Dollar, and C. L. Zitnick. Microsoft COCO: Common objects in context. In ECCV, 2014.</li>
+<li>J. Long, E. Shelhamer, and T. Darrell. Fully convolutional networks for semantic segmentation. In CVPR, 2015.</li>
+<li>G. Montufar, R. Pascanu, K. Cho, and Y. Bengio. On the number of linear regions of deep neural networks. In NIPS, 2014.</li>
+<li>V. Nair and G. E. Hinton. Rectified linear units improve restricted boltzmann machines. In ICML, 2010.</li>
+<li>F. Perronnin and C. Dance. Fisher kernels on visual vocabularies for image categorization. In CVPR, 2007.</li>
+<li>T. Raiko, H. Valpola, and Y. LeCun. Deep learning made easier by linear transformations in perceptrons. In AISTATS, 2012.</li>
+<li>S. Ren, K. He, R. Girshick, and J. Sun. Faster R-CNN: Towards real-time object detection with region proposal networks. In NIPS, 2015.</li>
+<li>S. Ren, K. He, R. Girshick, X. Zhang, and J. Sun. Object detection networks on convolutional feature maps. arXiv:1504.06066, 2015b.</li>
+<li>B. D. Ripley. Pattern recognition and neural networks. Cambridge university press, 1996.</li>
+<li>A. Romero, N. Ballas, S. E. Kahou, A. Chassang, C. Gatta, and Y. Bengio. Fitnets: Hints for thin deep nets. In ICLR, 2015.</li>
+<li>O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla, M. Bernstein, et al. Imagenet large scale visual recognition challenge. arXiv:1409.0575, 2014.</li>
+<li>A. M. Saxe, J. L. McClelland, and S. Ganguli. Exact solutions to the nonlinear dynamics of learning in deep linear neural networks. arXiv:1312.6120, 2013.</li>
+<li>N. N. Schraudolph. Accelerated gradient descent by factor-centering decomposition. Technical report, 1998a.</li>
+<li>N. N. Schraudolph. Centering neural network gradient factors. In Neural Networks: Tricks of the Trade, pages 207–226. Springer, 1998b.</li>
+<li>P. Sermanet, D. Eigen, X. Zhang, M. Mathieu, R. Fergus, and Y. LeCun. Overfeat: Integrated recognition, localization and detection using convolutional networks. In ICLR, 2014.</li>
+<li>K. Simonyan and A. Zisserman. Very deep convolutional networks for large-scale image recognition. In ICLR, 2015.</li>
+<li>R. K. Srivastava, K. Greff, and J. Schmidhuber. Highway networks. arXiv:1505.00387, 2015.</li>
+<li>R. K. Srivastava, K. Greff, and J. Schmidhuber. Training very deep networks. arXiv:1507.06228, 2015b.</li>
+<li>C. Szegedy, W. Liu, Y. Jia, P. Sermanet, S. Reed, D. Anguelov, D. Erhan, V. Vanhoucke, and A. Rabinovich. Going deeper with convolutions. In CVPR, 2015.</li>
+<li>R. Szeliski. Fast surface interpolation using hierarchical basis functions. TPAMI, 1990.</li>
+<li>R. Szeliski. Locally adapted hierarchical basis preconditioning. In SIGGRAPH, 2006.</li>
+<li>T. Vatanen, T. Raiko, H. Valpola, and Y. LeCun. Pushing stochastic gradient towards second-order methods–backpropagation learning with transformations in nonlinearities. In Neural Information Processing, 2013.</li>
+<li>A. Vedaldi and B. Fulkerson. VLFeat: An open and portable library of computer vision algorithms, 2008.</li>
+<li>W. Venables and B. Ripley. Modern applied statistics with s-plus. 1999.</li>
+<li>M. D. Zeiler and R. Fergus. Visualizing and understanding convolutional neural networks. In ECCV, 2014.</li>
+</ol></div>
+
+<h2 id="appA">附录 A　目标检测基线</h2>
+<p>本节介绍我们基于基线 Faster R-CNN（Ren 等, 2015）系统的检测方法。模型由 ImageNet 分类模型初始化，再在目标检测数据上微调。在 ILSVRC &amp; COCO 2015 检测竞赛时，我们实验了 ResNet-50/101。</p>
+<p>与（Ren 等, 2015）所用的 VGG-16 不同，我们的 ResNet 没有隐藏的全连接层。我们采用「在卷积特征图上的网络」（Networks on Conv feature maps, NoC）（Ren 等, 2015b）这一思路来解决该问题。我们用「在图像上的步长不超过 16 像素」的那些层（即 conv1、conv2_x、conv3_x、conv4_x，在 ResNet-101 中共 91 个卷积层；表 1）来计算全图共享的卷积特征图。我们把这些层类比于 VGG-16 中的 13 个卷积层：这样一来，ResNet 与 VGG-16 的卷积特征图具有相同的总步长（16 像素）。这些层由区域建议网络（RPN，生成 300 个建议）（Ren 等, 2015）与 Fast R-CNN 检测网络（Girshick, 2015）共享。RoI 池化（Girshick, 2015）在 conv5_1 之前执行。在这个 RoI 池化后的特征上，对每个区域采用 conv5_x 及更高层所有层，扮演 VGG-16 中全连接层的角色。最后的分类层被替换为两个同级的层（分类与框回归（Girshick, 2015））。</p>
+<p>关于 BN 层的使用：预训练之后，我们在 ImageNet 训练集上为每一层计算 BN 统计量（均值与方差）。随后在目标检测的微调过程中固定 BN 层。这样 BN 层就变成带常数偏移与尺度的线性激活，BN 统计量不会被微调更新。我们固定 BN 层主要是为了减少 Faster R-CNN 训练中的内存消耗。</p>
+
+<h3 id="appA1">PASCAL VOC</h3>
+<p>遵循（Girshick, 2015; Ren 等, 2015），对 PASCAL VOC 2007 测试集，我们用 VOC 2007 的 5k trainval 图像与 VOC 2012 的 16k trainval 图像训练（「07+12」）。对 PASCAL VOC 2012 测试集，我们用 VOC 2007 的 10k trainval+test 图像与 VOC 2012 的 16k trainval 图像训练（「07++12」）。训练 Faster R-CNN 的超参数与（Ren 等, 2015）相同。表 7 给出结果：ResNet-101 相对 VGG-16 把 mAP 提高了 3% 以上。这一增益完全来自 ResNet 学到的更好的特征。</p>
+
+<h3 id="appA2">MS COCO</h3>
+<p>MS COCO 数据集（Lin 等, 2014）涉及 80 个物体类别。我们评估 PASCAL VOC 指标（mAP @ IoU = 0.5）与 COCO 标准指标（mAP @ IoU = .5:.05:.95）。我们用训练集的 80k 图像训练、验证集的 40k 图像评估。我们的 COCO 检测系统与 PASCAL VOC 的类似。我们用 8 卡 GPU 实现训练 COCO 模型，因此 RPN 步骤的小批量大小为 8 张图像（即每卡 1 张），Fast R-CNN 步骤的小批量大小为 16 张图像。RPN 步骤与 Fast R-CNN 步骤都以学习率 0.001 训练 240k 次迭代，然后再以 0.0001 训练 80k 次迭代。</p>
+<p>表 8 给出 MS COCO 验证集上的结果。ResNet-101 相对 VGG-16 在 mAP@[.5, .95] 上提升 6%，即 28% 的相对改进，完全归功于更好的网络学到的特征。值得注意的是，mAP@[.5, .95] 的绝对提升（6.0%）几乎和 mAP@.5 的提升（6.9%）一样大。这说明更深的网络能同时改善识别与定位。</p>
+
+<h2 id="appB">附录 B　目标检测的改进</h2>
+<p>为完整起见，我们报告为竞赛所做的改进。这些改进基于深度特征，因此也应从残差学习中受益。</p>
+<h3 id="appB1">MS COCO</h3>
+<p><b>框精修（Box refinement）。</b>我们的框精修部分遵循（Gidaris &amp; Komodakis, 2015）中的迭代定位。在 Faster R-CNN 中，最终输出是一个回归框，它与提议框不同。因此推理时，我们从回归框上重新池化一个新特征，得到一个新的分类得分与一个新的回归框。我们把这 300 个新预测与原来的 300 个预测合并。对预测框的并集使用 IoU 阈值 0.3 做非极大值抑制（NMS）（Girshick 等, 2014），随后做框投票（box voting）（Gidaris &amp; Komodakis, 2015）。框精修把 mAP 提升约 2 个点（表 9）。</p>
+<p><b>全局上下文。</b>我们在 Fast R-CNN 步骤中加入全局上下文。给定全图卷积特征图，我们用全局空间金字塔池化（He 等, 2014）（「单层」金字塔）池化出一个特征，这可以实现为「以整幅图像的边界框作为 RoI」的 RoI 池化。这个池化特征被送入 RoI 之后的各层，得到全局上下文特征。该全局特征与原本的逐区域特征拼接，随后进入同级的分类与框回归层。这个新结构是端到端训练的。全局上下文把 mAP@.5 提升约 1 个点（表 9）。</p>
+<p><b>多尺度测试。</b>以上所有结果都按（Ren 等, 2015）做单尺度训练/测试得到，其中图像短边 s = 600 像素。多尺度训练/测试在（He 等, 2014; Girshick, 2015）中通过从特征金字塔中选择尺度来实现，在（Ren 等, 2015b）中则通过 maxout 层实现。在我们当前的实现中，我们按（Ren 等, 2015b）做了多尺度测试；由于时间有限，没有做多尺度训练。此外，我们只对 Fast R-CNN 步骤做了多尺度测试（尚未对 RPN 步骤做）。对训练好的模型，我们在图像金字塔上计算卷积特征图，图像短边为 s ∈ {200, 400, 600, 800, 1000}。</p>
+<p>我们按（Ren 等, 2015b）从金字塔中选择两个相邻尺度。RoI 池化与后续层在这两个尺度的特征图上执行（Ren 等, 2015b），并按（Ren 等, 2015b）用 maxout 合并。多尺度测试把 mAP 提升 2 个点以上（表 9）。</p>
+<p><b>使用验证数据。</b>接下来我们用 80k+40k 的 trainval 集训练、用 20k 的 test-dev 集评估。test-dev 集没有公开的真值，结果由评估服务器报告。在该设置下，结果为 mAP@.5 = 55.7%、mAP@[.5, .95] = 34.9%（表 9）。这是我们的单模型结果。</p>
+<p><b>集成。</b>在 Faster R-CNN 中，系统被设计为同时学习区域建议与物体分类器，因此集成可以用来同时提升这两个任务。我们用一个集成来生成区域建议，提议的并集由一组逐区域分类器处理。表 9 给出基于 3 个网络集成的结果：在 test-dev 集上 mAP 为 59.0% 与 37.4%。该结果赢得 COCO 2015 检测任务第一名。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 10px">训练数据</td><td style="border:1px solid var(--line);padding:5px 10px" colspan="2">COCO train</td><td style="border:1px solid var(--line);padding:5px 10px" colspan="2">COCO trainval</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">测试数据</td><td style="border:1px solid var(--line);padding:5px 10px" colspan="2">COCO val</td><td style="border:1px solid var(--line);padding:5px 10px" colspan="2">COCO test-dev</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">mAP</td><td style="border:1px solid var(--line);padding:5px 10px">@.5</td><td style="border:1px solid var(--line);padding:5px 10px">@[.5, .95]</td><td style="border:1px solid var(--line);padding:5px 10px">@.5</td><td style="border:1px solid var(--line);padding:5px 10px">@[.5, .95]</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">基线 Faster R-CNN（VGG-16）</td><td style="border:1px solid var(--line);padding:5px 10px">41.5</td><td style="border:1px solid var(--line);padding:5px 10px">21.2</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">基线 Faster R-CNN（ResNet-101）</td><td style="border:1px solid var(--line);padding:5px 10px">48.4</td><td style="border:1px solid var(--line);padding:5px 10px">27.2</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">+ 框精修</td><td style="border:1px solid var(--line);padding:5px 10px">49.9</td><td style="border:1px solid var(--line);padding:5px 10px">29.9</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">+ 上下文</td><td style="border:1px solid var(--line);padding:5px 10px">51.1</td><td style="border:1px solid var(--line);padding:5px 10px">30.0</td><td style="border:1px solid var(--line);padding:5px 10px">53.3</td><td style="border:1px solid var(--line);padding:5px 10px">32.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">+ 多尺度测试</td><td style="border:1px solid var(--line);padding:5px 10px">53.8</td><td style="border:1px solid var(--line);padding:5px 10px">32.5</td><td style="border:1px solid var(--line);padding:5px 10px">55.7</td><td style="border:1px solid var(--line);padding:5px 10px">34.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 10px">集成</td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px"></td><td style="border:1px solid var(--line);padding:5px 10px">59.0</td><td style="border:1px solid var(--line);padding:5px 10px">37.4</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 9　使用 Faster R-CNN 与 ResNet-101 在 MS COCO 上的目标检测改进。</p>
+
+<h3 id="appB2">PASCAL VOC</h3>
+<p>我们基于上述模型再次考察 PASCAL VOC 数据集。用在 COCO 数据集上的单模型（表 9 中 55.7% mAP@.5），我们在 PASCAL VOC 各集合上微调该模型。框精修、上下文与多尺度测试的改进也被采用。这样我们在 PASCAL VOC 2007 上取得 85.6% mAP（表 10）、在 PASCAL VOC 2012 上取得 83.8% mAP（表 11）<sup>6</sup>。PASCAL VOC 2012 上的结果比此前的最好结果（Gidaris &amp; Komodakis, 2015）高 10 个点。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:4px 8px">系统</td><td style="border:1px solid var(--line);padding:4px 8px">网络</td><td style="border:1px solid var(--line);padding:4px 8px">数据</td><td style="border:1px solid var(--line);padding:4px 8px">mAP</td><td style="border:1px solid var(--line);padding:4px 8px">aero</td><td style="border:1px solid var(--line);padding:4px 8px">bike</td><td style="border:1px solid var(--line);padding:4px 8px">bird</td><td style="border:1px solid var(--line);padding:4px 8px">boat</td><td style="border:1px solid var(--line);padding:4px 8px">bottle</td><td style="border:1px solid var(--line);padding:4px 8px">bus</td><td style="border:1px solid var(--line);padding:4px 8px">car</td><td style="border:1px solid var(--line);padding:4px 8px">cat</td><td style="border:1px solid var(--line);padding:4px 8px">chair</td><td style="border:1px solid var(--line);padding:4px 8px">cow</td><td style="border:1px solid var(--line);padding:4px 8px">table</td><td style="border:1px solid var(--line);padding:4px 8px">dog</td><td style="border:1px solid var(--line);padding:4px 8px">horse</td><td style="border:1px solid var(--line);padding:4px 8px">mbike</td><td style="border:1px solid var(--line);padding:4px 8px">person</td><td style="border:1px solid var(--line);padding:4px 8px">plant</td><td style="border:1px solid var(--line);padding:4px 8px">sheep</td><td style="border:1px solid var(--line);padding:4px 8px">sofa</td><td style="border:1px solid var(--line);padding:4px 8px">train</td><td style="border:1px solid var(--line);padding:4px 8px">tv</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 8px">baseline</td><td style="border:1px solid var(--line);padding:4px 8px">VGG-16</td><td style="border:1px solid var(--line);padding:4px 8px">07+12</td><td style="border:1px solid var(--line);padding:4px 8px">73.2</td><td style="border:1px solid var(--line);padding:4px 8px">76.5</td><td style="border:1px solid var(--line);padding:4px 8px">79.0</td><td style="border:1px solid var(--line);padding:4px 8px">70.9</td><td style="border:1px solid var(--line);padding:4px 8px">65.5</td><td style="border:1px solid var(--line);padding:4px 8px">52.1</td><td style="border:1px solid var(--line);padding:4px 8px">83.1</td><td style="border:1px solid var(--line);padding:4px 8px">84.7</td><td style="border:1px solid var(--line);padding:4px 8px">86.4</td><td style="border:1px solid var(--line);padding:4px 8px">52.0</td><td style="border:1px solid var(--line);padding:4px 8px">81.9</td><td style="border:1px solid var(--line);padding:4px 8px">65.7</td><td style="border:1px solid var(--line);padding:4px 8px">84.8</td><td style="border:1px solid var(--line);padding:4px 8px">84.6</td><td style="border:1px solid var(--line);padding:4px 8px">77.5</td><td style="border:1px solid var(--line);padding:4px 8px">76.7</td><td style="border:1px solid var(--line);padding:4px 8px">38.8</td><td style="border:1px solid var(--line);padding:4px 8px">73.6</td><td style="border:1px solid var(--line);padding:4px 8px">73.9</td><td style="border:1px solid var(--line);padding:4px 8px">83.0</td><td style="border:1px solid var(--line);padding:4px 8px">72.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 8px">baseline</td><td style="border:1px solid var(--line);padding:4px 8px">ResNet-101</td><td style="border:1px solid var(--line);padding:4px 8px">07+12</td><td style="border:1px solid var(--line);padding:4px 8px">76.4</td><td style="border:1px solid var(--line);padding:4px 8px">79.8</td><td style="border:1px solid var(--line);padding:4px 8px">80.7</td><td style="border:1px solid var(--line);padding:4px 8px">76.2</td><td style="border:1px solid var(--line);padding:4px 8px">68.3</td><td style="border:1px solid var(--line);padding:4px 8px">55.9</td><td style="border:1px solid var(--line);padding:4px 8px">85.1</td><td style="border:1px solid var(--line);padding:4px 8px">85.3</td><td style="border:1px solid var(--line);padding:4px 8px">89.8</td><td style="border:1px solid var(--line);padding:4px 8px">56.7</td><td style="border:1px solid var(--line);padding:4px 8px">87.8</td><td style="border:1px solid var(--line);padding:4px 8px">69.4</td><td style="border:1px solid var(--line);padding:4px 8px">88.3</td><td style="border:1px solid var(--line);padding:4px 8px">88.9</td><td style="border:1px solid var(--line);padding:4px 8px">80.9</td><td style="border:1px solid var(--line);padding:4px 8px">78.4</td><td style="border:1px solid var(--line);padding:4px 8px">41.7</td><td style="border:1px solid var(--line);padding:4px 8px">78.6</td><td style="border:1px solid var(--line);padding:4px 8px">79.8</td><td style="border:1px solid var(--line);padding:4px 8px">85.3</td><td style="border:1px solid var(--line);padding:4px 8px">72.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 8px">baseline++</td><td style="border:1px solid var(--line);padding:4px 8px">ResNet-101</td><td style="border:1px solid var(--line);padding:4px 8px">COCO+07+12</td><td style="border:1px solid var(--line);padding:4px 8px">85.6</td><td style="border:1px solid var(--line);padding:4px 8px">90.0</td><td style="border:1px solid var(--line);padding:4px 8px">89.6</td><td style="border:1px solid var(--line);padding:4px 8px">87.8</td><td style="border:1px solid var(--line);padding:4px 8px">80.8</td><td style="border:1px solid var(--line);padding:4px 8px">76.1</td><td style="border:1px solid var(--line);padding:4px 8px">89.9</td><td style="border:1px solid var(--line);padding:4px 8px">89.9</td><td style="border:1px solid var(--line);padding:4px 8px">89.6</td><td style="border:1px solid var(--line);padding:4px 8px">75.5</td><td style="border:1px solid var(--line);padding:4px 8px">90.0</td><td style="border:1px solid var(--line);padding:4px 8px">80.7</td><td style="border:1px solid var(--line);padding:4px 8px">89.6</td><td style="border:1px solid var(--line);padding:4px 8px">90.3</td><td style="border:1px solid var(--line);padding:4px 8px">89.1</td><td style="border:1px solid var(--line);padding:4px 8px">88.7</td><td style="border:1px solid var(--line);padding:4px 8px">65.4</td><td style="border:1px solid var(--line);padding:4px 8px">88.1</td><td style="border:1px solid var(--line);padding:4px 8px">85.6</td><td style="border:1px solid var(--line);padding:4px 8px">89.0</td><td style="border:1px solid var(--line);padding:4px 8px">86.8</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 10　PASCAL VOC 2007 测试集上的检测结果。基线为 Faster R-CNN 系统。表中「baseline++」包含表 9 中的框精修、上下文与多尺度测试。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:4px 8px">系统</td><td style="border:1px solid var(--line);padding:4px 8px">网络</td><td style="border:1px solid var(--line);padding:4px 8px">数据</td><td style="border:1px solid var(--line);padding:4px 8px">mAP</td><td style="border:1px solid var(--line);padding:4px 8px">aero</td><td style="border:1px solid var(--line);padding:4px 8px">bike</td><td style="border:1px solid var(--line);padding:4px 8px">bird</td><td style="border:1px solid var(--line);padding:4px 8px">boat</td><td style="border:1px solid var(--line);padding:4px 8px">bottle</td><td style="border:1px solid var(--line);padding:4px 8px">bus</td><td style="border:1px solid var(--line);padding:4px 8px">car</td><td style="border:1px solid var(--line);padding:4px 8px">cat</td><td style="border:1px solid var(--line);padding:4px 8px">chair</td><td style="border:1px solid var(--line);padding:4px 8px">cow</td><td style="border:1px solid var(--line);padding:4px 8px">table</td><td style="border:1px solid var(--line);padding:4px 8px">dog</td><td style="border:1px solid var(--line);padding:4px 8px">horse</td><td style="border:1px solid var(--line);padding:4px 8px">mbike</td><td style="border:1px solid var(--line);padding:4px 8px">person</td><td style="border:1px solid var(--line);padding:4px 8px">plant</td><td style="border:1px solid var(--line);padding:4px 8px">sheep</td><td style="border:1px solid var(--line);padding:4px 8px">sofa</td><td style="border:1px solid var(--line);padding:4px 8px">train</td><td style="border:1px solid var(--line);padding:4px 8px">tv</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 8px">baseline</td><td style="border:1px solid var(--line);padding:4px 8px">VGG-16</td><td style="border:1px solid var(--line);padding:4px 8px">07++12</td><td style="border:1px solid var(--line);padding:4px 8px">70.4</td><td style="border:1px solid var(--line);padding:4px 8px">84.9</td><td style="border:1px solid var(--line);padding:4px 8px">79.8</td><td style="border:1px solid var(--line);padding:4px 8px">74.3</td><td style="border:1px solid var(--line);padding:4px 8px">53.9</td><td style="border:1px solid var(--line);padding:4px 8px">49.8</td><td style="border:1px solid var(--line);padding:4px 8px">77.5</td><td style="border:1px solid var(--line);padding:4px 8px">75.9</td><td style="border:1px solid var(--line);padding:4px 8px">88.5</td><td style="border:1px solid var(--line);padding:4px 8px">45.6</td><td style="border:1px solid var(--line);padding:4px 8px">77.1</td><td style="border:1px solid var(--line);padding:4px 8px">55.3</td><td style="border:1px solid var(--line);padding:4px 8px">86.9</td><td style="border:1px solid var(--line);padding:4px 8px">81.7</td><td style="border:1px solid var(--line);padding:4px 8px">80.9</td><td style="border:1px solid var(--line);padding:4px 8px">79.6</td><td style="border:1px solid var(--line);padding:4px 8px">40.1</td><td style="border:1px solid var(--line);padding:4px 8px">72.6</td><td style="border:1px solid var(--line);padding:4px 8px">60.9</td><td style="border:1px solid var(--line);padding:4px 8px">81.2</td><td style="border:1px solid var(--line);padding:4px 8px">61.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 8px">baseline</td><td style="border:1px solid var(--line);padding:4px 8px">ResNet-101</td><td style="border:1px solid var(--line);padding:4px 8px">07++12</td><td style="border:1px solid var(--line);padding:4px 8px">73.8</td><td style="border:1px solid var(--line);padding:4px 8px">86.5</td><td style="border:1px solid var(--line);padding:4px 8px">81.6</td><td style="border:1px solid var(--line);padding:4px 8px">77.2</td><td style="border:1px solid var(--line);padding:4px 8px">58.0</td><td style="border:1px solid var(--line);padding:4px 8px">51.0</td><td style="border:1px solid var(--line);padding:4px 8px">78.6</td><td style="border:1px solid var(--line);padding:4px 8px">76.6</td><td style="border:1px solid var(--line);padding:4px 8px">93.2</td><td style="border:1px solid var(--line);padding:4px 8px">48.6</td><td style="border:1px solid var(--line);padding:4px 8px">80.4</td><td style="border:1px solid var(--line);padding:4px 8px">59.0</td><td style="border:1px solid var(--line);padding:4px 8px">92.1</td><td style="border:1px solid var(--line);padding:4px 8px">85.3</td><td style="border:1px solid var(--line);padding:4px 8px">84.8</td><td style="border:1px solid var(--line);padding:4px 8px">80.7</td><td style="border:1px solid var(--line);padding:4px 8px">48.1</td><td style="border:1px solid var(--line);padding:4px 8px">77.3</td><td style="border:1px solid var(--line);padding:4px 8px">66.5</td><td style="border:1px solid var(--line);padding:4px 8px">84.7</td><td style="border:1px solid var(--line);padding:4px 8px">65.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:4px 8px">baseline+++</td><td style="border:1px solid var(--line);padding:4px 8px">ResNet-101</td><td style="border:1px solid var(--line);padding:4px 8px">COCO+07++12</td><td style="border:1px solid var(--line);padding:4px 8px">83.8</td><td style="border:1px solid var(--line);padding:4px 8px">92.1</td><td style="border:1px solid var(--line);padding:4px 8px">88.4</td><td style="border:1px solid var(--line);padding:4px 8px">84.8</td><td style="border:1px solid var(--line);padding:4px 8px">75.9</td><td style="border:1px solid var(--line);padding:4px 8px">71.4</td><td style="border:1px solid var(--line);padding:4px 8px">86.3</td><td style="border:1px solid var(--line);padding:4px 8px">87.8</td><td style="border:1px solid var(--line);padding:4px 8px">94.2</td><td style="border:1px solid var(--line);padding:4px 8px">66.8</td><td style="border:1px solid var(--line);padding:4px 8px">89.4</td><td style="border:1px solid var(--line);padding:4px 8px">69.2</td><td style="border:1px solid var(--line);padding:4px 8px">93.9</td><td style="border:1px solid var(--line);padding:4px 8px">91.9</td><td style="border:1px solid var(--line);padding:4px 8px">90.9</td><td style="border:1px solid var(--line);padding:4px 8px">89.6</td><td style="border:1px solid var(--line);padding:4px 8px">67.9</td><td style="border:1px solid var(--line);padding:4px 8px">88.2</td><td style="border:1px solid var(--line);padding:4px 8px">76.8</td><td style="border:1px solid var(--line);padding:4px 8px">90.3</td><td style="border:1px solid var(--line);padding:4px 8px">80.0</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 11　PASCAL VOC 2012 测试集上的检测结果（来自官方排行榜）。基线为 Faster R-CNN 系统。表中「baseline+++」包含表 9 中的框精修、上下文与多尺度测试。</p>
+
+<h3 id="appB3">ImageNet 检测</h3>
+<p>ImageNet 检测（DET）任务涉及 200 个物体类别，准确率用 mAP@.5 评估。我们用于 ImageNet DET 的物体检测算法与表 9 中用于 MS COCO 的相同。网络在 1000 类 ImageNet 分类集上预训练，再在 DET 数据上微调。我们按（Girshick 等, 2014）把验证集分成两部分（val1/val2）。我们用 DET 训练集与 val1 集微调检测模型，val2 集用于验证。我们没有使用其他 ILSVRC 2015 数据。我们使用 ResNet-101 的单模型在 DET 测试集上取得 58.8% mAP，3 个模型的集成取得 62.1% mAP（表 12）。该结果赢得 ILSVRC 2015 ImageNet 检测任务第一名，比第二名高出 8.5 个点（绝对值）。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px"></td><td style="border:1px solid var(--line);padding:6px 12px">val2</td><td style="border:1px solid var(--line);padding:6px 12px">test</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">GoogLeNet（Szegedy 等, 2015）（ILSVRC'14）</td><td style="border:1px solid var(--line);padding:6px 12px">—</td><td style="border:1px solid var(--line);padding:6px 12px">43.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">我们的单模型（ILSVRC'15）</td><td style="border:1px solid var(--line);padding:6px 12px">60.5</td><td style="border:1px solid var(--line);padding:6px 12px">58.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">我们的集成（ILSVRC'15）</td><td style="border:1px solid var(--line);padding:6px 12px">63.6</td><td style="border:1px solid var(--line);padding:6px 12px">62.1</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 12　我们在 ImageNet 检测数据集上的结果（mAP，%）。检测系统为带表 9 改进的 Faster R-CNN（Ren 等, 2015），使用 ResNet-101。</p>
+
+<h2 id="appC">附录 C　ImageNet 定位</h2>
+<p>ImageNet 定位（LOC）任务（Russakovsky 等, 2014）要求对物体做分类与定位。遵循（Sermanet 等, 2014; Simonyan &amp; Zisserman, 2015），我们假定先用图像级分类器预测图像的类别标签，定位算法只负责基于预测类别预测边界框。我们采用「逐类回归」（per-class regression, PCR）策略（Sermanet 等, 2014; Simonyan &amp; Zisserman, 2015），为每个类别学习一个边界框回归器。我们先为 ImageNet 分类预训练网络，再为定位微调。我们在所提供的 1000 类 ImageNet 训练集上训练网络。</p>
+<p>我们的定位算法基于（Ren 等, 2015）的 RPN 框架并做若干修改。与（Ren 等, 2015）中与类别无关的做法不同，我们用于定位的 RPN 设计成逐类的形式。这个 RPN 以两个同级的 1×1 卷积层结束，分别做二分类（cls）与框回归（reg），如（Ren 等, 2015）。与（Ren 等, 2015）相反，cls 与 reg 层都是逐类形式。具体而言：cls 层输出 1000 维，每一维是对「是否为某个物体类」的二项逻辑回归预测；reg 层输出 1000×4 维，由 1000 个类别的框回归器组成。与（Ren 等, 2015）一样，我们的边界框回归以每个位置上的多个平移不变的「anchor」框为参照。</p>
+<p>与我们的 ImageNet 分类训练（3.4 节）一样，我们随机采样 224×224 裁剪做数据增强。微调时使用 256 张图像的小批量。为避免负样本占主导，每张图像随机采样 8 个 anchor，其中采到的正负 anchor 比例为 1:1（Ren 等, 2015）。测试时，网络以全卷积方式施加到图像上。</p>
+<p>表 13 比较了定位结果。遵循（Simonyan &amp; Zisserman, 2015），我们先做「oracle」测试，即用真实类别作为分类预测。VGG 的论文（Simonyan &amp; Zisserman, 2015）报告在真实类别下中心裁剪误差为 33.1%（表 13）。在相同设置下，我们使用 ResNet-101 的 RPN 方法把中心裁剪误差显著降到 13.3%。这一比较展示了我们框架的出色性能。使用稠密（全卷积）与多尺度测试时，我们的 ResNet-101 在真实类别下误差为 11.7%。用 ResNet-101 做类别预测（top-5 分类误差 4.6%，表 4），top-5 定位误差为 14.4%。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px">LOC 方法</td><td style="border:1px solid var(--line);padding:5px 9px">LOC 网络</td><td style="border:1px solid var(--line);padding:5px 9px">测试</td><td style="border:1px solid var(--line);padding:5px 9px">真实类别上的 LOC 误差</td><td style="border:1px solid var(--line);padding:5px 9px">分类网络</td><td style="border:1px solid var(--line);padding:5px 9px">预测类别上的 top-5 LOC 误差</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VGG（Simonyan &amp; Zisserman, 2015）</td><td style="border:1px solid var(--line);padding:5px 9px">VGG-16</td><td style="border:1px solid var(--line);padding:5px 9px">1-crop</td><td style="border:1px solid var(--line);padding:5px 9px">33.1</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">RPN</td><td style="border:1px solid var(--line);padding:5px 9px">ResNet-101</td><td style="border:1px solid var(--line);padding:5px 9px">1-crop</td><td style="border:1px solid var(--line);padding:5px 9px">13.3</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">RPN</td><td style="border:1px solid var(--line);padding:5px 9px">ResNet-101</td><td style="border:1px solid var(--line);padding:5px 9px">dense</td><td style="border:1px solid var(--line);padding:5px 9px">11.7</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px"></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">RPN</td><td style="border:1px solid var(--line);padding:5px 9px">ResNet-101</td><td style="border:1px solid var(--line);padding:5px 9px">dense</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">ResNet-101</td><td style="border:1px solid var(--line);padding:5px 9px">14.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">RPN+RCNN</td><td style="border:1px solid var(--line);padding:5px 9px">ResNet-101</td><td style="border:1px solid var(--line);padding:5px 9px">dense</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">ResNet-101</td><td style="border:1px solid var(--line);padding:5px 9px">10.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">RPN+RCNN</td><td style="border:1px solid var(--line);padding:5px 9px">集成</td><td style="border:1px solid var(--line);padding:5px 9px">dense</td><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">集成</td><td style="border:1px solid var(--line);padding:5px 9px">8.9</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 13　ImageNet 验证集上的定位误差（%）。在「真实类别上的 LOC 误差」一列（（Simonyan &amp; Zisserman, 2015）的做法）使用真实类别。在「测试」列中，「1-crop」表示在 224×224 的中心裁剪上测试，「dense」表示稠密（全卷积）与多尺度测试。</p>
+<p>上述结果只基于 Faster R-CNN（Ren 等, 2015）中的建议网络（RPN）。人们可以用 Faster R-CNN 中的检测网络（Fast R-CNN（Girshick, 2015））来改善结果。但我们注意到，在该数据集上一张图像通常只含一个主导物体，提议区域之间高度重叠，因此其 RoI 池化特征非常相似。结果是，Fast R-CNN（Girshick, 2015）以图像为中心的训练会产生变化很小的样本，这对随机训练而言可能并不理想。受此启发，我们当前实验使用以 RoI 为中心的原始 R-CNN（Girshick 等, 2014）来替代 Fast R-CNN。</p>
+<p>我们的 R-CNN 实现如下。我们把上面训练好的逐类 RPN 施加到训练图像上，为真实类别预测边界框。这些预测框充当与类别相关的提议。对每张训练图像，取出得分最高的 200 个提议作为训练样本来训练一个 R-CNN 分类器。图像区域从提议中裁剪出来，变形到 224×224 像素，按 R-CNN（Girshick 等, 2014）送入分类网络。该网络的输出由两个同级的全连接层构成，分别做 cls 与 reg，同样是逐类形式。这个 R-CNN 网络以 RoI 为中心的方式、用 256 的小批量大小在训练集上微调。测试时，RPN 为每个预测类别生成得分最高的 200 个提议，再用 R-CNN 网络更新这些提议的得分与框位置。</p>
+<p>该方法把 top-5 定位误差降到 10.6%（表 13）。这是我们在验证集上的单模型结果。使用分类与定位都做集成的网络，我们在测试集上取得 9.0% 的 top-5 定位误差。该数字显著优于 ILSVRC 14 的结果（表 14），即误差相对减少 64%。该结果赢得 ILSVRC 2015 ImageNet 定位任务第一名。</p>
+<div style="overflow-x:auto">
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:13.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:6px 12px" rowspan="2">方法</td><td style="border:1px solid var(--line);padding:6px 12px" colspan="2">top-5 定位误差</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">验证集</td><td style="border:1px solid var(--line);padding:6px 12px">测试集</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">OverFeat（Sermanet 等, 2014）（ILSVRC'13）</td><td style="border:1px solid var(--line);padding:6px 12px">30.0</td><td style="border:1px solid var(--line);padding:6px 12px">29.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">GoogLeNet（Szegedy 等, 2015）（ILSVRC'14）</td><td style="border:1px solid var(--line);padding:6px 12px">—</td><td style="border:1px solid var(--line);padding:6px 12px">26.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">VGG（Simonyan &amp; Zisserman, 2015）（ILSVRC'14）</td><td style="border:1px solid var(--line);padding:6px 12px">26.9</td><td style="border:1px solid var(--line);padding:6px 12px">25.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:6px 12px">我们（ILSVRC'15）</td><td style="border:1px solid var(--line);padding:6px 12px">8.9</td><td style="border:1px solid var(--line);padding:6px 12px">9.0</td></tr>
+</table></div>
+</div>
+<p style="font-size:13.5px;color:#565d67">表 14　与当时最好方法在 ImageNet 定位误差（%）上的比较。</p>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　CIFAR-10 上 20 层与 56 层普通网络的训练误差（左）与测试误差（右）</li>
+<li><a href="#fig2">图 2</a>　残差学习：一个基本模块</li>
+<li><a href="#fig3">图 3</a>　ImageNet 的示例架构：VGG-19（左）、34 层普通网络（中）、34 层残差网络（右）</li>
+<li><a href="#fig4">图 4</a>　在 ImageNet 上训练：普通网络（左）与 ResNet（右）</li>
+<li><a href="#fig5">图 5</a>　更深残差函数：基本模块（左）与 bottleneck 模块（右）</li>
+<li><a href="#fig6">图 6</a>　CIFAR-10 上的训练曲线：普通网络（左）、ResNet（中）、110 与 1202 层 ResNet（右）</li>
+<li><a href="#fig7">图 7</a>　CIFAR-10 上各层响应的标准差（上：按原始顺序；下：按降序）</li>
+</ol>
+<p style="margin-top:10px">表 1 在各小节中直接排出：表 1 架构、表 2 普通/残差网络对比、表 3 单模型误差、表 4 单模型最好结果、表 5 集成结果、表 6 CIFAR-10、表 7 与表 8 检测基线；附录中还有表 9–14。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

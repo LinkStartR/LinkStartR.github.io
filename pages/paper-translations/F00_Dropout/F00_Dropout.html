@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>通过阻止特征检测器的共适应来改进神经网络 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.lbrace{display:inline-block;font-size:3em;line-height:1;vertical-align:middle;font-weight:300;margin-right:2px}
+.cases{display:inline-block;vertical-align:middle;text-align:left;font-size:.95em;line-height:2.05}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">通过阻止特征检测器的共适应来改进神经网络</span><span>Hinton 等，2012 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#top">题录与摘要</a>
+<a href="#mainbody">正文</a>
+<a href="#refs">参考文献与注释</a>
+<hr>
+<a href="#appA">附录 A：MNIST 上的实验</a>
+<a class="sub" href="#appA1">A.1 dropout 训练细节</a>
+<a class="sub" href="#appA2">A.2 dropout 微调细节</a>
+<a class="sub" href="#appA3">A.3 对特征的影响</a>
+<a href="#appB">附录 B：TIMIT 上的实验</a>
+<a class="sub" href="#appB1">B.1 预训练</a>
+<a class="sub" href="#appB2">B.2 dropout 微调</a>
+<a href="#appC">附录 C：Reuters 上的实验</a>
+<a href="#appD">附录 D：Tiny Images 与 CIFAR-10</a>
+<a href="#appE">附录 E：ImageNet</a>
+<a href="#appF">附录 F：卷积神经网络</a>
+<a class="sub" href="#appF1">F.1 池化</a>
+<a class="sub" href="#appF2">F.2 局部响应归一化</a>
+<a class="sub" href="#appF3">F.3 神经元非线性</a>
+<a class="sub" href="#appF4">F.4 目标函数</a>
+<a class="sub" href="#appF5">F.5 权重初始化</a>
+<a class="sub" href="#appF6">F.6 训练</a>
+<a class="sub" href="#appF7">F.7 学习率</a>
+<a href="#appG">附录 G：CIFAR-10 的模型</a>
+<a href="#appH">附录 H：ImageNet 的模型</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<h1 class="doc">通过阻止特征检测器的共适应来改进神经网络
+<span class="en">Improving neural networks by preventing co-adaptation of feature detectors</span></h1>
+
+<p class="meta">
+G. E. Hinton<sup>∗</sup>、N. Srivastava、A. Krizhevsky、I. Sutskever、R. R. Salakhutdinov<br>
+多伦多大学计算机科学系（Department of Computer Science, University of Toronto），加拿大安大略省多伦多市 King&rsquo;s College Rd 6 号，邮编 M5S 3G4<br>
+<sup>∗</sup>通讯作者；电子邮箱：hinton@cs.toronto.edu<br>
+预印本：arXiv:1207.0580v1 [cs.NE]，2012 年 7 月 3 日
+</p>
+
+<div class="hint">阅读提示：带<span class="term" data-tip="这样带金色虚线底纹的词是术语注释；鼠标悬停即可查看其中文译名与简要解释，触屏设备可点按展开。">金色虚线底纹</span>的词语是术语注释，悬停（触屏点按）可查看中英对照与简要说明；标有 <span class="tn" data-tip="译者注：这类标记表示该说明由译者补充，原文中没有对应文字。">译注</span> 的标记是译者补注。正文与图题中的中文为译文，专业术语、数据集名与人名按原文保留。</div>
+
+<div class="abstract">
+<span class="lab">摘 要</span>
+<p>当用一个较小的训练集训练一个大型<span class="term" data-tip="feedforward neural network：信息只从输入层单向流向输出层，层内与层间都没有反馈回路的神经网络。">前馈神经网络</span>时，它通常在留出的测试数据上表现很差。这种“<span class="term" data-tip="overfitting：模型把训练数据中的细节与噪声也一并“记住”，结果在训练集上表现好、在新数据上表现差。">过拟合</span>”可以通过在每条训练样本上随机丢弃一半的<span class="term" data-tip="feature detector：对输入中某种模式作出响应的单元，可理解为网络学到的一个“特征”。">特征检测器</span>而大幅减轻。这样做阻止了复杂的<span class="term" data-tip="co-adaptation：多个特征检测器彼此配合、相互依赖才起作用，单独拿出来就没有用。">共适应</span>——即某个特征检测器只有在若干个特定特征检测器同时存在时才有用。取而代之，每个神经元学会去检测这样一个特征：在它必须面对的、组合上极其多样的内部语境中，该特征总体上都有助于产生正确答案。随机的“<span class="term" data-tip="dropout：训练时按一定概率随机“关掉”一部分单元；测试时改用全部单元，并按比例缩放权重。">丢弃</span>”（dropout）在许多基准任务上带来大幅改进，并在语音识别与物体识别上刷新了纪录。</p>
+</div>
+
+<h2 id="mainbody">正文</h2>
+
+<p>前馈人工神经网络在其输入与输出之间设有若干层非线性的“隐藏”单元。通过调整这些隐藏单元输入连接上的权重，网络学得一组特征检测器，从而能够在给定一个输入向量时预测出正确的输出<sup>(1)</sup>。如果输入与正确输出之间的关系很复杂，而网络又有足够多的隐藏单元来精确地建模这种关系，那么通常会存在许多组不同的权重设置，它们都能几乎完美地拟合训练集——在标注训练数据有限时尤其如此。这些权重向量各自会在留出的测试数据上给出不同的预测，而且几乎所有这些权重向量在测试数据上的表现都不如在训练数据上，因为这些特征检测器已经被调校成“在训练数据上彼此配合良好”，而在测试数据上并非如此。</p>
+
+<p>过拟合可以通过“丢弃”（dropout）来减轻，其做法是阻止在训练数据上形成复杂的共适应。在每次呈现每一条训练样本时，每个隐藏单元都以 0.5 的概率被随机地从网络中移除，因此一个隐藏单元无法依赖其他隐藏单元一定在场。看待 dropout 的另一种方式是：它是一种对神经网络做<span class="term" data-tip="model averaging：把多个模型的预测结果组合起来，通常比任何单个模型更准确。">模型平均</span>的极为高效的办法。降低测试集误差的一个好办法，是把数量非常庞大的不同网络的预测结果平均起来。标准做法是分别训练许多个网络，然后把每个网络都作用到测试数据上，但这样做无论训练还是测试，计算代价都很高。随机丢弃使得在合理的时间内训练数量极其庞大的不同网络成为可能。几乎可以肯定，每一条训练样本的每一次呈现都对应着一个不同的网络，但所有这些网络在“当前在场的隐藏单元”上共享同一套权重。</p>
+
+<p>我们采用标准的<span class="term" data-tip="stochastic gradient descent, SGD：每次只用一小批样本估计梯度、据此更新权重，逐步降低损失。">随机梯度下降</span>过程，在训练样本的<span class="term" data-tip="mini-batch：训练时每次送入网络的一小批样本（例如 100 条），用它们的平均梯度做一次更新。">小批量</span>上训练 dropout 神经网络，但我们修改了通常用来防止权重变得过大的惩罚项。我们没有去惩罚整个权重向量的平方长度（<span class="term" data-tip="L2 norm：向量各分量平方和的开方，此处衡量权重向量的“大小”。">L2 范数</span>），而是对每个单独隐藏单元的输入权重向量的 L2 范数设一个上界。如果某次权重更新违反了这个约束，我们就通过除法把该隐藏单元的权重重新归一化。用约束而不是惩罚，可以保证无论提议的权重更新有多大，权重都不会变得非常大。这使得我们可以从一个很大的<span class="term" data-tip="learning rate：每次更新权重时沿梯度方向迈出的步长。">学习率</span>出发、再在学习过程中让它衰减，从而对权重空间进行比“从小权重起步、用小学习率”的方法彻底得多的搜索。</p>
+
+<p>在测试阶段，我们使用“平均网络”（mean network）：它包含全部隐藏单元，但把它们的输出权重减半，以补偿测试时活跃的隐藏单元数目是训练时的两倍这一事实。实践中，这与在大量 dropout 网络上取平均的表现非常接近。对于只有一个含 N 个单元的隐藏层、并用“softmax”输出层计算类别标签概率的网络，使用平均网络恰好等价于：对所有 2<sup>N</sup> 个可能网络所预测的标签概率分布取<span class="term" data-tip="geometric mean：把各数相乘后开相应次方；对概率分布取几何平均，等价于在 log 空间取算术平均。">几何平均</span>。只要这些 dropout 网络并非全都给出完全相同的预测，平均网络的预测就保证会给正确答案赋予更高的对数概率，高于“各个 dropout 网络所赋对数概率的平均”<sup>(2)</sup>。类似地，对于使用线性输出单元的回归任务，平均网络的平方误差总是优于各 dropout 网络平方误差的平均。</p>
+
+<p>我们最初用 MNIST 来考察 dropout 的效果，MNIST 是机器学习算法广泛使用的一个基准数据集。它包含 60 000 张 28×28 的手写数字训练图像和 10 000 张测试图像。通过用变换后的图像扩充训练数据<sup>(3)</sup>，或者把关于空间变换的知识“接线”进<span class="term" data-tip="convolutional neural network, CNN：用共享的局部滤波器在输入上滑动做卷积的神经网络，特别适合图像。">卷积神经网络</span><sup>(4)</sup>，或者用<span class="term" data-tip="generative pre-training：先让网络以无监督方式学习数据本身的生成规律，从而得到有用的初始特征，再用于下游任务。">生成式预训练</span>在不使用标签的情况下从训练图像中提取有用特征<sup>(5)</sup>，都可以大幅改善测试集上的表现。在不使用上述任何技巧的情况下，标准前馈神经网络已发表的最好结果是测试集上 160 个错误。若对所有隐藏单元的输入权重分别施加 L2 约束并使用 50% 的 dropout，这一数字可以降到约 130；若再对输入层随机丢弃 20% 的像素，则可进一步降到约 110（见图 1）。</p>
+
+<figure id="fig1">
+<img src="images/fig1.png" alt="图 1：MNIST 测试集上的错误率曲线">
+<figcaption><span class="lab">图 1</span>MNIST 测试集上，多种神经网络结构用反向传播训练时的错误率；所有隐藏层均使用 50% 的 dropout。下方一组曲线还对输入层使用了 20% 的 dropout。图中横线表示该任务此前已发表的最好结果，即在反向传播且不使用预训练、权重共享或训练集增强的条件下所得到的结果。</figcaption>
+</figure>
+
+<p>dropout 也可以与生成式预训练结合使用，不过在那种情况下我们使用较小的学习率并且不加权重约束，以免破坏预训练已经发现的那些特征检测器。文献 (5) 中公开可得的预训练<span class="term" data-tip="deep belief net, DBN：由多层受限玻尔兹曼机堆叠、逐层无监督预训练得到的深层生成模型。">深度信念网络</span>，用标准反向传播微调时得到 118 个错误，而对隐藏单元使用 50% dropout 微调时得到 92 个错误。用 <span class="tn" data-tip="译者注：原文此处写作 at URL，是一个未填写的占位符，并未给出实际网址，译文按原文保留。">URL</span> 处公开可得的代码把一个<span class="term" data-tip="Deep Boltzmann Machine, DBM：一种无向的深层生成模型，层与层之间都有连接，训练比 DBN 更困难。">深度玻尔兹曼机</span>预训练五次后，展开网络在用标准反向传播微调时分别得到 103、97、94、93 和 88 个错误，而在对隐藏单元使用 50% dropout 时分别得到 83、79、78、78 和 77 个错误。79 个错误的均值，是“不使用先验知识、也不扩充训练集”这一类方法所取得的纪录（细节见附录 A）。</p>
+
+<p>随后我们把 dropout 用于 TIMIT——一个被广泛使用的、针对小词汇量干净语音识别的基准。语音识别系统用<span class="term" data-tip="hidden Markov model, HMM：把语音看作在若干隐含状态之间按概率转移的序列，用来刻画时间上的变化。">隐马尔可夫模型</span>（HMM）来处理时间上的变化，并且需要一个<span class="term" data-tip="acoustic model：判断“某一段声学特征属于某个 HMM 状态”的可能性有多大的模型。">声学模型</span>来判定：从声学输入中提取的一帧系数，与每个 HMM 的每个可能状态究竟有多“吻合”。近来，把一小段帧序列映射为 HMM 状态上概率分布的深度预训练前馈神经网络，被证明在 TIMIT<sup>(6)</sup> 以及多种更接近实际的大词汇量任务<sup>(7, 8)</sup>上都能胜过传统的<span class="term" data-tip="Gaussian mixture model, GMM：用若干高斯分布的加权和来刻画特征分布，是语音识别中传统的声学建模方法。">高斯混合模型</span>。</p>
+
+<p>图 2 给出了 TIMIT 基准核心测试集上的帧分类错误率：这里把窗口的中心帧归类为神经网络赋予概率最高的那个 HMM 状态。网络的输入是相邻的 21 帧，每帧前进 10 ms。该神经网络有 4 个全连接的隐藏层、每层 4000 个单元，以及 185 个“softmax”输出单元，这些输出随后被合并为基准所使用的 39 个不同类别。对隐藏单元使用 50% 的 dropout，能显著改善多种不同网络结构的分类效果（见图 2）。为了得到帧识别率，神经网络对每一帧输出的类别概率被送入一个解码器，该解码器知道 HMM 状态之间的转移概率，并运行<span class="term" data-tip="Viterbi algorithm：在给定观测序列下，动态规划地求出概率最大的那条隐状态序列。">维特比算法</span>来推断唯一最优的 HMM 状态序列。不使用 dropout 时识别率为 22.7%<span class="tn" data-tip="译者注：原文此处写作 recognition rate（识别率）22.7%，但从上下文看它指的是帧分类错误率；译文按原文表述保留。">译注</span>，使用 dropout 后提高到 19.7%，这是在不使用任何说话人身份信息的方法中所取得的纪录。</p>
+
+<figure id="fig2">
+<img src="images/fig2.png" alt="图 2：TIMIT 核心测试集上的帧分类错误率">
+<figcaption><span class="lab">图 2</span>TIMIT 基准核心测试集上的帧分类错误率，比较不同网络结构下标准微调与 dropout 微调的效果。对隐藏单元使用 50%、对输入单元使用 20% 的 dropout，能改善分类效果。</figcaption>
+</figure>
+
+<p>CIFAR-10 是物体识别的一个基准任务。它使用 10 个不同物体类别的 32×32 降采样彩色图像，这些图像是通过在网络上搜索类别名（例如 dog）或其子类名（例如 Golden Retriever）收集到的。这些图像经人工标注，得到 50 000 张训练图像和 10 000 张测试图像，其中每张图像都含有一个占主导、且可以被合理地赋予该类别名的物体<sup>(9)</sup>（见图 3）。在不使用变换数据的情况下，已发表的测试集最好错误率是 18.5%<sup>(10)</sup>。我们使用一个“三层卷积隐藏层与三层 <span class="term" data-tip="max-pooling：在一个小邻域内取最大值，既降低分辨率又保留最强烈的响应。">max-pooling</span> 层交替”的神经网络（max-pooling 层报告卷积单元局部池中的最大激活值），取得了 16.6% 的错误率。这六层之后接一个<span class="term" data-tip="locally-connected layer：滤波器不跨位置共享权重，但每个位置仍是局部的；介于卷积层与全连接层之间。">局部连接层</span>（细节见附录 D）。在最后一个隐藏层中使用 dropout，错误率降到 15.6%。</p>
+
+<p>ImageNet 是一个极具挑战性的物体识别数据集，由数千个物体类别的数千张高分辨率图像构成<sup>(11)</sup>。2010 年，其中一个包含 1000 个类别、每类约 1000 个样本的子集成为一项物体识别竞赛的基础，获胜方案（实际上是六个独立模型的平均）在测试集上取得了 47.2% 的错误率。该数据集上当时的最好结果是 45.7%<sup>(12)</sup>。我们用一个单独的神经网络取得了与之相当的 48.6% 错误率：该网络有五个卷积隐藏层与 max-pooling 层交替，其后接两个全局连接层和一个最终的 1000 路 softmax 层。所有层都对每个隐藏单元的输入权重施加了 L2 权重约束。在第六个隐藏层中使用 50% 的 dropout，把错误率降到创纪录的 42.4%（细节见附录 E）。</p>
+
+<figure id="fig3">
+<img src="images/fig3.png" alt="图 3：CIFAR-10 测试集中 category bird 的十个样例">
+<figcaption><span class="lab">图 3</span>CIFAR-10 测试集中“鸟”这一类的十个样例，用来说明鸟的种类、视角、光照与背景的多样性。神经网络把除最后两个之外的所有样例都判断正确。</figcaption>
+</figure>
+
+<p>对于语音识别数据集以及两个物体识别数据集，在设计网络结构时都必须做出大量决策。我们做出这些决策的办法是：留出一个单独的验证集，用它来评估大量不同结构的表现；然后选用在验证集上配合 dropout 表现最好的那个结构，去评估 dropout 在真正的测试集上的表现。</p>
+
+<p>Reuters 数据集包含被标注了类别层次体系的文档。我们构造了各含 201 369 篇文档的训练集和测试集，涵盖 50 个互斥类别。每篇文档用一个包含 2000 个常见非停用词计数的向量表示，每个计数值 C 被变换为 log(1 + C)。一个含两个 2000 单元全连接隐藏层、用反向传播训练的前馈神经网络在测试集上得到 31.05% 的错误率。使用 50% 的 dropout 后降到 29.62%（附录 C）。</p>
+
+<p>我们尝试过各种 dropout 概率，几乎所有的概率都能改善网络的泛化性能。对全连接层而言，在所有隐藏层都使用 dropout 比只在某一个隐藏层使用更好；而过于极端的概率往往更差，这也是我们在本文中一律使用 0.5 的原因。对输入而言，dropout 也有帮助，不过通常保留 50% 以上的输入会更好。还可以通过比较“某单元在场时”与“平均情形下”在验证集上的平均表现，来为每个隐藏单元或输入单元自适应地设定其各自的 dropout 概率；这会让方法的表现略有提升。对于“所需的输入—输出映射包含若干相当不同的模式”的数据集，把 dropout 概率做成输入的、可学习的函数，很可能还能进一步提升表现，从而构造出一个统计上更高效的“<span class="term" data-tip="mixture of experts：由许多“专家”子模型构成，由门控机制决定谁来负责当前输入；此处强调专家数目在组合上极多。">专家混合</span>”<sup>(13)</sup>：其中专家的数目在组合上极多，但每个参数都在相当大一部分训练数据上得到调整。</p>
+
+<figure id="fig4">
+<img src="images/fig4.png" alt="图 4：若干 ImageNet 测试样例及其最好的 5 个标签的概率">
+<figcaption><span class="lab">图 4</span>若干 ImageNet 测试样例，下方给出最好的 5 个标签及其概率。许多进入前 5 的标签都相当合理。</figcaption>
+</figure>
+
+<p>dropout 的实现比<span class="term" data-tip="Bayesian model averaging：按各模型在给定训练数据下的后验概率来加权组合模型的预测。">贝叶斯模型平均</span>要简单得多；后者按照给定训练数据下各模型的后验概率来加权。对于像前馈神经网络这样复杂的模型类，贝叶斯方法通常要用<span class="term" data-tip="Markov chain Monte Carlo, MCMC：通过构造马尔可夫链来从难以直接采样的分布中抽取样本。">马尔可夫链蒙特卡洛</span>方法从后验分布中采样模型<sup>(14)</sup>。相比之下，概率为 0.5 的 dropout 假定所有模型最终在组合中权重相同，而共享权重的学习过程会把这件事实考虑进去。在测试阶段，各个单元的丢弃决策相互独立，这一事实使得“用一次前向通过平均网络”来近似指数多个 dropout 网络的综合意见变得非常容易。这比把许多独立模型的预测平均起来要高效得多。</p>
+
+<p>贝叶斯模型平均的一个常见替代方案是“<span class="term" data-tip="bagging：在训练集的不同随机子集上分别训练模型，再把它们等权组合（bootstrap aggregating）。">bagging</span>”：在不同的训练样本随机子集上训练不同的模型，并在组合中给所有模型相同的权重<sup>(15)</sup>。bagging 最常用在决策树这类模型上，因为这类模型拟合数据快、测试也快<sup>(16)</sup>。dropout 使得类似的做法可以应用到前馈神经网络这种强大得多的模型上。可以把 dropout 看成 bagging 的一种极端形式：每个模型只用一条样本训练，而模型的每个参数都通过与所有其他模型中对应参数共享而受到极强的<span class="term" data-tip="regularization：抑制模型过度拟合训练数据的手段，例如限制权重大小、加惩罚项等。">正则化</span>。这比“把参数向零收缩”的标准方法是一个好得多的正则化器。</p>
+
+<p>dropout 的一个我们熟悉的极端情形是“<span class="term" data-tip="naive Bayes：朴素贝叶斯。假定各特征在给定类别下相互独立，逐个特征训练后再相乘。">朴素贝叶斯</span>”：每个输入特征各自单独训练来预测类别标签，然后在测试时把所有特征的预测分布乘起来。当训练数据非常少时，这往往比逻辑斯特分类（训练每个输入特征在所有其他特征的情境下都好用）表现得好得多。</p>
+
+<p>最后，dropout 与近来一个关于“性在演化中的作用”的理论之间有一种耐人寻味的相似<sup>(17)</sup>。对文献 (17) 中阐述的“<span class="term" data-tip="mixability：源出演化生物学，指“同一功能可以用多种彼此不同的方式实现”的性质，这样的系统更稳健、更不易陷入局部死胡同。">可混合性</span>”理论的一种可能解读是：性打散了共同适应的基因集合，这意味着“依靠一大组共同适应的基因来实现某个功能”远不如“用多种彼此不同的方式来实现同一功能（哪怕实现得不那么最优）、而每种方式只用到少量共同适应的基因”来得稳健。这使演化能够避免陷入“适应度的提升需要一大群共同适应的基因协同改变”这样的死胡同。它也降低了环境的小变化导致适应度大幅下降的概率——这一现象在机器学习领域被称作“过拟合”。</p>
+
+<h2 id="refs">参考文献与注释（References and Notes）</h2>
+<p class="reflist-note">按约定，参考文献保留原文、不作翻译，以便检索与引用。</p>
+<div class="refs"><ol>
+<li>D. E. Rumelhart, G. E. Hinton, R. J. Williams, Nature <b>323</b>, 533 (1986).</li>
+<li>G. E. Hinton, Neural Computation <b>14</b>, 1771 (2002).</li>
+<li>L. M. G. D. C. Ciresan, U. Meier, J. Schmidhuber, Neural Computation <b>22</b>, 3207 (2010).</li>
+<li>Y. B. Y. Lecun, L. Bottou, P. Haffner, Proceedings of the IEEE <b>86</b>, 2278 (1998).</li>
+<li>G. E. Hinton, R. Salakhutdinov, Science <b>313</b>, 504 (2006).</li>
+<li>A. Mohamed, G. Dahl, G. Hinton, IEEE Transactions on Audio, Speech, and Language Processing, <b>20</b>, 14 (2012).</li>
+<li>G. Dahl, D. Yu, L. Deng, A. Acero, IEEE Transactions on Audio, Speech, and Language Processing, <b>20</b>, 30 (2012).</li>
+<li>N. Jaitly, P. Nguyen, A. Senior, V. Vanhoucke, <i>An Application OF Pretrained Deep Neural Networks To Large Vocabulary Conversational Speech Recognition</i>, Tech. Rep. 001, Department of Computer Science, University of Toronto (2012).</li>
+<li>A. Krizhevsky, <i>Learning multiple layers of features from tiny images</i>, Tech. Rep. 001, Department of Computer Science, University of Toronto (2009).</li>
+<li>A. Coates, A. Y. Ng, ICML (2011), pp. 921&ndash;928.</li>
+<li>J. Deng, et al., CVPR09 (2009).</li>
+<li>J. Sanchez, F. Perronnin, CVPR11 (2011).</li>
+<li>S. J. N. R. A. Jacobs, M. I. Jordan, G. E. Hinton, Neural Computation <b>3</b>, 79 (1991).</li>
+<li>R. M. Neal, <i>Bayesian Learning for Neural Networks</i>, Lecture Notes in Statistics No. 118 (Springer-Verlag, New York, 1996).</li>
+<li>L. Breiman, Machine Learning <b>24</b>, 123 (1996).</li>
+<li>L. Breiman, Machine Learning <b>45</b>, 5 (2001).</li>
+<li>J. D. A. Livnat, C. Papadimitriou, M. W. Feldman, PNAS <b>105</b>, 19803 (2008).</li>
+<li>R. R. Salakhutdinov, G. E. Hinton, Artificial Intelligence and Statistics (2009).</li>
+<li>D. D. Lewis, T. G. R. Y. Yang, Journal of Machine Learning <b>5</b>, 361 (2004). <span class="tn" data-tip="译者注：原文此处印作 Journal ofMachine Learning（缺少空格），译文保留原样。">译注</span></li>
+<li>We thank N. Jaitly for help with TIMIT, H. Larochelle, R. Neal, K. Swersky and C.K.I. Williams for helpful discussions, and NSERC, Google and Microsoft Research for funding. GEH and RRS are members of the Canadian Institute for Advanced Research.</li>
+</ol></div>
+
+<h2 id="appA">附录 A　MNIST 上的实验</h2>
+
+<h3 id="appA1">A.1　dropout 训练细节</h3>
+
+<p>MNIST 数据集由 28×28 的数字图像构成——60 000 张用于训练、10 000 张用于测试。任务目标是把数字图像分类到正确的数字类别。我们试验了不同结构（不同数量的隐藏单元与层数）的神经网络，以评估 dropout 方法对这些选择的敏感性。我们给出 4 个网络的结果（784-800-800-10、784-1200-1200-10、784-2000-2000-10、784-1200-1200-1200-10）。对这些结构我们使用相同的 dropout 率——所有隐藏单元 50%、可见单元 20%。我们使用小批量为 100 的随机梯度下降和<span class="term" data-tip="cross-entropy：衡量模型预测分布与真实分布之间差异的损失函数，越小越好。">交叉熵</span>目标函数。学习率指数衰减，初值为 10.0（作用于每个小批量上的平均梯度）。每训练一轮（<span class="term" data-tip="epoch：把整个训练集完整过一遍称为一轮。">epoch</span>），学习率乘以 0.998。每个隐藏单元对应的输入权重向量被约束为平方长度不超过 <i>l</i>。如果由于一次更新使平方长度超过 <i>l</i>，就把该向量按比例缩小，使其平方长度为 <i>l</i>。通过交叉验证，我们发现 <i>l</i> = 15 效果最好。权重初始化为从零均值、标准差 0.01 的正态分布中抽取的小随机值。使用<span class="term" data-tip="momentum：在梯度更新中加入“惯性”，把历史更新方向累积起来，从而加速学习并平滑震荡。">动量</span>来加速学习。动量从 0.5 开始，在最初的 500 轮中线性增加到 0.99，此后保持为 0.99。另外，学习率还乘以因子 (1 − 动量)。不使用<span class="term" data-tip="weight decay：在目标函数中加入权重平方的惩罚项，使权重趋向于变小。">权重衰减</span>。权重在每个小批量结束时更新。训练进行 3000 轮。权重更新采取如下形式：</p>
+
+<div class="eq"><div class="body">
+Δw<sup>t</sup>&nbsp;=&nbsp;p<sup>t</sup> Δw<sup>t−1</sup>&nbsp;−&nbsp;(1 − p<sup>t</sup>) ε<sup>t</sup> ⟨∇<sub>w</sub>L⟩<br>
+w<sup>t</sup>&nbsp;=&nbsp;w<sup>t−1</sup> + Δw<sup>t</sup>
+</div></div>
+
+<p>其中，</p>
+
+<div class="eq"><div class="body">
+ε<sup>t</sup> = ε<sub>0</sub> f<sup>t</sup><br>
+p<sup>t</sup> = <span class="lbrace">{</span><span class="cases">t/T · p<sub>i</sub> + (1 − t/T) · p<sub>f</sub>,&nbsp;&nbsp;t &lt; T<br>p<sub>f</sub>,&nbsp;&nbsp;t ≥ T</span>
+</div></div>
+
+<p>且 ε<sub>0</sub> = 10.0，f = 0.998，p<sub>i</sub> = 0.5，p<sub>f</sub> = 0.99，T = 500。虽然使用常数学习率也比标准反向传播有改进，但从高学习率开始并让它衰减带来了显著的表现提升。把输入向量约束为固定长度，可以防止权重的幅值任意增长，无论学习率如何。这给了网络大量机会在权重空间中搜索一个好的配置。随着学习率衰减，算法能够迈出更小的步子，并找到可以让学习取得进展的合适步长。使用较高的最终动量，把梯度信息分摊到大量更新上，从而在“每次梯度计算针对的都是一个不同的随机网络”这一情形下使学习保持稳定。</p>
+
+<h3 id="appA2">A.2　dropout 微调细节</h3>
+
+<p>除了从随机权重开始训练神经网络之外，dropout 还可用于微调预训练模型。我们发现，用较小的学习率配合 dropout 微调一个模型，可以得到比标准反向传播微调好得多的表现。</p>
+
+<p><b>深度信念网络（Deep Belief Nets）</b>——我们取一个用深度信念网络预训练好的神经网络<sup>(5)</sup>。它的结构是 784-500-500-2000，并用贪心的逐层对比散度学习训练<sup>①</sup>。我们没有用通常的反向传播算法去微调它，而是用了它的 dropout 版本。dropout 率与之前相同：隐藏单元 50%、可见单元 20%。使用了恒定的较小学习率 1.0。对输入权重向量的长度不加约束。不使用权重衰减。所有其他超参数与之前相同。模型用小批量为 100 的随机梯度下降训练 1000 轮。标准反向传播大约给出 118 个错误，而 dropout 把错误降到约 92。</p>
+
+<p><b>深度玻尔兹曼机（Deep Boltzmann Machines）</b>——我们还取了一个预训练好的深度玻尔兹曼机<sup>(18)</sup><sup>②</sup>（784-500-1000-10），并用 dropout-反向传播对它微调。该模型使用 1784-500-1000-10 的结构（多出的 1000 个输入单元来自该 DBM 第二层隐藏单元的<span class="term" data-tip="mean-field：用一组相互独立的单元的平均激活来近似它们联合分布的推断方法。">均值场</span>激活，细节见文献 (18)）。所有微调超参数都与用于深度信念网络的那些相同。配用 dropout 我们得到了约 79 个错误的均值，而通常的微调给出约 94 个错误。</p>
+
+<p class="fn">原文脚注：<br>① For code see http://www.cs.toronto.edu/~hinton/MatlabForSciencePaper.html<br>② For code see http://www.utstat.toronto.edu/~rsalakhu/DBM.html</p>
+
+<h3 id="appA3">A.3　对特征的影响</h3>
+
+<p>dropout 相对反向传播之所以带来大幅改进，原因之一是它鼓励每个单独的隐藏单元去学习一个有意义的特征，而不依赖特定的其他隐藏单元来纠正它的错误。为了验证这一点、并更好地理解 dropout 对特征学习的影响，我们考察了一个 784-500-500 神经网络在没有任何生成式预训练的情况下所学到的第一层特征。这些特征展示在图 5 中。每个面板显示每个网络学到的 100 个随机特征。dropout 学到的特征更简单，看起来像“笔画”，而标准反向传播学到的特征难以解释。这证实了 dropout 确实迫使判别式模型去学习更好的、共适应程度更低的特征，从而带来更好的泛化。</p>
+
+<figure id="fig5">
+<img src="images/fig5.png" alt="图 5：第一层隐藏单元学到的特征可视化">
+<figcaption><span class="lab">图 5</span>在 MNIST 数据集上，第一层隐藏单元所学特征的可视化：(a) 反向传播；(b) dropout。</figcaption>
+</figure>
+
+<h2 id="appB">附录 B　TIMIT 上的实验</h2>
+
+<p>TIMIT 声学—音素连续语音语料库是评估自动语音识别系统的标准数据集。它包含 630 位说话人朗读的录音，覆盖美式英语的 8 种方言，每人朗读 10 个音素丰富的句子。它同时带有词级和音素级的转写。任务目标是把给定的语音信号转换为音素转写序列。这些数据需要预处理，以提取输入特征和输出目标。我们使用 Kaldi——一个开源的语音代码库<sup>③</sup>——来预处理数据集，以便我们的结果可以被精确复现。我们网络的输入是<span class="term" data-tip="log filter bank responses：先用一组滤波器把语音频谱分成若干频带，取各频带能量，再取对数，作为声学特征。">对数滤波器组响应</span>。它们是在 25 ms 的语音窗上、以 10 ms 的步长提取的。</p>
+
+<p>输入表示的每一维都被归一化为均值 0、方差 1。预训练和 dropout 微调都使用大小为 100 的小批量。我们通过改变输入帧数（15 和 31）、神经网络层数（3、4 和 5）以及每层隐藏单元数（2000 和 4000），尝试了若干网络结构。图 6 展示了其中若干组合的验证误差曲线。使用 dropout 始终带来更低的错误率。</p>
+
+<h3 id="appB1">B.1　预训练</h3>
+
+<p>在 TIMIT 上的所有实验中，我们都用深度信念网络预训练神经网络<sup>(5)</sup>。由于输入是实值的，第一层被作为高斯 RBM 预训练。</p>
+
+<figure id="fig6">
+<img src="images/fig6.png" alt="图 6：训练集与验证集上的帧分类误差与交叉熵">
+<figcaption><span class="lab">图 6</span>随着学习推进，帧分类误差与交叉熵在 (a) 训练集和 (b) 验证集上的变化。训练误差是用那些随机网络计算的。</figcaption>
+</figure>
+
+<p>可见单元的偏置初始化为零，权重初始化为从零均值、标准差 0.01 的正态分布中采样的随机数。每个可见单元的方差设为 1.0，且不学习。学习通过最小化<span class="term" data-tip="Contrastive Divergence, CD：训练受限玻尔兹曼机的一种近似方法，用少量采样步数估计梯度。">对比散度</span>完成。使用动量来加速学习。动量从 0.5 开始，在 20 轮内线性增加到 0.9。对平均梯度使用 0.001 的学习率（然后再乘以 1 − 动量）。使用 0.001 的 L2 权重衰减。模型训练 100 轮。</p>
+
+<p>所有后续层都作为二值 RBM 训练。学习率为 0.01。每个单元的可见偏置初始化为 log(p/(1−p))，其中 p 是该单元在数据集中的平均激活。所有其他超参数都与我们对高斯 RBM 所用的相同。每层训练 50 轮。</p>
+
+<h3 id="appB2">B.2　dropout 微调</h3>
+
+<p>预训练好的 RBM 被用来初始化神经网络中的权重。然后用 dropout-反向传播对该网络进行微调。动量在 10 轮内从 0.5 线性增加到 0.9。使用一个较小的恒定学习率 1.0（作用于一个小批量上的平均梯度）。所有其他超参数与 MNIST 的 dropout 微调相同。模型需要运行约 200 轮才能收敛。同一个网络也用标准反向传播、以更小的学习率 0.1 微调，其余所有超参数保持不变。</p>
+
+<p>图 6 展示了训练集与验证集上的帧分类误差和交叉熵目标值。我们在若干网络结构和输入表示上比较 dropout 与标准反向传播的表现。dropout 始终取得更低的误差和交叉熵。它显著地控制了过拟合，使方法对网络结构的选择变得稳健。它使得训练大得多的网络成为可能，并且免除了<span class="term" data-tip="early stopping：在验证集误差不再下降时提前停止训练，以防止过拟合。">早停</span>的需要。我们还观察到，模型最终得到的误差对学习率和动量的选择并不很敏感。</p>
+
+<p class="fn">原文脚注：<br>③ http://kaldi.sourceforge.net</p>
+
+<h2 id="appC">附录 C　Reuters 上的实验</h2>
+
+<p>路透社语料库第一卷（Reuters Corpus Volume I, RCV1-v2）<sup>(19)</sup> 收录了 804 414 篇新闻稿，这些新闻稿被人工归类到 103 个主题中<sup>④</sup>。该语料库覆盖四大类：企业/工业、经济、政府/社会以及市场。主题示例包括能源市场、账目/盈利、政府借贷、灾害与事故、银行间市场、法律/司法、生产/服务等。主题类别构成一棵通常深度为三的树。</p>
+
+<p>我们取用该数据集，并按类别树第二层的 63 个类别把它划分为 63 个类。我们去掉了 11 个没有任何数据的类别，以及一个只有 4 条训练样本的类别。我们还去掉了一个覆盖了很大一部分（25%）样本的类别。这样剩下 50 个类别、402 738 篇文档。我们把文档随机划分为大小相等的训练集与测试集。每篇文档用数据集中出现最频繁的 2000 个非停用词表示。</p>
+
+<figure id="fig7">
+<img src="images/fig7.png" alt="图 7：Reuters 数据集上的分类错误率">
+<figcaption><span class="lab">图 7</span>随着学习推进，Reuters 数据集在 (a) 训练集和 (b) 验证集上的分类错误率。训练误差是用那些随机网络计算的。</figcaption>
+</figure>
+
+<p>我们用 dropout-反向传播训练了一个神经网络，并与标准反向传播比较。我们使用 2000-2000-1000-50 的结构。训练超参数与 MNIST 的 dropout 训练相同（附录 A.1）。训练进行 500 轮。</p>
+
+<p>图 7 展示了随着学习推进，训练集与测试集的误差。我们给出两个网络——一个是 2000-2000-1000-50，另一个是 2000-1000-1000-50，各自在有/无 dropout 下训练。与前面讨论的所有数据集一样，我们在这里也获得了显著的改进。这种学习不仅带来更好的泛化，而且进行得平稳，无需早停。</p>
+
+<p class="fn">原文脚注：<br>④ The corpus is available at http://www.ai.mit.edu/projects/jmlr/papers/volume5/lewis04a/lyrl2004_rcv1v2_README.htm</p>
+
+<h2 id="appD">附录 D　Tiny Images 与 CIFAR-10</h2>
+
+<p>Tiny Images 数据集包含 8000 万张从网络上收集的 32×32 彩色图像。这些图像是通过在各种图像搜索引擎中检索英语名词找到的，因此每张图像都带有一个非常不可靠的标签，即用来找到它的那个名词。CIFAR-10 数据集是 Tiny Images 数据集的一个子集，包含 60 000 张图像、分属十个类别<sup>⑤</sup>。每个类别包含 5000 张训练图像和 1000 张测试图像。这些类别是：飞机、汽车、鸟、猫、鹿、狗、蛙、马、船、卡车。CIFAR-10 数据集是通过过滤 Tiny Images 数据集、去除标签不正确的图像而得到的。CIFAR-10 图像变化极大，没有物体出现的标准视点或尺度。纳入一张图像的唯一标准是：该图像包含 CIFAR-10 某个类别的一个占主导的实例，并且图像中的物体能够被容易地识别为图像标签所指的类别。</p>
+
+<p class="fn">原文脚注：<br>⑤ The CIFAR dataset is available at http://www.cs.toronto.edu/~kriz/cifar.html.</p>
+
+<h2 id="appE">附录 E　ImageNet</h2>
+
+<p>ImageNet 是一个包含数千个类别、数百万张带标签图像的数据集。图像从网络上收集，并由人工标注者使用亚马逊的 Mechanical Turk 众包工具标注。2010 年，1000 个类别中每类约 1000 张图像构成的子集成为一项物体识别竞赛的基础，该竞赛是 Pascal 视觉物体挑战赛的一部分。我们进行实验所用的正是这个版本的 ImageNet。总共有约 130 万张训练图像、50 000 张验证图像和 150 000 张测试图像。这个数据集在思路上与 CIFAR-10 相似，但规模大得多。图像是全分辨率的，类别有 1000 个而非十个。另一个区别是，ImageNet 图像常常包含多个 ImageNet 物体的实例，这仅仅是因为物体类别数量极其庞大。因此，即使对人来说，在这个数据集上接近完美准确率也很困难。实验中我们把所有图像缩放为 256×256 像素。</p>
+
+<h2 id="appF">附录 F　卷积神经网络</h2>
+
+<p>我们用于 CIFAR-10 和 ImageNet 的模型是深层前馈卷积神经网络（CNN）。前馈神经网络是由若干层“神经元”构成的模型，其中给定层中的每个神经元对上一层神经元输出施加一个线性滤波器。通常会给滤波器输出加上一个标量偏置，并对结果施加一个非线性激活函数，然后把神经元的输出传给下一层。线性滤波器与偏置被称为权重，它们是网络从训练数据中学习到的参数。</p>
+
+<p>CNN 与普通神经网络在几个方面不同。第一，CNN 中的神经元在地形上被组织成一个“组”（bank），这种组织反映了输入数据中各维度的排布。所以就图像而言，神经元被排布在二维网格上。第二，CNN 中的神经元所施加的滤波器在范围上是局部的，并且以该神经元在地形组织中的位置为中心。对于“输入各维度之间的依赖随距离递减”的数据集来说，这是合理的——自然图像的像素正是如此。特别地，我们预期：关于输入图像中物体身份的有用线索，可以通过考察图像的小块局部邻域找到。第三，一个组中的所有神经元施加同一个滤波器，但正如刚才所说，它们在输入图像的不同位置上施加。这对具有近似平稳统计特性的数据集（例如自然图像）是合理的。我们预期同类的结构可以出现在输入图像的所有位置，因此对所有位置一视同仁、用同样的方式去滤波是合理的。这样一来，CNN 中的一个神经元组就对其输入施加了一次卷积操作。CNN 中的一层通常有多个神经元组，每组用不同的滤波器做一次卷积。这些神经元组成为下一层的不同输入通道。一个卷积组中相邻神经元<span class="term" data-tip="receptive field：某个神经元在输入图像上所“看到”的那一小块区域。">感受野</span>边界之间以像素计的距离，决定了卷积操作施加的<span class="term" data-tip="stride：滤波器在输入上每次滑动的步长（以像素计）。步长越大，输出分辨率越低。">步长</span>（stride）。步长越大，每组中的神经元越少。除非另有说明，我们的模型使用一个像素的步长。</p>
+
+<p>这种卷积式“共享滤波器”结构的一个重要后果是：与“所有神经元都施加不同滤波器”的神经网络相比，参数数量大幅减少。这降低了网络的表示能力，但也降低了它过拟合的能力，因此 dropout 在卷积层中远没有那么有优势。</p>
+
+<h3 id="appF1">F.1　池化</h3>
+
+<p>CNN 通常还具有“池化”（pooling）层，它们对卷积层中局部小块神经元的活动做概括。本质上，池化层以卷积层的输出为输入，并对其进行下采样。池化层由若干池化单元构成，这些单元在地形上排布，并与同一个组中卷积单元输出的一个局部邻域相连。每个池化单元随后对该组在这个邻域中的输出计算某个函数。典型的函数是最大值和平均值。具有这类单元的池化层分别被称为最大池化层和平均池化层。池化单元通常至少相隔若干像素，因此池化单元的总数少于上一层卷积单元输出的数量。把这个间距做得小于池化单元所概括邻域的大小，就产生了<span class="term" data-tip="overlapping pooling：相邻池化窗口互相重叠，使池化输出形成对下层活动的“粗编码”。">重叠池化</span>。这种变体使池化层产生卷积单元输出的一种粗编码，我们在实验中发现这有助于泛化。我们把这个间距称为池化单元之间的步长，与卷积单元之间的步长类比。池化层为网络引入了一定程度的局部平移不变性，从而改善泛化。它们相当于哺乳动物视觉皮层中的复杂细胞，后者汇集多个简单细胞的活动。已知这类细胞表现出类似的相位不变性。</p>
+
+<h3 id="appF2">F.2　局部响应归一化</h3>
+
+<p>我们的网络还包含响应归一化层。这类层鼓励属于不同组的神经元之间为“取得大的激活值”而竞争。具体而言，位于地形组织中位置 (x, y)、属于组 i 的神经元，其活动 a<sup>i</sup><sub>x,y</sub> 被除以</p>
+
+<div class="eq"><div class="body">
+(1 + α <span class="sum"><span class="t">i + N/2</span><span class="o">Σ</span><span class="b">j = i − N/2</span></span> (a<sup>j</sup><sub>x,y</sub>)<sup>2</sup>)<sup>β</sup>
+</div></div>
+
+<p>其中求和遍历位于地形组织同一位置上的 N 个“相邻”神经元组。组的排序当然是任意的，并在训练开始前确定。响应归一化层实现了真实神经元中发现的一种<span class="term" data-tip="lateral inhibition：一个神经元被激活时会抑制其邻近神经元的活动，从而增强对比、突出显著特征。">侧抑制</span>形式。常数 N、α、β 是超参数，其取值通过验证集确定。</p>
+
+<h3 id="appF3">F.3　神经元非线性</h3>
+
+<p>我们网络中的所有神经元都使用“与零取最大”的非线性。也就是说，它们的输出按 a<sup>i</sup><sub>x,y</sub> = max(0, z<sup>i</sup><sub>x,y</sub>) 计算，其中 z<sup>i</sup><sub>x,y</sub> 是该神经元的总输入（等价地说，是该神经元线性滤波器的输出加上偏置）。与传统的饱和型神经元模型相比，这种非线性有几个优点，其中包括显著缩短达到给定错误率所需的训练时间。这种非线性还降低了对对比度归一化及类似数据预处理方案的需求，因为使用这种非线性的神经元不会饱和——当面对异常大的输入值时，它们的活动只是相应地按比例增大。因此，我们唯一采取的数据预处理步骤是：从每个像素中减去平均活动，使数据居中。所以我们是在像素的（居中后的）原始 RGB 值上训练网络。</p>
+
+<h3 id="appF4">F.4　目标函数</h3>
+
+<p>我们的网络最大化多项逻辑斯特回归目标，这等价于最小化训练样本上“真实标签分布与模型预测标签分布之间交叉熵”的平均值。</p>
+
+<h3 id="appF5">F.5　权重初始化</h3>
+
+<p>我们用零均值正态分布初始化模型中的权重，方差设得足够大，以便为每层神经元产生正的输入。在使用“与零取最大”非线性时，这是一个稍显微妙的问题。如果某个神经元的输入总是负的，就不会发生任何学习，因为它的输出将恒为零，其输出关于输入的导数也将恒为零。因此，重要的是从方差足够大的分布初始化权重，使得所有神经元都至少偶尔能得到正的输入。实践中，我们只是尝试不同的方差，直到找到一个可行的初始化。通常只需要试几次。我们还发现，出于同样的原因，用某个正常数（在我们的情形中是 1）初始化隐藏层神经元的偏置，有助于让学习启动起来。</p>
+
+<h3 id="appF6">F.6　训练</h3>
+
+<p>我们用随机梯度下降训练模型，批量大小为 128 个样本，动量为 0.9。因此权重 w 的更新规则为</p>
+
+<div class="eq"><div class="body">
+v<sub>i+1</sub> = 0.9 v<sub>i</sub> + ε ⟨<span class="frac"><span class="n2">∂E</span><span class="d2">∂w<sub>i</sub></span></span>⟩<sub>i</sub><br>
+w<sub>i+1</sub> = w<sub>i</sub> + v<sub>i+1</sub>
+</div></div>
+
+<p>其中 i 是迭代下标，v 是动量变量，ε 是学习率，而 ⟨∂E/∂w<sub>i</sub>⟩<sub>i</sub> 是目标关于 w<sub>i</sub> 的导数在第 i 个批次上的平均。我们使用公开可得的 cuda-convnet 软件包，在单块 NVIDIA GTX 580 GPU 上训练所有模型。CIFAR-10 上的训练大约需要 90 分钟。ImageNet 上的训练用 dropout 大约需要四天，不用 dropout 大约需要两天。</p>
+
+<h3 id="appF7">F.7　学习率</h3>
+
+<p>我们对每一层使用相同的学习率，其取值我们用启发式方法确定为“能使目标函数下降的十的最大幂”。实践中它通常是 10<sup>−2</sup> 或 10<sup>−3</sup> 量级。在训练终止前不久，我们把学习率两次降低为原来的十分之一。</p>
+
+<h2 id="appG">附录 G　CIFAR-10 的模型</h2>
+
+<p>我们不使用 dropout 的 CIFAR-10 模型是一个含三个卷积层的 CNN。三层之后都接池化层。所有池化层概括 3×3 的邻域并使用步长 2。第一个卷积层之后的池化层做最大池化，其余池化层做平均池化。响应归一化层接在前两个池化层之后，取 N = 9、α = 0.001、β = 0.75。最上面的池化层连接到一个含十个单元的 softmax 层，该层输出类别标签上的概率分布。所有卷积层都有 64 个滤波器组，使用 5×5 的滤波器大小（乘以前一层的通道数）。</p>
+
+<p>我们使用 dropout 的 CIFAR-10 模型类似，但因为 dropout 对网络施加了很强的正则化，我们能够使用更多参数。因此我们增加第四个权重层，它从第三个池化层取输入。这个权重层是局部连接的，但不是卷积的。它类似于一个卷积层，只不过同一组中的滤波器不共享权重。这一层包含 16 个大小为 3×3 的滤波器组。我们就是在这层使用 50% 的 dropout。softmax 层从这第四个权重层取输入。</p>
+
+<h2 id="appH">附录 H　ImageNet 的模型</h2>
+
+<p>我们使用 dropout 的 ImageNet 模型是一个 CNN，它在从 256×256 图像中随机抽取的 224×224 图块及其水平镜像上训练。这是一种<span class="term" data-tip="data augmentation：通过对训练图像做随机裁剪、翻转等变换来人为扩大训练集，以减轻过拟合。">数据增强</span>形式，降低网络过拟合训练数据的能力，有助于泛化。该网络包含七个权重层。前五个是卷积层，后两个是全局连接层。最大池化层接在第一个、第二个和第五个卷积层之后。所有池化层概括 3×3 的邻域并使用步长 2。响应归一化层接在第一个和第二个池化层之后。第一个卷积层有 64 个滤波器组，滤波器为 11×11，并以 4 个像素的步长施加（这是组中相邻神经元之间的距离）。第二个卷积层有 256 个滤波器组，滤波器为 5×5。这一层有两个输入。第一个输入是第一个卷积层的（池化并响应归一化后的）输出。这一层中的 256 个组被任意划分为每组 64 个，每一组连接到第一个卷积层中一个唯一的随机 16 通道子集。第二个输入是原始图像的一个下采样版本（56×56），由这一层以 2 个像素的步长滤波。对两个输入分别滤波得到的两张特征图逐元素相加（它们的维度完全相同），再按通常方式对和施加“与零取最大”的非线性。第三个、第四个和第五个卷积层彼此相连，中间没有任何池化或归一化层，但每层在线性滤波之后都施加“与零取最大”的非线性。第三个卷积层有 512 个滤波器组，划分为每组 32 个，每一组连接到由第二个卷积层的（池化、归一化后的）输出所产生的、一个唯一的随机 32 通道子集。第四个和第五个卷积层同样有 512 个滤波器组，划分为每组 32 个，每一组连接到由下一层产生的、一个唯一的随机 32 通道子集。接下来的两个权重层是全局连接的，各有 4096 个神经元。在这最后两层中我们使用 50% 的 dropout。最后，最后一个全局连接层的输出被送入一个 1000 路 softmax，产生 1000 个类别标签上的分布。我们通过在 256×256 输入图像的十个 224×224 图块（中心图块、四个角图块及其水平镜像）上平均网络的预测来测试模型。尽管在测试时对每张图像做了十次前向计算，我们仍能实时运行系统。</p>
+
+<p>我们不使用 dropout 的 ImageNet 模型类似，但没有那两个全局连接层——在不使用 dropout 的情况下，它们会造成严重的过拟合。</p>
+
+<p>为了在验证集上达到当时的最好表现，我们发现必须使用上面描述的这种非常复杂的网络结构。所幸，这个结构的复杂性并不是本文的重点。我们想要展示的是：即使对于那些由许多团队多年共同努力、为把物体识别做到极好而发展出来的非常复杂的神经网络，dropout 也有显著的帮助。这一点清楚地体现在：使用带大量参数的非卷积高层的做法，配用 dropout 时带来大幅改进，而不用 dropout 时反而使情况变糟。</p>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　MNIST 测试集上的错误率（50% dropout，含输入层 20% dropout）</li>
+<li><a href="#fig2">图 2</a>　TIMIT 核心测试集上的帧分类错误率</li>
+<li><a href="#fig3">图 3</a>　CIFAR-10 测试集中“鸟”这一类的十个样例</li>
+<li><a href="#fig4">图 4</a>　若干 ImageNet 测试样例及其前 5 个标签的概率</li>
+<li><a href="#fig5">图 5</a>　第一层隐藏单元学到的特征可视化（(a) 反向传播、(b) dropout）</li>
+<li><a href="#fig6">图 6</a>　训练集与验证集上的帧分类误差与交叉熵</li>
+<li><a href="#fig7">图 7</a>　Reuters 数据集上的分类错误率</li>
+</ol></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献与原文脚注保留原文，未作翻译。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>

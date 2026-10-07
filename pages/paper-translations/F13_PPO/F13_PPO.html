@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>近端策略优化算法 · 中文翻译</title>
+<style>
+:root{
+ --bg:#fbfaf7;--fg:#23272e;--muted:#6b7280;--line:#e6e1d6;
+ --accent:#8a6d1f;--tip-bg:#1f2933;--tip-fg:#f7f9fa;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:var(--bg);color:var(--fg);
+ font-family:"Source Han Serif SC","Noto Serif CJK SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;
+ font-size:17px;line-height:1.95;-webkit-text-size-adjust:100%;
+}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#d9b45a,#8a6d1f);z-index:400;transition:width .1s linear}
+.topbar{position:sticky;top:0;z-index:300;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+ padding:9px 22px;background:rgba(251,250,247,.93);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line);font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13px;color:var(--muted)}
+.topbar .t{color:var(--fg);font-weight:600;font-size:14px}
+.layout{display:grid;grid-template-columns:272px minmax(0,1fr);max-width:1280px;margin:0 auto}
+nav#toc{position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;
+ padding:22px 14px 60px 22px;border-right:1px solid var(--line);
+ font-family:system-ui,"Segoe UI","Microsoft YaHei",sans-serif;font-size:13.5px}
+nav#toc h2{font-size:11px;letter-spacing:.18em;color:var(--muted);margin:0 0 10px;font-weight:700}
+nav#toc a{display:block;color:#4a5260;text-decoration:none;padding:4px 9px;border-radius:7px;border-left:2px solid transparent;line-height:1.7}
+nav#toc a:hover{background:#f1ede2;color:#1b2027}
+nav#toc a.sub{padding-left:22px;font-size:12.5px;color:#6f7681}
+nav#toc hr{border:0;border-top:1px solid var(--line);margin:10px 6px}
+main{min-width:0;padding:30px 52px 140px 52px}
+h1.doc{font-size:27px;line-height:1.5;margin:0 0 4px;letter-spacing:.01em}
+h1.doc .en{display:block;font-size:14.5px;color:var(--muted);font-weight:400;font-style:italic;margin-top:10px;font-family:Georgia,"Times New Roman",serif;line-height:1.6}
+.meta{font-size:13.5px;color:var(--muted);line-height:1.9;margin:14px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line)}
+h2{font-size:21px;margin:48px 0 18px;padding-bottom:9px;border-bottom:2px solid var(--line);scroll-margin-top:64px}
+h3{font-size:17px;margin:32px 0 12px;color:#39404a;scroll-margin-top:64px}
+p{margin:0 0 17px;text-align:justify}
+.abstract{background:#f4f1e7;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:20px 24px;margin:26px 0 10px}
+.abstract .lab{display:block;font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.hint{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);background:#f7f5ef;border:1px dashed var(--line);border-radius:8px;padding:11px 15px;margin:22px 0 0;line-height:1.85}
+.term,.tn{position:relative;cursor:help}
+.term{border-bottom:1px dashed #c9a227;background:linear-gradient(transparent 62%,rgba(255,214,102,.32) 0)}
+.tn{font-size:.7em;vertical-align:super;color:var(--accent);font-family:system-ui,"Microsoft YaHei",sans-serif;font-weight:700;padding:0 2px}
+.term:hover::after,.term.on::after,.tn:hover::after,.tn.on::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:var(--tip-bg);color:var(--tip-fg);padding:9px 13px;border-radius:8px;font-size:13px;line-height:1.75;font-weight:400;font-family:system-ui,"Microsoft YaHei",sans-serif;width:max-content;max-width:min(340px,78vw);white-space:normal;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.3);z-index:350;pointer-events:none}
+figure{margin:30px 0}
+figure img{display:block;max-width:74%;height:auto;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:5px}
+figcaption{font-size:13px;color:#565d67;line-height:1.8;margin-top:12px;padding:0 4px;text-align:left}
+figcaption .lab{color:var(--accent);font-weight:700;margin-right:4px}
+.eq{margin:24px 0;display:flex;align-items:center;gap:10px;font-family:"Cambria Math",Cambria,Georgia,"Times New Roman",serif;font-size:16.5px}
+.eq .body{flex:1;text-align:center;line-height:2.4}
+.eq .no{color:var(--muted);font-size:14px;white-space:nowrap}
+.frac{display:inline-block;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.25;margin:0 2px}
+.frac .n2{display:block;padding:0 5px;border-bottom:1px solid currentColor}
+.frac .d2{display:block;padding:0 5px}
+.sum{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.05}
+.sum .t{font-size:.62em}
+.sum .o{font-size:1.75em;line-height:1}
+.sum .b{font-size:.62em}
+.alg{border:1px solid var(--line);border-radius:8px;background:#fdfcf8;padding:18px 22px;margin:26px 0;font-size:15px;line-height:2.05}
+.alg .cap{font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.alg .cap .en{font-weight:400;color:var(--muted);font-size:13.5px}
+.alg ol{padding-left:26px;margin:10px 0}
+.alg ol>li{margin-bottom:7px}
+.alg .req{font-size:14.5px;color:#3f4651;background:#f6f3ea;border-radius:6px;padding:9px 14px;margin:0 0 12px}
+.refs{font-size:14px;line-height:1.85;color:#3f4651}
+.refs ol{padding-left:26px;margin:0}
+.refs li{margin-bottom:6px}
+.reflist-note{font-family:system-ui,"Microsoft YaHei",sans-serif;font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.fn{font-size:13.5px;color:#565d67;line-height:1.9}
+.fn ol{padding-left:24px;margin:0}
+.thm{border-left:3px solid var(--accent);background:#f8f6ef;padding:14px 18px;margin:22px 0;font-size:15.5px}
+#totop{position:fixed;right:22px;bottom:24px;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.94);color:#4a5260;font-size:17px;cursor:pointer;display:none;z-index:320;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+#totop.show{display:block}
+@media(max-width:900px){
+ .layout{grid-template-columns:1fr}
+ nav#toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:16px 20px}
+ main{padding:22px 20px 120px} figure img{max-width:100%}
+ h1.doc{font-size:22px}
+}
+</style>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<style>
+.topbar .site-return{color:var(--accent);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.topbar .site-return:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{overflow-wrap:anywhere}
+.eq,pre,.table-scroll{max-width:100%;overflow-x:auto}
+.eq .body{flex-shrink:0}
+.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header class="topbar"><a class="site-return" href="../../../index.html">LinkStartR</a><a class="site-return" href="../index.html">← 论文翻译目录</a><span class="t">近端策略优化算法</span><span>Schulman 等，2017 · 中文翻译</span></header>
+<div class="layout">
+<nav id="toc">
+<h2>目录</h2>
+<a href="#s1">1 引言</a>
+<a href="#s2">2 背景：策略优化</a>
+<a class="sub" href="#s2-1">2.1 策略梯度方法</a>
+<a class="sub" href="#s2-2">2.2 信赖域方法</a>
+<a href="#s3">3 裁剪的替代目标</a>
+<a href="#s4">4 自适应 KL 惩罚系数</a>
+<a href="#s5">5 算法</a>
+<a href="#s6">6 实验</a>
+<a class="sub" href="#s6-1">6.1 替代目标的比较</a>
+<a class="sub" href="#s6-2">6.2 与连续域中其他算法的比较</a>
+<a class="sub" href="#s6-3">6.3 连续域展示：人形机器人奔跑与转向</a>
+<a class="sub" href="#s6-4">6.4 与 Atari 域中其他算法的比较</a>
+<a href="#s7">7 结论</a>
+<a href="#s8">8 致谢</a>
+<hr>
+<a href="#refs">参考文献</a>
+<a href="#appA">附录 A　超参数</a>
+<a href="#appB">附录 B　在更多 Atari 游戏上的性能</a>
+<hr>
+<a href="#figs">图表索引</a>
+</nav>
+<main id="top">
+
+<!--topbar: 近端策略优化算法 | Schulman 等，2017 · 中文翻译-->
+<h1 class="doc">近端策略优化算法<span class="en">Proximal Policy Optimization Algorithms</span></h1>
+<p class="meta">John Schulman · Filip Wolski · Prafulla Dhariwal · Alec Radford · Oleg Klimov（OpenAI）<br>
+arXiv:1707.06347v2 [cs.LG] 28 Aug 2017 · 中文翻译（术语保留原文并附悬停注释）</p>
+<div class="abstract"><span class="lab">摘要</span>
+<p>我们为强化学习提出一族新的<span class="term" data-tip="policy gradient method：直接把策略参数化，用「策略梯度」估计量做随机梯度上升来改进策略的方法">策略梯度</span>方法：它们在「与环境交互采样数据」与「用随机梯度上升优化一个『替代』目标函数」之间交替。标准策略梯度方法每个数据样本只做一次梯度更新，而我们提出一个新的目标函数，允许对同一批数据做多轮小批量更新。这些新方法（我们称为<span class="term" data-tip="Proximal Policy Optimization：通过「限制新旧策略概率比的变化幅度」来保证每步更新不过大的策略优化方法">近端策略优化</span>，PPO）具有<span class="term" data-tip="Trust Region Policy Optimization：在「新旧策略 KL 散度不超过阈值」的约束下最大化替代目标的方法">信赖域策略优化</span>（TRPO）的一些优点，但实现起来简单得多、更通用，并且（经验上）样本复杂度更好。我们的实验在一组基准任务上测试 PPO，包括模拟机器人运动与 Atari 游戏，结果表明 PPO 优于其他在线策略梯度方法，并在样本复杂度、简单性与墙面时间（wall-time）之间取得了良好的整体平衡。</p>
+</div>
+<p class="hint">正文、图表与参考文献均来自源 PDF 解析结果。专业术语、模型名、数据集名与人名按要求保留原文；术语上的金色虚线表示可悬停（触屏可点按）查看中文解释。参考文献整节保留英文原文不译（原文使用方括号缩写式引用，如 [Sch+15b]，与文中引用对应）。原文用 <i>ε</i> 表示裁剪参数、<i>β</i> 表示 KL 惩罚系数，译文保留这些符号。</p>
+
+<h2 id="s1">1 引言</h2>
+<p>近年来，针对使用神经网络函数近似器的强化学习，已经提出了若干不同方法。领先的竞争者包括深度 Q-learning [Mni+15]、「朴素」策略梯度方法 [Mni+16]，以及信赖域 / 自然策略梯度方法 [Sch+15b]。然而，在开发一种既可扩展（能用于大模型与并行实现）、又数据高效、且稳健（即在各类问题上无需调超参也能成功）的方法上仍有改进空间。Q-learning（配合函数近似）在许多简单问题上失败<sup class="tn" data-tip="原文脚注 1：DQN 在 Arcade Learning Environment [Bel+15] 这类离散动作空间游戏中表现良好，但尚未被证明能在连续动作空间的情形下很好地工作。">1</sup>且人们对其理解不足；朴素策略梯度方法的数据效率与稳健性都较差；而信赖域策略优化（TRPO）相对复杂，并且与包含噪声（例如 dropout）或参数共享（在策略与价值函数之间，或与辅助任务之间）的结构不兼容。</p>
+<p>本文试图改进现状：引入一个算法，它获得 TRPO 那样的数据效率与可靠性能，却只使用一阶优化。我们提出一个新的、带裁剪概率比的目标，它构成对策略性能的悲观估计（即下界）。为优化策略，我们在「从策略采样数据」与「在采样数据上做若干轮优化」之间交替。</p>
+<p>我们的实验比较了替代目标各种不同版本的性能，发现带裁剪概率比的版本表现最好。我们还把 PPO 与文献中若干先前算法做了比较。在连续控制任务上，它优于我们对比的算法。在 Atari 上，它的样本复杂度显著优于 A2C，与 ACER 相近，但实现简单得多。</p>
+
+<h2 id="s2">2 背景：策略优化</h2>
+<h3 id="s2-1">2.1 策略梯度方法</h3>
+<p>策略梯度方法通过计算策略梯度的估计量，并把它代入随机梯度上升算法来工作。最常用的梯度估计量具有如下形式：</p>
+<div class="eq"><div class="body"><i>ĝ</i> = 𝔼̂<sub><i>t</i></sub>[∇<sub><i>θ</i></sub> log <i>π</i><sub><i>θ</i></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>) <i>Â</i><sub><i>t</i></sub>]</div><div class="no">(1)</div></div>
+<p>其中 <i>π</i><sub><i>θ</i></sub> 是随机策略，<i>Â</i><sub><i>t</i></sub> 是时刻 <i>t</i> 优势函数的估计量。这里的期望 𝔼̂<sub><i>t</i></sub>[…] 表示在「交替采样与优化」的算法中、对有限一批样本取经验平均。使用自动微分软件的实现，做法是构造一个其梯度就是策略梯度估计量的目标函数；估计量 <i>ĝ</i> 通过对下述目标求导得到：</p>
+<div class="eq"><div class="body"><i>L</i><sup>PG</sup>(<i>θ</i>) = 𝔼̂<sub><i>t</i></sub>[log <i>π</i><sub><i>θ</i></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>) <i>Â</i><sub><i>t</i></sub>].</div><div class="no">(2)</div></div>
+<p>虽然在同一批轨迹上对损失 <i>L</i><sup>PG</sup> 做多步优化很诱人，但这样做缺乏充分理由，并且经验上常常导致破坏性的过大策略更新（见 6.1 节；结果未展示，但与「不裁剪也不加惩罚」的设置相近或更差）。</p>
+
+<h3 id="s2-2">2.2 信赖域方法</h3>
+<p>在 TRPO [Sch+15b] 中，最大化一个目标函数（「替代」目标）时，对策略更新的幅度施加约束。具体来说，</p>
+<div class="eq"><div class="body">maximize<sub><i>θ</i></sub>　𝔼̂<sub><i>t</i></sub>[<span class="frac"><span class="n2"><i>π</i><sub><i>θ</i></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span><span class="d2"><i>π</i><sub><i>θ</i><sub>old</sub></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span></span> <i>Â</i><sub><i>t</i></sub>]</div><div class="no">(3)</div></div>
+<div class="eq"><div class="body">subject to　𝔼̂<sub><i>t</i></sub>[KL[<i>π</i><sub><i>θ</i><sub>old</sub></sub>(· | <i>s</i><sub><i>t</i></sub>), <i>π</i><sub><i>θ</i></sub>(· | <i>s</i><sub><i>t</i></sub>)]] ≤ <i>δ</i>.</div><div class="no">(4)</div></div>
+<p>这里 <i>θ</i><sub>old</sub> 是更新前的策略参数向量。在对目标做线性近似、对约束做二次近似之后，该问题可以用共轭梯度算法高效地近似求解。</p>
+<p>为 TRPO 提供依据的理论实际上建议用惩罚而不是约束，即求解无约束优化问题：</p>
+<div class="eq"><div class="body">maximize<sub><i>θ</i></sub>　𝔼̂<sub><i>t</i></sub>[<span class="frac"><span class="n2"><i>π</i><sub><i>θ</i></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span><span class="d2"><i>π</i><sub><i>θ</i><sub>old</sub></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span></span> <i>Â</i><sub><i>t</i></sub> − <i>β</i> KL[<i>π</i><sub><i>θ</i><sub>old</sub></sub>(· | <i>s</i><sub><i>t</i></sub>), <i>π</i><sub><i>θ</i></sub>(· | <i>s</i><sub><i>t</i></sub>)]]</div><div class="no">(5)</div></div>
+<p>其中 <i>β</i> 是某个系数。这是因为某个替代目标（它对状态取 KL 的最大值而非均值）构成策略 <i>π</i> 性能的下界（即悲观界）。TRPO 使用硬约束而不是惩罚，原因在于：很难选出一个单一的 <i>β</i> 值就能在不同问题上都表现良好——甚至在同一个问题内部也不行，因为问题特征会随学习进程变化。因此，为了实现「用一阶算法模拟 TRPO 那样的单调改进」这一目标，实验表明：仅仅选一个固定的惩罚系数 <i>β</i> 并用 SGD 优化带惩罚的目标（式 5）是不够的，还需要额外的修改。</p>
+
+<h2 id="s3">3 裁剪的替代目标</h2>
+<p>记 <i>r</i><sub><i>t</i></sub>(<i>θ</i>) 为概率比 <i>r</i><sub><i>t</i></sub>(<i>θ</i>) = <span class="frac"><span class="n2"><i>π</i><sub><i>θ</i></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span><span class="d2"><i>π</i><sub><i>θ</i><sub>old</sub></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span></span>，于是 <i>r</i>(<i>θ</i><sub>old</sub>) = 1。TRPO 最大化一个「替代」目标：</p>
+<div class="eq"><div class="body"><i>L</i><sup>CPI</sup>(<i>θ</i>) = 𝔼̂<sub><i>t</i></sub>[<span class="frac"><span class="n2"><i>π</i><sub><i>θ</i></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span><span class="d2"><i>π</i><sub><i>θ</i><sub>old</sub></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span></span> <i>Â</i><sub><i>t</i></sub>] = 𝔼̂<sub><i>t</i></sub>[<i>r</i><sub><i>t</i></sub>(<i>θ</i>) <i>Â</i><sub><i>t</i></sub>].</div><div class="no">(6)</div></div>
+<p>上标 CPI 指保守策略迭代（conservative policy iteration）[KL02]，该目标最初正是在那里提出的。若无约束，最大化 <i>L</i><sup>CPI</sup> 会导致过大的策略更新；因此我们现在考虑如何修改目标，以惩罚那些使 <i>r</i><sub><i>t</i></sub>(<i>θ</i>) 偏离 1 的策略变化。</p>
+<p>我们提出的主要目标如下：</p>
+<div class="eq"><div class="body"><i>L</i><sup>CLIP</sup>(<i>θ</i>) = 𝔼̂<sub><i>t</i></sub>[min(<i>r</i><sub><i>t</i></sub>(<i>θ</i>)<i>Â</i><sub><i>t</i></sub>, clip(<i>r</i><sub><i>t</i></sub>(<i>θ</i>), 1 − <i>ε</i>, 1 + <i>ε</i>)<i>Â</i><sub><i>t</i></sub>)]</div><div class="no">(7)</div></div>
+<p>其中 <i>ε</i> 是一个超参数，例如 <i>ε</i> = 0.2。该目标的动机如下。min 中的第一项是 <i>L</i><sup>CPI</sup>。第二项 clip(<i>r</i><sub><i>t</i></sub>(<i>θ</i>), 1 − <i>ε</i>, 1 + <i>ε</i>)<i>Â</i><sub><i>t</i></sub> 通过裁剪概率比来修改替代目标，从而消除把 <i>r</i><sub><i>t</i></sub> 移出区间 [1 − <i>ε</i>, 1 + <i>ε</i>] 的动机。最后我们取裁剪项与未裁剪项的最小值，因此最终目标是未裁剪目标的下界（即悲观界）。在这一方案下，我们只在「概率比的变化会让目标变好」时忽略它，而在它让目标变差时把它计入。注意在 <i>θ</i><sub>old</sub> 附近（即 <i>r</i> = 1 处）一阶意义下有 <i>L</i><sup>CLIP</sup>(<i>θ</i>) = <i>L</i><sup>CPI</sup>(<i>θ</i>)；然而当 <i>θ</i> 远离 <i>θ</i><sub>old</sub> 后二者就会不同。图 1 画出了 <i>L</i><sup>CLIP</sup> 中的单项（即单个 <i>t</i>）；注意概率比 <i>r</i> 是在 1 − <i>ε</i> 还是 1 + <i>ε</i> 处被裁剪，取决于优势为正还是为负。</p>
+
+<figure id="fig1"><img src="images/fig1.png" alt="Single term of L^CLIP as a function of ratio r">
+<figcaption><span class="lab">图 1</span>替代函数 <i>L</i><sup>CLIP</sup> 中的单项（即单个时间步）作为概率比 <i>r</i> 的函数图像，左为优势为正，右为优势为负。每个图上的红圈表示优化的起点，即 <i>r</i> = 1。注意 <i>L</i><sup>CLIP</sup> 是许多这样的项之和。</figcaption></figure>
+
+<p>图 2 为替代目标 <i>L</i><sup>CLIP</sup> 提供了另一个直觉来源。它展示了在连续控制问题上、沿近端策略优化（即我们稍后将引入的算法）得到的策略更新方向做插值时，若干目标如何变化。可以看到 <i>L</i><sup>CLIP</sup> 是 <i>L</i><sup>CPI</sup> 的下界，并对过大的策略更新施加惩罚。</p>
+
+<figure id="fig2"><img src="images/fig2.png" alt="Surrogate objectives along the policy update direction">
+<figcaption><span class="lab">图 2</span>在初始策略参数 <i>θ</i><sub>old</sub> 与更新后的策略参数（我们跑一轮 PPO 后得到的参数）之间做插值时，各替代目标的变化。更新后的策略与初始策略的 KL 散度约为 0.02，而这正是 <i>L</i><sup>CLIP</sup> 取最大值的点。该图对应 Hopper-v1 问题上的第一次策略更新，使用的超参数见 6.1 节。</figcaption></figure>
+
+<h2 id="s4">4 自适应 KL 惩罚系数</h2>
+<p>另一种可替代裁剪替代目标、也可以与之叠加的做法是：对 KL 散度施加惩罚，并自适应地调整惩罚系数，使每次策略更新后 KL 散度达到某个目标值 <i>d</i><sub>targ</sub>。在我们的实验中，KL 惩罚的表现比裁剪替代目标差，但我们还是把它列在这里，因为它是一个重要的基线。</p>
+<p>在该算法最简单的形式中，每次策略更新执行以下步骤：</p>
+<ul>
+<li>用若干轮小批量 SGD 优化带 KL 惩罚的目标
+<div class="eq"><div class="body"><i>L</i><sup>KLPEN</sup>(<i>θ</i>) = 𝔼̂<sub><i>t</i></sub>[<span class="frac"><span class="n2"><i>π</i><sub><i>θ</i></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span><span class="d2"><i>π</i><sub><i>θ</i><sub>old</sub></sub>(<i>a</i><sub><i>t</i></sub> | <i>s</i><sub><i>t</i></sub>)</span></span> <i>Â</i><sub><i>t</i></sub> − <i>β</i> KL[<i>π</i><sub><i>θ</i><sub>old</sub></sub>(· | <i>s</i><sub><i>t</i></sub>), <i>π</i><sub><i>θ</i></sub>(· | <i>s</i><sub><i>t</i></sub>)]]</div><div class="no">(8)</div></div></li>
+<li>计算 <i>d</i> = 𝔼̂<sub><i>t</i></sub>[KL[<i>π</i><sub><i>θ</i><sub>old</sub></sub>(· | <i>s</i><sub><i>t</i></sub>), <i>π</i><sub><i>θ</i></sub>(· | <i>s</i><sub><i>t</i></sub>)]]</li>
+<li>若 <i>d</i> &lt; <i>d</i><sub>targ</sub> / 1.5，则 <i>β</i> ← <i>β</i> / 2</li>
+<li>若 <i>d</i> &gt; <i>d</i><sub>targ</sub> × 1.5，则 <i>β</i> ← <i>β</i> × 2</li>
+</ul>
+<p>更新后的 <i>β</i> 用于下一次策略更新。在这一方案下，我们偶尔会看到 KL 散度与 <i>d</i><sub>targ</sub> 相差很大的策略更新，但它们很少见，且 <i>β</i> 会迅速调整。上面的 1.5 与 2 这两个参数是启发式选取的，但算法对它们并不很敏感。<i>β</i> 的初值是另一个超参数，但在实践中不重要，因为算法会很快调整它。</p>
+
+<h2 id="s5">5 算法</h2>
+<p>前面几节的替代损失可以在典型策略梯度实现上做一点小改动就算出并求导。对使用自动微分的实现，只需构造损失 <i>L</i><sup>CLIP</sup> 或 <i>L</i><sup>KLPEN</sup> 而不是 <i>L</i><sup>PG</sup>，并对该目标执行多步随机梯度上升即可。</p>
+<p>多数用于计算方差缩减优势函数估计量的技术都会使用一个学习到的状态价值函数 <i>V</i>(<i>s</i>)；例如<span class="term" data-tip="Generalized Advantage Estimation：用 λ 加权的多步时序差分残差之和来估计优势函数，可在偏差与方差之间调节">广义优势估计</span> [Sch+15a]，或 [Mni+16] 中的有限时域估计量。如果使用在策略与价值函数之间共享参数的神经网络结构，我们就必须使用一个把策略替代目标与价值函数误差项结合起来的损失函数。这个目标还可以进一步加上熵奖励以确保充分探索，如以往工作 [Wil92; Mni+16] 所建议的那样。把这些项合起来，我们得到下述目标，它在每轮迭代中被（近似地）最大化：</p>
+<div class="eq"><div class="body"><i>L</i><sub><i>t</i></sub><sup>CLIP+VF+S</sup>(<i>θ</i>) = 𝔼̂<sub><i>t</i></sub>[<i>L</i><sub><i>t</i></sub><sup>CLIP</sup>(<i>θ</i>) − <i>c</i><sub>1</sub><i>L</i><sub><i>t</i></sub><sup>VF</sup>(<i>θ</i>) + <i>c</i><sub>2</sub><i>S</i>[<i>π</i><sub><i>θ</i></sub>](<i>s</i><sub><i>t</i></sub>)]</div><div class="no">(9)</div></div>
+<p>其中 <i>c</i><sub>1</sub>、<i>c</i><sub>2</sub> 是系数，<i>S</i> 表示熵奖励，<i>L</i><sub><i>t</i></sub><sup>VF</sup> 是平方误差损失 (<i>V</i><sub><i>θ</i></sub>(<i>s</i><sub><i>t</i></sub>) − <i>V</i><sub><i>t</i></sub><sup>targ</sup>)<sup>2</sup>。</p>
+<p>一种在 [Mni+16] 中流行起来、且很适合与循环神经网络配合使用的策略梯度实现风格是：让策略运行 <i>T</i> 个时间步（<i>T</i> 远小于回合长度），并用收集到的样本做一次更新。这种风格要求优势估计量不超出时间步 <i>T</i>。[Mni+16] 使用的估计量是：</p>
+<div class="eq"><div class="body"><i>Â</i><sub><i>t</i></sub> = −<i>V</i>(<i>s</i><sub><i>t</i></sub>) + <i>r</i><sub><i>t</i></sub> + <i>γ</i><i>r</i><sub><i>t</i>+1</sub> + … + <i>γ</i><sup><i>T</i>−<i>t</i>+1</sup><i>r</i><sub><i>T</i>−1</sub> + <i>γ</i><sup><i>T</i>−<i>t</i></sup><i>V</i>(<i>s</i><sub><i>T</i></sub>)</div><div class="no">(10)</div></div>
+<p>其中 <i>t</i> 指明某条长度为 <i>T</i> 的轨迹片段内 [0, <i>T</i>] 中的时间下标。把这一选择推广，我们可以使用广义优势估计的截断版本，它在 <i>λ</i> = 1 时退化为式 10：</p>
+<div class="eq"><div class="body"><i>Â</i><sub><i>t</i></sub> = <i>δ</i><sub><i>t</i></sub> + (<i>γλ</i>)<i>δ</i><sub><i>t</i>+1</sub> + … + (<i>γλ</i>)<sup><i>T</i>−<i>t</i>+1</sup><i>δ</i><sub><i>T</i>−1</sub>,</div><div class="no">(11)</div></div>
+<div class="eq"><div class="body">其中　<i>δ</i><sub><i>t</i></sub> = <i>r</i><sub><i>t</i></sub> + <i>γV</i>(<i>s</i><sub><i>t</i>+1</sub>) − <i>V</i>(<i>s</i><sub><i>t</i></sub>)</div><div class="no">(12)</div></div>
+<p>下面给出使用定长轨迹片段的近端策略优化（PPO）算法。每轮迭代中，<i>N</i> 个（并行）行动者各收集 <i>T</i> 个时间步的数据。然后我们在这 <i>NT</i> 个时间步的数据上构造替代损失，并用小批量 SGD（或为更好性能通常用 Adam [KB14]）优化 <i>K</i> 轮。</p>
+
+<div class="alg"><div class="cap">算法 1　PPO，行动者—评论者风格<span class="en">（PPO, Actor-Critic Style）</span></div>
+<ol>
+<li><b>for</b> 迭代 = 1, 2, … <b>do</b></li>
+<li>&nbsp;&nbsp;<b>for</b> 行动者 = 1, 2, …, <i>N</i> <b>do</b></li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;在环境中运行策略 <i>π</i><sub><i>θ</i><sub>old</sub></sub> 共 <i>T</i> 个时间步</li>
+<li>&nbsp;&nbsp;&nbsp;&nbsp;计算优势估计 <i>Â</i><sub>1</sub>, …, <i>Â</i><sub><i>T</i></sub></li>
+<li>&nbsp;&nbsp;<b>end for</b></li>
+<li>&nbsp;&nbsp;用 <i>K</i> 轮、小批量大小为 <i>M</i> ≤ <i>NT</i> 的优化，对 <i>θ</i> 优化替代目标 <i>L</i></li>
+<li>&nbsp;&nbsp;<i>θ</i><sub>old</sub> ← <i>θ</i></li>
+<li><b>end for</b></li>
+</ol></div>
+
+<h2 id="s6">6 实验</h2>
+<h3 id="s6-1">6.1 替代目标的比较</h3>
+<p>首先我们在不同超参数下比较几种不同的替代目标。这里我们把替代目标 <i>L</i><sup>CLIP</sup> 与几种自然的变体及消融版本做比较。</p>
+<div class="eq"><div class="body" style="text-align:left;padding-left:8%">不裁剪也不加惩罚：　<i>L</i><sub><i>t</i></sub>(<i>θ</i>) = <i>r</i><sub><i>t</i></sub>(<i>θ</i>)<i>Â</i><sub><i>t</i></sub><br>
+裁剪：　<i>L</i><sub><i>t</i></sub>(<i>θ</i>) = min(<i>r</i><sub><i>t</i></sub>(<i>θ</i>)<i>Â</i><sub><i>t</i></sub>, clip(<i>r</i><sub><i>t</i></sub>(<i>θ</i>), 1 − <i>ε</i>, 1 + <i>ε</i>)<i>Â</i><sub><i>t</i></sub>)<br>
+KL 惩罚（固定或自适应）：　<i>L</i><sub><i>t</i></sub>(<i>θ</i>) = <i>r</i><sub><i>t</i></sub>(<i>θ</i>)<i>Â</i><sub><i>t</i></sub> − <i>β</i> KL[<i>π</i><sub><i>θ</i><sub>old</sub></sub>, <i>π</i><sub><i>θ</i></sub>]</div></div>
+<p>对 KL 惩罚，既可以使用固定的惩罚系数 <i>β</i>，也可以使用第 4 节所述、以目标 KL 值 <i>d</i><sub>targ</sub> 为依据的自适应系数。注意我们还尝试了对数空间中的裁剪，但发现性能并没有更好。</p>
+<p>由于我们要为每个算法变体搜索超参数，我们选择了一个计算代价低廉的基准来测试这些算法，即在 OpenAI Gym [Bro+16] 中实现、使用 MuJoCo [TET12] 物理引擎的 7 个模拟机器人任务<sup class="tn" data-tip="原文脚注 2：HalfCheetah、Hopper、InvertedDoublePendulum、InvertedPendulum、Reacher、Swimmer、Walker2d，均为「-v1」版本。">2</sup>。我们在每个任务上训练 100 万时间步。除裁剪参数 <i>ε</i> 与 KL 惩罚参数（<i>β</i>、<i>d</i><sub>targ</sub>）需要搜索外，其他超参数见表 3。</p>
+<p>为表示策略，我们使用含两个 64 单元隐藏层、tanh 非线性的全连接 MLP，输出高斯分布的均值、标准差可变，遵循 [Sch+15b; Dua+16]。我们不在策略与价值函数之间共享参数（因此系数 <i>c</i><sub>1</sub> 无关），也不使用熵奖励。</p>
+<p>每个算法都在全部 7 个环境上运行，每个环境 3 个随机种子。我们用最后 100 个回合的平均总奖励给每次运行打分。我们对每个环境的分数做了平移与缩放，使随机策略得分为 0、最好结果为 1，然后在 21 次运行上取平均，为每个算法设置得到一个标量。结果见表 1。注意「不裁剪也不加惩罚」这一设置的分数为负，因为在其中一个环境（half cheetah）上它导致非常负的分数，比初始的随机策略还差。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"><b>算法</b></td><td style="border:1px solid var(--line);padding:5px 9px"><b>平均归一化得分</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">不裁剪也不加惩罚</td><td style="border:1px solid var(--line);padding:5px 9px">−0.39</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">裁剪，<i>ε</i> = 0.1</td><td style="border:1px solid var(--line);padding:5px 9px">0.76</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">裁剪，<i>ε</i> = 0.2</td><td style="border:1px solid var(--line);padding:5px 9px"><b>0.82</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">裁剪，<i>ε</i> = 0.3</td><td style="border:1px solid var(--line);padding:5px 9px">0.70</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">自适应 KL，<i>d</i><sub>targ</sub> = 0.003</td><td style="border:1px solid var(--line);padding:5px 9px">0.68</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">自适应 KL，<i>d</i><sub>targ</sub> = 0.01</td><td style="border:1px solid var(--line);padding:5px 9px">0.74</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">自适应 KL，<i>d</i><sub>targ</sub> = 0.03</td><td style="border:1px solid var(--line);padding:5px 9px">0.71</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">固定 KL，<i>β</i> = 0.3</td><td style="border:1px solid var(--line);padding:5px 9px">0.62</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">固定 KL，<i>β</i> = 1</td><td style="border:1px solid var(--line);padding:5px 9px">0.71</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">固定 KL，<i>β</i> = 3</td><td style="border:1px solid var(--line);padding:5px 9px">0.72</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">固定 KL，<i>β</i> = 10</td><td style="border:1px solid var(--line);padding:5px 9px">0.69</td></tr>
+</table></div>
+<p class="fn"><b>表 1</b>　连续控制基准的结果。每个算法 / 超参数设置的平均归一化得分（7 个环境、每个算法 21 次运行）。<i>β</i> 初始化为 1。</p>
+
+<h3 id="s6-2">6.2 与连续域中其他算法的比较</h3>
+<p>接下来我们把 PPO（使用第 3 节的「裁剪」替代目标）与文献中若干被认为对连续问题有效的方法做比较。我们对比以下算法的调优实现：信赖域策略优化 [Sch+15b]、交叉熵方法（CEM）[SL06]、带自适应步长的朴素策略梯度<sup class="tn" data-tip="原文脚注 3：每批数据之后，Adam 步长会根据原策略与更新后策略的 KL 散度调整，所用规则与本文第 4 节所述类似。">3</sup>、A2C [Mni+16]、带信赖域的 A2C [Wan+16]。A2C 指 advantage actor critic，是 A3C 的同步版本，我们发现它的性能与异步版本相同或更好。对 PPO 我们使用上一节的超参数，取 <i>ε</i> = 0.2。可以看到，PPO 在几乎所有连续控制环境上都优于先前方法。</p>
+
+<figure id="fig3"><img src="images/fig3.png" alt="Comparison of algorithms on MuJoCo environments">
+<figcaption><span class="lab">图 3</span>若干算法在若干 MuJoCo 环境上的比较，训练 100 万时间步。</figcaption></figure>
+
+<h3 id="s6-3">6.3 连续域展示：人形机器人奔跑与转向</h3>
+<p>为展示 PPO 在高维连续控制问题上的性能，我们在一组涉及 3D 人形机器人的问题上训练，机器人必须奔跑、转向并从地面爬起，有时还要在被立方体投掷击打的情况下完成。我们测试的三个任务是：（1）RoboschoolHumanoid：仅向前行走；（2）RoboschoolHumanoidFlagrun：目标位置每 200 个时间步随机改变一次，或每当目标达成时改变；（3）RoboschoolHumanoidFlagrunHarder：机器人被立方体投掷击打，需要从地面爬起。学到的策略的连续帧见图 5，三个任务的学习曲线见图 4。超参数见表 4。在同期工作中，Heess et al. [Hee+17] 使用 PPO 的自适应 KL 变体（第 4 节）来学习 3D 机器人的运动策略。</p>
+
+<figure id="fig4"><img src="images/fig4.png" alt="Learning curves on 3D humanoid tasks">
+<figcaption><span class="lab">图 4</span>PPO 在 3D 人形机器人控制任务上的学习曲线，使用 Roboschool。</figcaption></figure>
+
+<figure id="fig5"><img src="images/fig5.png" alt="Still frames of RoboschoolHumanoidFlagrun policy">
+<figcaption><span class="lab">图 5</span>从 RoboschoolHumanoidFlagrun 学到的策略的连续帧。前六帧中机器人朝目标奔跑。随后位置被随机改变，机器人转身朝新目标奔跑。</figcaption></figure>
+
+<h3 id="s6-4">6.4 与 Atari 域中其他算法的比较</h3>
+<p>我们还在 Arcade Learning Environment [Bel+15] 基准上运行 PPO，并与 A2C [Mni+16] 和 ACER [Wan+16] 的调优实现比较。对这三个算法，我们都使用 [Mni+16] 中相同的策略网络结构。PPO 的超参数见表 5。对另外两个算法，我们使用为在该基准上最大化性能而调过的超参数。全部 49 款游戏的结果表与学习曲线见附录 B。我们考虑两个评分指标：（1）整个训练期间每回合的平均奖励（偏好学得快），（2）训练最后 100 个回合的每回合平均奖励（偏好最终性能）。表 2 给出各算法「获胜」的游戏数，其中胜负由三个试验上评分指标的均值决定。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">A2C</td><td style="border:1px solid var(--line);padding:5px 9px">ACER</td><td style="border:1px solid var(--line);padding:5px 9px">PPO</td><td style="border:1px solid var(--line);padding:5px 9px">平局</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">（1）整个训练期间每回合平均奖励</td><td style="border:1px solid var(--line);padding:5px 9px">1</td><td style="border:1px solid var(--line);padding:5px 9px">18</td><td style="border:1px solid var(--line);padding:5px 9px">30</td><td style="border:1px solid var(--line);padding:5px 9px">0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">（2）最后 100 回合的每回合平均奖励</td><td style="border:1px solid var(--line);padding:5px 9px">1</td><td style="border:1px solid var(--line);padding:5px 9px">28</td><td style="border:1px solid var(--line);padding:5px 9px">19</td><td style="border:1px solid var(--line);padding:5px 9px">1</td></tr>
+</table></div>
+<p class="fn"><b>表 2</b>　各算法「获胜」的游戏数，评分指标在三个试验上取平均。</p>
+
+<h2 id="s7">7 结论</h2>
+<p>我们提出了近端策略优化——一族策略优化方法，它们用多轮随机梯度上升来完成每次策略更新。这些方法具有信赖域方法的稳定性与可靠性，但实现起来简单得多：对朴素策略梯度实现只需改几行代码，可适用于更一般的设定（例如对策略与价值函数使用联合结构），并且整体性能更好。</p>
+
+<h2 id="s8">8 致谢</h2>
+<p>感谢 OpenAI 的 Rocky Duan、Peter Chen 以及其他同事的富有洞见的评论。</p>
+
+<h2 id="refs">参考文献</h2>
+<p class="reflist-note">按原文要求，参考文献整节保留英文原文，未作翻译。原文使用方括号缩写式引用（如 [Sch+15b]），此处按原文顺序排列，与正文引用对应。</p>
+<div class="refs"><ol>
+<li>[Bel+15] M. Bellemare, Y. Naddaf, J. Veness, and M. Bowling. “The arcade learning environment: An evaluation platform for general agents”. In: Twenty-Fourth International Joint Conference on Artificial Intelligence. 2015.</li>
+<li>[Bro+16] G. Brockman, V. Cheung, L. Pettersson, J. Schneider, J. Schulman, J. Tang, and W. Zaremba. “OpenAI Gym”. In: arXiv preprint arXiv:1606.01540 (2016).</li>
+<li>[Dua+16] Y. Duan, X. Chen, R. Houthooft, J. Schulman, and P. Abbeel. “Benchmarking Deep Reinforcement Learning for Continuous Control”. In: arXiv preprint arXiv:1604.06778 (2016).</li>
+<li>[Hee+17] N. Heess, S. Sriram, J. Lemmon, J. Merel, G. Wayne, Y. Tassa, T. Erez, Z. Wang, A. Eslami, M. Riedmiller, et al. “Emergence of Locomotion Behaviours in Rich Environments”. In: arXiv preprint arXiv:1707.02286 (2017).</li>
+<li>[KL02] S. Kakade and J. Langford. “Approximately optimal approximate reinforcement learning”. In: ICML. Vol. 2. 2002, pp. 267–274.</li>
+<li>[KB14] D. Kingma and J. Ba. “Adam: A method for stochastic optimization”. In: arXiv preprint arXiv:1412.6980 (2014).</li>
+<li>[Mni+15] V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, et al. “Human-level control through deep reinforcement learning”. In: Nature 518.7540 (2015), pp. 529–533.</li>
+<li>[Mni+16] V. Mnih, A. P. Badia, M. Mirza, A. Graves, T. P. Lillicrap, T. Harley, D. Silver, and K. Kavukcuoglu. “Asynchronous methods for deep reinforcement learning”. In: arXiv preprint arXiv:1602.01783 (2016).</li>
+<li>[Sch+15a] J. Schulman, P. Moritz, S. Levine, M. Jordan, and P. Abbeel. “High-dimensional continuous control using generalized advantage estimation”. In: arXiv preprint arXiv:1506.02438 (2015).</li>
+<li>[Sch+15b] J. Schulman, S. Levine, P. Moritz, M. I. Jordan, and P. Abbeel. “Trust region policy optimization”. In: CoRR, abs/1502.05477 (2015).</li>
+<li>[SL06] I. Szita and A. Lörincz. “Learning Tetris using the noisy cross-entropy method”. In: Neural computation 18.12 (2006), pp. 2936–2941.</li>
+<li>[TET12] E. Todorov, T. Erez, and Y. Tassa. “MuJoCo: A physics engine for model-based control”. In: Intelligent Robots and Systems (IROS), 2012 IEEE/RSJ International Conference on. IEEE. 2012, pp. 5026–5033.</li>
+<li>[Wan+16] Z. Wang, V. Bapst, N. Heess, V. Mnih, R. Munos, K. Kavukcuoglu, and N. de Freitas. &quot;Sample Efficient Actor-Critic with Experience Replay&quot;. In: arXiv preprint arXiv:1611.01224 (2016).</li>
+<li>[Wil92] R. J. Williams. “Simple statistical gradient-following algorithms for connectionist reinforcement learning”. In: Machine learning 8.3-4 (1992), pp. 229–256.</li>
+</ol></div>
+
+<h2 id="appA">附录 A　超参数</h2>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"><b>超参数</b></td><td style="border:1px solid var(--line);padding:5px 9px"><b>取值</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">时域（<i>T</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">2048</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Adam 步长</td><td style="border:1px solid var(--line);padding:5px 9px">3 × 10<sup>−4</sup></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">轮数（epochs）</td><td style="border:1px solid var(--line);padding:5px 9px">10</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">小批量大小</td><td style="border:1px solid var(--line);padding:5px 9px">64</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">折扣（<i>γ</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">0.99</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GAE 参数（<i>λ</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">0.95</td></tr>
+</table></div>
+<p class="fn"><b>表 3</b>　用于 MuJoCo 100 万时间步基准的 PPO 超参数。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"><b>超参数</b></td><td style="border:1px solid var(--line);padding:5px 9px"><b>取值</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">时域（<i>T</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">512</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Adam 步长</td><td style="border:1px solid var(--line);padding:5px 9px">*</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">轮数（epochs）</td><td style="border:1px solid var(--line);padding:5px 9px">15</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">小批量大小</td><td style="border:1px solid var(--line);padding:5px 9px">4096</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">折扣（<i>γ</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">0.99</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GAE 参数（<i>λ</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">0.95</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">行动者数量</td><td style="border:1px solid var(--line);padding:5px 9px">32（locomotion）、128（flagrun）</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">动作分布的对数标准差</td><td style="border:1px solid var(--line);padding:5px 9px">LinearAnneal(−0.7, −1.6)</td></tr>
+</table></div>
+<p class="fn"><b>表 4</b>　用于 Roboschool 实验的 PPO 超参数。Adam 步长依据 KL 散度的目标值调整。</p>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"><b>超参数</b></td><td style="border:1px solid var(--line);padding:5px 9px"><b>取值</b></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">时域（<i>T</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">128</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Adam 步长</td><td style="border:1px solid var(--line);padding:5px 9px">2.5 × 10<sup>−4</sup> × <i>α</i></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">轮数（epochs）</td><td style="border:1px solid var(--line);padding:5px 9px">3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">小批量大小</td><td style="border:1px solid var(--line);padding:5px 9px">32 × 8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">折扣（<i>γ</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">0.99</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">GAE 参数（<i>λ</i>）</td><td style="border:1px solid var(--line);padding:5px 9px">0.95</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">行动者数量</td><td style="border:1px solid var(--line);padding:5px 9px">8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">裁剪参数 <i>ε</i></td><td style="border:1px solid var(--line);padding:5px 9px">0.1 × <i>α</i></td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">价值函数系数 <i>c</i><sub>1</sub>（式 9）</td><td style="border:1px solid var(--line);padding:5px 9px">1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">熵系数 <i>c</i><sub>2</sub>（式 9）</td><td style="border:1px solid var(--line);padding:5px 9px">0.01</td></tr>
+</table></div>
+<p class="fn"><b>表 5</b>　Atari 实验中使用的 PPO 超参数。<i>α</i> 在学习过程中从 1 线性退火到 0。</p>
+
+<h2 id="appB">附录 B　在更多 Atari 游戏上的性能</h2>
+<p>这里我们给出 PPO 与 A2C 在更大规模的 49 款 Atari 游戏上的比较。图 6 展示三个随机种子各自的学习曲线，表 6 给出平均性能。</p>
+
+<figure id="fig6"><img src="images/fig6.png" alt="PPO vs A2C on all 49 Atari games">
+<figcaption><span class="lab">图 6</span>PPO 与 A2C 在发表时 OpenAI Gym 中全部 49 款 ATARI 游戏上的比较。</figcaption></figure>
+
+<div class="table-scroll" tabindex="0" role="region" aria-label="论文表格，可横向滚动"><table style="border-collapse:collapse;font-size:12.5px;margin:14px 0">
+<tr><td style="border:1px solid var(--line);padding:5px 9px"></td><td style="border:1px solid var(--line);padding:5px 9px">A2C</td><td style="border:1px solid var(--line);padding:5px 9px">ACER</td><td style="border:1px solid var(--line);padding:5px 9px">PPO</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Alien</td><td style="border:1px solid var(--line);padding:5px 9px">1141.7</td><td style="border:1px solid var(--line);padding:5px 9px">1655.4</td><td style="border:1px solid var(--line);padding:5px 9px">1850.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Amidar</td><td style="border:1px solid var(--line);padding:5px 9px">380.8</td><td style="border:1px solid var(--line);padding:5px 9px">827.6</td><td style="border:1px solid var(--line);padding:5px 9px">674.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Assault</td><td style="border:1px solid var(--line);padding:5px 9px">1562.9</td><td style="border:1px solid var(--line);padding:5px 9px">4653.8</td><td style="border:1px solid var(--line);padding:5px 9px">4971.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Asterix</td><td style="border:1px solid var(--line);padding:5px 9px">3176.3</td><td style="border:1px solid var(--line);padding:5px 9px">6801.2</td><td style="border:1px solid var(--line);padding:5px 9px">4532.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Asteroids</td><td style="border:1px solid var(--line);padding:5px 9px">1653.3</td><td style="border:1px solid var(--line);padding:5px 9px">2389.3</td><td style="border:1px solid var(--line);padding:5px 9px">2097.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Atlantis</td><td style="border:1px solid var(--line);padding:5px 9px">729265.3</td><td style="border:1px solid var(--line);padding:5px 9px">1841376.0</td><td style="border:1px solid var(--line);padding:5px 9px">2311815.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">BankHeist</td><td style="border:1px solid var(--line);padding:5px 9px">1095.3</td><td style="border:1px solid var(--line);padding:5px 9px">1177.5</td><td style="border:1px solid var(--line);padding:5px 9px">1280.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">BattleZone</td><td style="border:1px solid var(--line);padding:5px 9px">3080.0</td><td style="border:1px solid var(--line);padding:5px 9px">8983.3</td><td style="border:1px solid var(--line);padding:5px 9px">17366.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">BeamRider</td><td style="border:1px solid var(--line);padding:5px 9px">3031.7</td><td style="border:1px solid var(--line);padding:5px 9px">3863.3</td><td style="border:1px solid var(--line);padding:5px 9px">1590.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Bowling</td><td style="border:1px solid var(--line);padding:5px 9px">30.1</td><td style="border:1px solid var(--line);padding:5px 9px">33.3</td><td style="border:1px solid var(--line);padding:5px 9px">40.1</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Boxing</td><td style="border:1px solid var(--line);padding:5px 9px">17.7</td><td style="border:1px solid var(--line);padding:5px 9px">98.9</td><td style="border:1px solid var(--line);padding:5px 9px">94.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Breakout</td><td style="border:1px solid var(--line);padding:5px 9px">303.0</td><td style="border:1px solid var(--line);padding:5px 9px">456.4</td><td style="border:1px solid var(--line);padding:5px 9px">274.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Centipede</td><td style="border:1px solid var(--line);padding:5px 9px">3496.5</td><td style="border:1px solid var(--line);padding:5px 9px">8904.8</td><td style="border:1px solid var(--line);padding:5px 9px">4386.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">ChopperCommand</td><td style="border:1px solid var(--line);padding:5px 9px">1171.7</td><td style="border:1px solid var(--line);padding:5px 9px">5287.7</td><td style="border:1px solid var(--line);padding:5px 9px">3516.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">CrazyClimber</td><td style="border:1px solid var(--line);padding:5px 9px">107770.0</td><td style="border:1px solid var(--line);padding:5px 9px">132461.0</td><td style="border:1px solid var(--line);padding:5px 9px">110202.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">DemonAttack</td><td style="border:1px solid var(--line);padding:5px 9px">6639.1</td><td style="border:1px solid var(--line);padding:5px 9px">38808.3</td><td style="border:1px solid var(--line);padding:5px 9px">11378.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">DoubleDunk</td><td style="border:1px solid var(--line);padding:5px 9px">−16.2</td><td style="border:1px solid var(--line);padding:5px 9px">−13.2</td><td style="border:1px solid var(--line);padding:5px 9px">−14.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Enduro</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">758.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">FishingDerby</td><td style="border:1px solid var(--line);padding:5px 9px">20.6</td><td style="border:1px solid var(--line);padding:5px 9px">34.7</td><td style="border:1px solid var(--line);padding:5px 9px">17.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Freeway</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">32.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Frostbite</td><td style="border:1px solid var(--line);padding:5px 9px">261.8</td><td style="border:1px solid var(--line);padding:5px 9px">285.6</td><td style="border:1px solid var(--line);padding:5px 9px">314.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Gopher</td><td style="border:1px solid var(--line);padding:5px 9px">1500.9</td><td style="border:1px solid var(--line);padding:5px 9px">37802.3</td><td style="border:1px solid var(--line);padding:5px 9px">2932.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Gravitar</td><td style="border:1px solid var(--line);padding:5px 9px">194.0</td><td style="border:1px solid var(--line);padding:5px 9px">225.3</td><td style="border:1px solid var(--line);padding:5px 9px">737.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">IceHockey</td><td style="border:1px solid var(--line);padding:5px 9px">−6.4</td><td style="border:1px solid var(--line);padding:5px 9px">−5.9</td><td style="border:1px solid var(--line);padding:5px 9px">−4.2</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Jamesbond</td><td style="border:1px solid var(--line);padding:5px 9px">52.3</td><td style="border:1px solid var(--line);padding:5px 9px">261.8</td><td style="border:1px solid var(--line);padding:5px 9px">560.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Kangaroo</td><td style="border:1px solid var(--line);padding:5px 9px">45.3</td><td style="border:1px solid var(--line);padding:5px 9px">50.0</td><td style="border:1px solid var(--line);padding:5px 9px">9928.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Krull</td><td style="border:1px solid var(--line);padding:5px 9px">8367.4</td><td style="border:1px solid var(--line);padding:5px 9px">7268.4</td><td style="border:1px solid var(--line);padding:5px 9px">7942.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">KungFuMaster</td><td style="border:1px solid var(--line);padding:5px 9px">24900.3</td><td style="border:1px solid var(--line);padding:5px 9px">27599.3</td><td style="border:1px solid var(--line);padding:5px 9px">23310.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">MontezumaRevenge</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.3</td><td style="border:1px solid var(--line);padding:5px 9px">42.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">MsPacman</td><td style="border:1px solid var(--line);padding:5px 9px">1626.9</td><td style="border:1px solid var(--line);padding:5px 9px">2718.5</td><td style="border:1px solid var(--line);padding:5px 9px">2096.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">NameThisGame</td><td style="border:1px solid var(--line);padding:5px 9px">5961.2</td><td style="border:1px solid var(--line);padding:5px 9px">8488.0</td><td style="border:1px solid var(--line);padding:5px 9px">6254.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Pitfall</td><td style="border:1px solid var(--line);padding:5px 9px">−55.0</td><td style="border:1px solid var(--line);padding:5px 9px">−16.9</td><td style="border:1px solid var(--line);padding:5px 9px">−32.9</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Pong</td><td style="border:1px solid var(--line);padding:5px 9px">19.7</td><td style="border:1px solid var(--line);padding:5px 9px">20.7</td><td style="border:1px solid var(--line);padding:5px 9px">20.7</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">PrivateEye</td><td style="border:1px solid var(--line);padding:5px 9px">91.3</td><td style="border:1px solid var(--line);padding:5px 9px">182.0</td><td style="border:1px solid var(--line);padding:5px 9px">69.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Qbert</td><td style="border:1px solid var(--line);padding:5px 9px">10065.7</td><td style="border:1px solid var(--line);padding:5px 9px">15316.6</td><td style="border:1px solid var(--line);padding:5px 9px">14293.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Riverraid</td><td style="border:1px solid var(--line);padding:5px 9px">7653.5</td><td style="border:1px solid var(--line);padding:5px 9px">9125.1</td><td style="border:1px solid var(--line);padding:5px 9px">8393.6</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">RoadRunner</td><td style="border:1px solid var(--line);padding:5px 9px">32810.0</td><td style="border:1px solid var(--line);padding:5px 9px">35466.0</td><td style="border:1px solid var(--line);padding:5px 9px">25076.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Robotank</td><td style="border:1px solid var(--line);padding:5px 9px">2.2</td><td style="border:1px solid var(--line);padding:5px 9px">2.5</td><td style="border:1px solid var(--line);padding:5px 9px">5.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Seaquest</td><td style="border:1px solid var(--line);padding:5px 9px">1714.3</td><td style="border:1px solid var(--line);padding:5px 9px">1739.5</td><td style="border:1px solid var(--line);padding:5px 9px">1204.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">SpaceInvaders</td><td style="border:1px solid var(--line);padding:5px 9px">744.5</td><td style="border:1px solid var(--line);padding:5px 9px">1213.9</td><td style="border:1px solid var(--line);padding:5px 9px">942.5</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">StarGunner</td><td style="border:1px solid var(--line);padding:5px 9px">26204.0</td><td style="border:1px solid var(--line);padding:5px 9px">49817.7</td><td style="border:1px solid var(--line);padding:5px 9px">32689.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Tennis</td><td style="border:1px solid var(--line);padding:5px 9px">−22.2</td><td style="border:1px solid var(--line);padding:5px 9px">−17.6</td><td style="border:1px solid var(--line);padding:5px 9px">−14.8</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">TimePilot</td><td style="border:1px solid var(--line);padding:5px 9px">2898.0</td><td style="border:1px solid var(--line);padding:5px 9px">4175.7</td><td style="border:1px solid var(--line);padding:5px 9px">4342.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Tutankham</td><td style="border:1px solid var(--line);padding:5px 9px">206.8</td><td style="border:1px solid var(--line);padding:5px 9px">280.8</td><td style="border:1px solid var(--line);padding:5px 9px">254.4</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">UpNDown</td><td style="border:1px solid var(--line);padding:5px 9px">17369.8</td><td style="border:1px solid var(--line);padding:5px 9px">145051.4</td><td style="border:1px solid var(--line);padding:5px 9px">95445.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Venture</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td><td style="border:1px solid var(--line);padding:5px 9px">0.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">VideoPinball</td><td style="border:1px solid var(--line);padding:5px 9px">19735.9</td><td style="border:1px solid var(--line);padding:5px 9px">156225.6</td><td style="border:1px solid var(--line);padding:5px 9px">37389.0</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">WizardOfWor</td><td style="border:1px solid var(--line);padding:5px 9px">859.0</td><td style="border:1px solid var(--line);padding:5px 9px">2308.3</td><td style="border:1px solid var(--line);padding:5px 9px">4185.3</td></tr>
+<tr><td style="border:1px solid var(--line);padding:5px 9px">Zaxxon</td><td style="border:1px solid var(--line);padding:5px 9px">16.3</td><td style="border:1px solid var(--line);padding:5px 9px">29.0</td><td style="border:1px solid var(--line);padding:5px 9px">5008.7</td></tr>
+</table></div>
+<p class="fn"><b>表 6</b>　PPO 与 A2C 在 Atari 游戏上、经过 4000 万游戏帧（1000 万时间步）后的平均最终得分（最后 100 个回合）。</p>
+
+<h2 id="figs">图表索引</h2>
+<div class="refs"><ol>
+<li><a href="#fig1">图 1</a>　<i>L</i><sup>CLIP</sup> 单项随概率比 <i>r</i> 的变化（优势为正 / 为负）（第 3 节）</li>
+<li><a href="#fig2">图 2</a>　沿策略更新方向做插值时各替代目标的变化（第 3 节）</li>
+<li><a href="#fig3">图 3</a>　若干算法在若干 MuJoCo 环境上的比较（6.2 节）</li>
+<li><a href="#fig4">图 4</a>　3D 人形机器人控制任务上的学习曲线（6.3 节）</li>
+<li><a href="#fig5">图 5</a>　RoboschoolHumanoidFlagrun 学到的策略的连续帧（6.3 节）</li>
+<li><a href="#fig6">图 6</a>　PPO 与 A2C 在全部 49 款 Atari 游戏上的比较（附录 B）</li>
+</ol>
+<p style="margin-top:10px">表 1 替代目标比较的连续控制基准（6.1 节）、表 2 各算法在 Atari 上「获胜」的游戏数（6.4 节）、表 3–5 超参数（附录 A）、表 6 PPO 与 A2C 在 49 款 Atari 游戏上的最终得分（附录 B）已在正文中直接排出。式 (1)–(12) 与算法 1（PPO，行动者—评论者风格）按原文位置排入正文。</p></div>
+
+<p class="fn" style="margin-top:28px">本页由 Zotero 库中的 PDF 原文与 MinerU 解析结果翻译整理而成。图片为从源 PDF 中裁取的原始插图，存于同目录下 <code>images/</code>。参考文献保留原文，未作翻译；原文脚注按位置以悬停注释形式保留并译出。</p>
+
+</main>
+</div>
+<button id="totop" title="回到顶部">↑</button>
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var btn=document.getElementById('totop');
+  function upd(){
+    var h=document.documentElement;
+    var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?(h.scrollTop/max*100):0;
+    bar.style.width=p+'%';
+    if(h.scrollTop>400){btn.classList.add('show');}else{btn.classList.remove('show');}
+  }
+  document.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);
+  upd();
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.term,.tn');
+    var open=document.querySelectorAll('.term.on,.tn.on');
+    for(var i=0;i<open.length;i++){ if(open[i]!==t){open[i].classList.remove('on');} }
+    if(t){ t.classList.toggle('on'); }
+  });
+})();
+</script>
+</body>
+</html>
