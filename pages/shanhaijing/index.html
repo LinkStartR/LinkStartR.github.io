@@ -4,277 +4,1776 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>山海经 · 读本</title>
-  <meta name="description" content="《山海经》南山經开篇的原文、试译与山川神怪图鉴阅读实验。">
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-  <style>:root{color-scheme:light;--paper:#f5f1e7;--surface:#fbf9f3;--ink:#282920;--muted:#68685e;--border:#d9d2c2;--accent:#9c3d2c;--green:#46665b;--focus:#b14d37;font-family:"Songti SC","STSong","SimSun","Noto Serif CJK SC",serif;color:var(--ink);background:var(--paper)}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1rem}body{margin:0;line-height:1.8;background:var(--paper);color:var(--ink)}button,input,select{font:inherit;color:inherit}a{color:var(--green);text-decoration-thickness:1px;text-underline-offset:3px}a:hover{color:var(--accent)}:focus-visible{outline:3px solid var(--focus);outline-offset:3px}.skip-link{position:absolute;top:-5rem;left:1rem;background:var(--surface);padding:.5rem 1rem;z-index:5}.skip-link:focus{top:1rem}.masthead{height:62px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 max(5vw,1rem);background:var(--surface)}.wordmark{font-size:1.1rem;letter-spacing:.12em;text-decoration:none;color:var(--ink)}.wordmark span{font-size:.75rem;color:var(--muted);margin-left:.6rem;letter-spacing:.08em}.masthead-note,.search-help{font-size:.8rem;color:var(--muted)}main{max-width:1440px;margin:auto}.intro{padding:3rem max(5vw,1rem) 2rem;border-bottom:1px solid var(--border)}.eyebrow{text-transform:none;color:var(--accent);font-size:.78rem;letter-spacing:.12em;margin:0 0 .4rem}.intro h1{font-size:clamp(2rem,4vw,3.3rem);font-weight:500;line-height:1.25;margin:.2rem 0}.subtitle{font-size:1.1rem;color:var(--green);margin:.5rem 0}.editorial-notice{max-width:72ch;color:var(--muted);font-size:.92rem;margin:.9rem 0 0}.workspace{display:grid;grid-template-columns:280px minmax(0,1fr);align-items:start}.sidebar{position:sticky;top:0;max-height:100vh;overflow:auto;padding:1.5rem 1.4rem;border-right:1px solid var(--border);background:var(--surface)}label,.sidebar h2{font-size:.9rem;font-weight:600}.sidebar h2{margin:1.5rem 0 .35rem}.search-row{display:flex;gap:.35rem;margin-top:.35rem}.search-row input{min-width:0;width:100%;border:1px solid var(--border);background:var(--paper);padding:.42rem .55rem}.search-row button,button:not(.text-button){border:1px solid var(--green);background:var(--green);color:#fff;padding:.38rem .75rem;cursor:pointer}.search-help{margin:.25rem 0}.filter-block{margin-top:1rem}.filter-block label{display:block}.filter-block select{width:100%;border:1px solid var(--border);background:var(--paper);padding:.4rem;margin-top:.25rem}.toc ol,.entity-nav ol{list-style:none;padding:0;margin:.3rem 0}.toc li,.entity-nav li{line-height:1.55;padding:.2rem 0}.toc a,.entity-nav a{font-size:.91rem;text-decoration:none}.toc a[aria-current],.entity-nav a[aria-current]{color:var(--accent);font-weight:700}.entity-nav h2 span{color:var(--muted);font-size:.8rem;font-weight:400}.reader{min-width:0;padding:1.25rem clamp(1rem,4vw,3.8rem) 4rem}.results-bar{display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--border);color:var(--muted);font-size:.87rem}.text-button{background:none;border:0;color:var(--green);text-decoration:underline;text-underline-offset:3px;padding:.4rem;cursor:pointer}.passage{padding:2rem 0 2.5rem;border-bottom:1px solid var(--border);scroll-margin-top:1rem}.passage h2,.entity-card h3{font-size:1.65rem;font-weight:500;margin:.2rem 0}.passage-meta{font-size:.84rem;color:var(--muted)}.original{font-size:1.18rem;line-height:2.05;white-space:pre-line;max-width:72ch}.translation{border-left:2px solid var(--green);padding:.2rem 1rem;color:#4d5249;margin:1rem 0}.translation small,.note small,.evidence small,.visual-brief small{color:var(--muted)}.note-list{padding-left:1.25rem}.note{margin:.35rem 0}.entity-links{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1rem}.entity-links a,.tag{font-size:.82rem;border:1px solid var(--border);padding:.1rem .48rem;text-decoration:none;color:var(--green)}.entity-section{padding-top:2.5rem}.section-heading{border-bottom:1px solid var(--border);margin-bottom:1rem}.section-heading h2{font-size:1.75rem;font-weight:500;margin:.2rem 0 1rem}.entity-card{padding:1.4rem 0;border-bottom:1px solid var(--border);scroll-margin-top:1rem}.entity-card h3{display:inline}.category{color:var(--accent);font-size:.85rem;margin-left:.7rem}.aliases,.summary{margin:.35rem 0}.tag-list{display:flex;gap:.35rem;flex-wrap:wrap}.features{margin:.8rem 0}.features li{margin:.35rem 0}.evidence{display:block;background:#eeeadf;padding:.35rem .7rem;margin:.3rem 0;font-size:.9rem}.visual-brief{margin-top:.65rem;color:var(--muted);font-size:.9rem}.visual-brief p{margin:.18rem 0}.entity-passages{font-size:.9rem}.sources{margin-top:2.5rem;border-top:1px solid var(--border);padding:1rem 0}.sources summary{cursor:pointer;color:var(--green)}.source-item{padding:.6rem 0;border-bottom:1px dotted var(--border)}.source-item p{margin:.15rem 0}.empty-state{margin:3rem auto;padding:2rem;max-width:34rem;text-align:center;border:1px solid var(--border);background:var(--surface)}.empty-state h2{font-weight:500}footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-size:.82rem;color:var(--muted)}[hidden]{display:none!important}@media(max-width:760px){.masthead{height:54px}.intro{padding-top:2rem}.workspace{display:flex;flex-direction:column}.sidebar{position:static;max-height:none;overflow:visible;border-right:0;border-bottom:1px solid var(--border);width:100%;padding:1rem}.toc{max-height:180px;overflow:auto}.entity-nav{max-height:200px;overflow:auto}.sidebar h2{margin-top:.85rem}.reader{width:100%;padding:1rem 1rem 3rem}.original{font-size:1.08rem}.results-bar{align-items:flex-start}.passage h2{font-size:1.45rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-
-.note-kind{display:inline-block;color:var(--green);font-size:.76rem;border:1px solid var(--border);padding:0 .35rem;line-height:1.5;vertical-align:middle}
-
-.search-row button{white-space:nowrap;flex-shrink:0}
-</style>
-  <style>
-/* The personal-site navigation is scoped so the reader keeps its paper palette. */
-.ls-site-header {
-  --ls-surface: #0a192f; --ls-raised: #10243a; --ls-text: #e0e8f5;
-  --ls-muted: #9aaac0; --ls-border: #304459; --ls-accent: #64ffda;
-  --ls-graphic: #477568;
-  position: relative; z-index: 20; height: 88px; padding: 16px 32px;
-  background: var(--ls-surface); border-bottom: 1px solid var(--ls-border);
-  color: var(--ls-text); font-family: Inter, "LXGW WenKai Screen", system-ui, sans-serif;
-  font-size: 16px; line-height: 1.5;
+  <meta name="theme-color" content="#f5f1e7">
+  <link rel="icon" href="data:,">
+  <title>山海经 · 数字读本</title>
+  <style>:root {
+  color-scheme: light;
+  --paper: #f5f1e7;
+  --surface: #fbf9f3;
+  --surface-raised: #fffdf8;
+  --ink: #282920;
+  --muted: #68685e;
+  --border: #d9d2c2;
+  --accent: #9c3d2c;
+  --moss: #46665b;
+  --focus: #b14d37;
+  --font-body: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+  --font-ui: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+  --space-1: .35rem;
+  --space-2: .65rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.25rem;
+  --content-width: 1200px;
+  --reading-width: 72ch;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
 }
-.skip-link:focus { z-index: 30; }
-.ls-site-header *, .ls-site-header *::before, .ls-site-header *::after { box-sizing: border-box; }
-.ls-site-header .site-navigation { width: fit-content; }
-.ls-site-header .brand { display: flex; align-items: center; gap: 10px; }
-.ls-site-header button.nav-trigger { display: grid; width: 52px; height: 52px; place-items: center; padding: 2px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--ls-accent); }
-.ls-site-header button.nav-trigger:hover, .ls-site-header button.nav-trigger[aria-expanded="true"] { background: var(--ls-raised); border-color: var(--ls-border); }
-.ls-site-header .brand-mark { display: block; width: 44px; height: 44px; overflow: visible; }
-.ls-site-header .brand-mark path, .ls-site-header .brand-mark circle, .ls-site-header .brand-mark ellipse { fill: none; vector-effect: non-scaling-stroke; }
-.ls-site-header .graphic-ring { stroke: var(--ls-border); stroke-width: .8; }
-.ls-site-header .graphic-orbit { stroke: var(--ls-graphic); stroke-width: .8; transform: rotate(-35deg); transform-origin: 210px 210px; animation: ls-orbit 28s linear infinite; }
-.ls-site-header .graphic-letter { stroke: var(--ls-accent); stroke-width: 2.5; stroke-linecap: square; }
-.ls-site-header a { text-decoration: none; }
-.ls-site-header a:hover { color: var(--ls-accent); }
-.ls-site-header .brand-name { display: inline-flex; align-items: center; min-height: 48px; color: var(--ls-text); font-size: 17px; font-weight: 550; letter-spacing: -.04em; }
-.ls-site-header .brand-period { color: var(--ls-accent); }
-.ls-site-header .site-menu { position: absolute; z-index: 21; top: 78px; left: 24px; display: flex; flex-direction: column; width: 286px; max-height: calc(100dvh - 100px); overflow-y: auto; padding: 14px; border: 1px solid var(--ls-border); border-radius: 12px; background: var(--ls-raised); color: var(--ls-text); box-shadow: 12px 18px 48px rgb(0 0 0 / 28%); animation: ls-menu-enter 180ms ease-out; }
-.ls-site-header .site-menu[hidden] { display: none; }
-.ls-site-header .menu-topline { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 8px 12px; color: var(--ls-muted); font-size: 13px; }
-.ls-site-header button.nav-close { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--ls-muted); font-size: 24px; }
-.ls-site-header button.nav-close:hover { color: var(--ls-accent); background: var(--ls-surface); }
-.ls-site-header .menu-link { display: flex; align-items: center; gap: 16px; min-height: 52px; padding: 8px 12px; border-radius: 6px; color: var(--ls-text); font-size: 16px; }
-.ls-site-header .menu-link:hover, .ls-site-header .menu-link[aria-current="page"] { background: var(--ls-surface); color: var(--ls-accent); }
-.ls-site-header .menu-link[aria-current="page"] { box-shadow: inset 2px 0 var(--ls-accent); }
-.ls-site-header .menu-number { color: var(--ls-muted); font-family: ui-monospace, Consolas, monospace; font-size: 11px; }
-.ls-site-header .menu-arrow { margin-left: auto; color: var(--ls-muted); }
-.ls-site-header .menu-github { display: inline-flex; align-items: center; min-height: 48px; margin: 14px 12px 0; padding-top: 12px; border-top: 1px solid var(--ls-border); color: var(--ls-muted); font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
-.ls-site-header button.motion-toggle { align-self: flex-start; min-height: 44px; margin-left: 4px; padding: 0 8px; border: 0; background: transparent; color: var(--ls-muted); font-size: 12px; }
-.ls-site-header button.motion-toggle:hover { color: var(--ls-accent); }
-.motion-paused .ls-site-header .graphic-orbit { animation-play-state: paused; }
-.ls-site-header :focus-visible { outline: 2px solid var(--ls-accent); outline-offset: 5px; }
-@keyframes ls-orbit { from { transform: rotate(-35deg); } to { transform: rotate(325deg); } }
-@keyframes ls-menu-enter { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
-@media (max-width: 640px) {
-  .ls-site-header { height: 80px; padding: 12px 16px; }
-  .ls-site-header .site-menu { top: 72px; left: 12px; width: min(286px, calc(100vw - 24px)); max-height: calc(100dvh - 84px); }
+
+* { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; scroll-padding-top: 1rem; }
+body { min-height: 100vh; margin: 0; line-height: 1.75; background: var(--paper); color: var(--ink); }
+button, a { font: inherit; }
+a { color: var(--moss); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.skip-link { position: fixed; z-index: 5; inset: -5rem auto auto 1rem; padding: .5rem 1rem; color: var(--ink); background: var(--surface-raised); }
+.skip-link:focus { inset-block-start: 1rem; }
+.site-header { display: flex; min-height: 4.2rem; align-items: center; justify-content: space-between; gap: var(--space-4); padding: .65rem max(4vw, 1rem); border-bottom: 1px solid var(--border); background: var(--surface); }
+.wordmark { color: var(--ink); font-size: 1.1rem; letter-spacing: .12em; text-decoration: none; white-space: nowrap; }
+.wordmark span { margin-inline-start: .55rem; color: var(--muted); font-size: .8rem; letter-spacing: .06em; }
+.main-nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .35rem; }
+.main-nav a { min-height: 2.75rem; display: inline-flex; align-items: center; padding: .35rem .7rem; text-decoration: none; }
+.main-nav a[aria-current="page"] { color: var(--accent); text-decoration: underline; text-underline-offset: .35rem; }
+main { width: min(100% - 2rem, var(--content-width)); min-height: calc(100vh - 8rem); margin-inline: auto; padding-block: var(--space-5); }
+#route-view { min-width: 0; }
+.page-heading { padding-block: .4rem 1.25rem; border-bottom: 1px solid var(--border); }
+.eyebrow { margin: 0 0 .35rem; color: var(--accent); font-size: .82rem; letter-spacing: .12em; }
+h1, h2, h3 { line-height: 1.35; font-weight: 500; }
+h1 { margin: .15rem 0 .55rem; font-size: clamp(1.8rem, 4vw, 2.65rem); }
+h2 { margin: 0 0 .65rem; font-size: 1.5rem; }
+p { max-width: var(--reading-width); }
+.lede { margin: 0; color: var(--muted); }
+.chapter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; margin: var(--space-4) 0; padding: 0; list-style: none; }
+.chapter-link, .action-link.chapter-link { display: grid; width: 100%; min-height: 3.25rem; grid-template-columns: 2.4rem minmax(0, 1fr); align-items: center; gap: .65rem; padding: .55rem .75rem; border: 1px solid var(--border); background: var(--surface); color: var(--ink); text-align: start; text-decoration: none; }
+.chapter-link:hover, .chapter-link:focus-visible, .action-link.chapter-link:hover, .action-link.chapter-link:focus-visible { border-color: var(--accent); background: var(--surface-raised); color: var(--ink); }
+.chapter-number { color: var(--accent); font-size: .86rem; }
+.chapter-title { overflow-wrap: anywhere; }
+.stats { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; padding-block: .8rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .92rem; }
+.route-panel { margin-block: var(--space-4); padding: clamp(1rem, 4vw, 2rem); border: 1px solid var(--border); background: var(--surface); }
+.route-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-block-start: 1.25rem; }
+.action-link, .action-button { display: inline-flex; min-height: 2.8rem; align-items: center; justify-content: center; padding: .45rem .85rem; border: 1px solid var(--moss); background: var(--moss); color: #fff; text-decoration: none; cursor: pointer; }
+.action-link:hover, .action-button:hover { border-color: var(--accent); background: var(--accent); color: #fff; }
+.action-link.secondary, .action-button.secondary { border-color: var(--border); background: var(--surface-raised); color: var(--moss); }
+.route-status { margin-block: 1rem; padding: .65rem .9rem; border-inline-start: 3px solid var(--moss); background: var(--surface); color: var(--ink); }
+.route-status[data-kind="error"] { border-color: var(--accent); }
+.route-error { color: var(--accent); }
+.site-footer { padding: 1.4rem 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .86rem; text-align: center; }
+.muted { color: var(--muted); }
+code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size: .9em; overflow-wrap: anywhere; }
+
+/* CSS variables cannot be used in media queries: 900px switches to two columns; 620px stacks the navigation. */
+@media (max-width: 900px) {
+  .chapter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .site-header { align-items: flex-start; flex-direction: column; gap: .45rem; padding-block: .7rem; }
+  .main-nav { width: 100%; justify-content: flex-start; gap: .15rem; }
+  .main-nav a { padding-inline: .55rem; }
+  main { width: min(100% - 1.25rem, var(--content-width)); padding-block: 1.3rem; }
+  .chapter-grid { grid-template-columns: 1fr; }
+  .chapter-link, .action-link.chapter-link { min-height: 3rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ls-site-header .graphic-orbit, .ls-site-header .site-menu { animation: none; }
-  .ls-site-header button.motion-toggle { display: none; }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* P5 reader: shared namespace styles. */
+.shj-reader { min-width: 0; }
+.shj-reader__heading { padding-block: .5rem 1.25rem; border-bottom: 1px solid var(--border); }
+.shj-reader__eyebrow { margin: 0 0 .3rem; color: var(--accent); font-size: .9rem; }
+.shj-reader__title { margin: .15rem 0 .45rem; font-size: clamp(1.7rem, 4vw, 2.5rem); }
+.shj-reader__source-line, .shj-reader__source-note { margin: .25rem 0; color: var(--muted); font-size: .93rem; }
+.shj-reader__controls { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem 1rem; padding-block: 1rem; border-bottom: 1px solid var(--border); }
+.shj-reader__volume-label { font-weight: 600; }
+.shj-reader__volume-select { min-height: 2.75rem; max-width: 100%; padding: .4rem .6rem; border: 1px solid var(--border); background: var(--surface); color: var(--ink); font: inherit; }
+.shj-reader__counts { flex-basis: 100%; margin: 0; color: var(--muted); font-size: .9rem; }
+.shj-reader__review-details, .shj-reader__edition-details, .shj-reader__toc, .shj-reader__glyph-source { margin-block: .8rem; padding: .65rem .8rem; border: 1px solid var(--border); background: var(--surface); }
+.shj-reader__review-details > summary, .shj-reader__edition-details > summary, .shj-reader__toc > summary, .shj-reader__source-details > summary, .shj-reader__glyph-source > summary { min-height: 2rem; color: var(--moss); cursor: pointer; }
+.shj-reader__review-totals, .shj-reader__note { margin: .45rem 0; color: var(--muted); }
+.shj-reader__toc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .2rem .9rem; max-height: 14rem; margin: .5rem 0 0; padding: 0 0 0 1.2rem; overflow: auto; }
+.shj-reader__toc-link, .shj-reader__block-link { display: inline-flex; min-height: 2.5rem; align-items: center; padding-inline: .25rem; }
+.shj-reader__stream { margin-block-start: 1.25rem; }
+.shj-reader__block { min-width: 0; padding: .8rem 0 1rem; border-bottom: 1px solid var(--border); scroll-margin-top: 1rem; }
+.shj-reader__block--target { border-inline-start: 3px solid var(--accent); padding-inline-start: .8rem; background: var(--surface); }
+.shj-reader__block:focus { outline: 2px solid var(--focus); outline-offset: 3px; }
+.shj-reader__block-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: .35rem .7rem; margin-block-end: .55rem; color: var(--muted); font-size: .84rem; }
+.shj-reader__kind { color: var(--accent); font-weight: 600; }
+.shj-reader__section-label { color: var(--muted); }
+.shj-reader__text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.08rem; line-height: 2; }
+.shj-reader__block:has(.shj-reader__kind) .shj-reader__kind { flex: 0 0 auto; }
+.shj-reader__separator { min-height: .4rem; border-block-start: 1px dotted var(--border); }
+.shj-reader__relations { margin-block-start: .75rem; }
+.shj-reader__relations > summary, .shj-reader__relation-card > summary { min-height: 2.6rem; display: flex; align-items: center; color: var(--moss); cursor: pointer; }
+.shj-reader__relation-card { margin-block: .45rem; padding-inline: .65rem; border-inline-start: 2px solid var(--border); background: var(--surface); }
+.shj-reader__relation-role { display: flex; align-items: baseline; flex-wrap: wrap; gap: .3rem .7rem; padding-block: .35rem; }
+.shj-reader__relation-label { color: var(--muted); font-size: .86rem; }
+.shj-reader__block-links { display: flex; flex-wrap: wrap; gap: .2rem .6rem; margin: 0; padding: 0; list-style: none; }
+.shj-reader__not-linked { color: var(--muted); font-size: .9rem; }
+.shj-reader__status { color: var(--ink); }
+.shj-reader__review-summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: .4rem .7rem; padding-block: .5rem; }
+.shj-reader__review-status { color: var(--moss); }
+.shj-reader__review-note, .shj-reader__reason, .shj-reader__evidence { color: var(--muted); }
+.shj-reader__issues { flex-basis: 100%; padding: .35rem .55rem; border-inline-start: 2px solid var(--accent); background: var(--surface-raised); }
+.shj-reader__issues > summary { min-height: 2.4rem; display: flex; align-items: center; color: var(--accent); cursor: pointer; }
+.shj-reader__issues li { margin-block: .35rem; }
+.shj-reader__relations > summary::before, .shj-reader__relation-card > summary::before,
+.shj-reader__source-details > summary::before, .shj-reader__issues > summary::before { content: "▸"; margin-inline-end: .4rem; }
+.shj-reader__relations[open] > summary::before, .shj-reader__relation-card[open] > summary::before,
+.shj-reader__source-details[open] > summary::before, .shj-reader__issues[open] > summary::before { content: "▾"; }
+.shj-reader__source-list { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .25rem .75rem; margin: .5rem 0 0; }
+.shj-reader__source-list dt { color: var(--muted); }
+.shj-reader__source-list dd { margin: 0; overflow-wrap: anywhere; }
+.shj-reader__source-details { margin-block: .3rem 0; color: var(--muted); font-size: .84rem; }
+.shj-reader__source-details > summary { display: inline-flex; align-items: center; min-height: 2.75rem; }
+.shj-reader__block[data-kind="heading"] { padding-block: .45rem; }
+.shj-reader__block[data-kind="heading"] .shj-reader__text { font-size: 1.25rem; }
+.shj-reader__block[data-kind="separator"] { padding-block: .25rem; border-bottom: 0; }
+.shj-reader__glyph { display: inline; vertical-align: middle; }
+.shj-reader__glyph-link { display: inline-flex; min-width: 2.5rem; min-height: 2.5rem; align-items: center; justify-content: center; vertical-align: middle; }
+.shj-reader__glyph-image { display: inline-block; width: 2.3rem; height: 2.3rem; object-fit: contain; border: 1px solid var(--border); background: var(--surface-raised); }
+.shj-reader__glyph-note { overflow-wrap: anywhere; }
+.shj-reader__glyph-source { margin-block: .5rem; font-size: .92rem; }
+
+@media (max-width: 620px) {
+  .shj-reader__controls { align-items: flex-start; flex-direction: column; }
+  .shj-reader__volume-select { width: 100%; }
+  .shj-reader__toc-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .shj-reader__text { font-size: 1rem; }
+}
+
+
+/* P5-4 entry and catalog: integrated shared styles. */
+/* 命名空间规则参考；运行时样式集中维护于 src/styles.css。 */
+.shj-entry { max-width: 62rem; margin: 0 auto; padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 4rem; }
+.shj-entry__eyebrow, .shj-entry__muted { color: var(--muted); }
+.shj-entry__title { margin: .25rem 0 1rem; font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.35; }
+.shj-entry__section { margin-top: 2rem; }
+.shj-entry__section h2 { border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+.shj-entry__card, .shj-entry__evidence { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--surface); }
+.shj-entry__card-title { margin: 0 0 .5rem; font-size: 1.2rem; }
+.shj-entry__status-row, .shj-entry__location { margin: .35rem 0; }
+.shj-entry__links { display: flex; flex-wrap: wrap; gap: .65rem 1rem; margin: .75rem 0; }
+.shj-entry a { color: var(--moss); text-underline-offset: .18em; }
+.shj-entry a:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.shj-entry__details { margin: 1rem 0; }
+.shj-entry__details summary { cursor: pointer; font-weight: 600; }
+.shj-entry__quote { margin: .75rem 0; padding: .75rem 1rem; border-inline-start: 3px solid var(--accent); background: var(--surface); line-height: 1.9; }
+.shj-entry__reason { line-height: 1.8; }
+.shj-entry__source-link { display: inline-block; margin: .25rem 0; }
+
+/* 命名空间规则参考；运行时样式集中维护于 src/styles.css。 */
+.shj-catalog { max-width: 72rem; margin: 0 auto; padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 4rem; }
+.shj-catalog__eyebrow, .shj-catalog__policy, .shj-catalog__status, .shj-catalog__empty { color: var(--muted); }
+.shj-catalog__title { margin: .25rem 0 1rem; font-size: clamp(1.8rem, 4vw, 2.7rem); }
+.shj-catalog__category-nav { display: flex; flex-wrap: wrap; gap: .5rem .9rem; padding: 1rem 0; border-block: 1px solid var(--border); }
+.shj-catalog__category-nav a[aria-current="page"] { font-weight: 700; text-decoration-thickness: 2px; }
+.shj-catalog a { color: var(--moss); text-underline-offset: .18em; }
+.shj-catalog a:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.shj-catalog__overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: .75rem; margin-top: 1rem; }
+.shj-catalog__category, .shj-catalog__item { padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--surface); }
+.shj-catalog__volume { margin: .75rem 0; border: 1px solid var(--border); border-radius: .5rem; background: var(--surface); }
+.shj-catalog__volume > summary, .shj-catalog__unresolved > summary { padding: .8rem 1rem; cursor: pointer; font-weight: 600; }
+.shj-catalog__volume-content { padding: 0 1rem 1rem; }
+.shj-catalog__unresolved { margin-top: 1.5rem; border: 1px solid var(--border); border-radius: .5rem; }
+.shj-catalog__definition { max-width: 60rem; line-height: 1.8; }
+.shj-catalog__results { margin-top: 1.5rem; }
+.shj-catalog__item { margin: .75rem 0; }
+.shj-catalog__item h4 { margin: 0 0 .4rem; font-size: 1.1rem; }
+.shj-catalog__quote { margin: .6rem 0; padding: .65rem .9rem; border-inline-start: 3px solid var(--accent); line-height: 1.8; }
+.shj-catalog__reason { line-height: 1.8; }
+.shj-catalog__links { display: flex; flex-wrap: wrap; gap: .6rem 1rem; margin: .6rem 0; }
+
+.shj-entry, .shj-catalog { min-width: 0; overflow-wrap: anywhere; }
+.shj-entry a, .shj-catalog a { display: inline-flex; min-height: 2.75rem; align-items: center; }
+.shj-entry summary { min-height: 2.75rem; align-content: center; }
+.shj-entry mark { background: var(--surface-raised); color: var(--accent); font-weight: 600; }
+.shj-catalog__retry { min-height: 2.75rem; padding: .5rem .8rem; color: var(--ink); background: var(--surface-raised); border: 1px solid var(--border); font: inherit; cursor: pointer; }
+
+/* P5-5 search: integrated shared styles. */
+/* 待公共框架负责人合并至 src/styles.css；运行时样式集中维护。 */
+.shj-search { max-width: 76rem; margin: 0 auto; padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 4rem; }
+.shj-search__title { margin: .25rem 0 1rem; font-size: clamp(1.8rem, 4vw, 2.7rem); }
+.shj-search__intro, .shj-search__source, .shj-search__result-kind, .shj-search__raw-status { color: var(--muted); line-height: 1.7; }
+.shj-search__form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--surface); }
+.shj-search__field { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: .35rem; min-width: 0; }
+.shj-search__field label { font-weight: 600; }
+.shj-search input, .shj-search select, .shj-search button { max-width: 100%; min-height: 2.75rem; padding: .45rem .6rem; border: 1px solid var(--border); border-radius: .35rem; color: var(--ink); background: var(--surface); font: inherit; }
+.shj-search__multi { width: 100%; }
+.shj-search__actions, .shj-search__pager, .shj-search__links { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; }
+.shj-search button { cursor: pointer; }
+.shj-search button:disabled { cursor: not-allowed; opacity: .55; }
+.shj-search a { color: var(--moss); text-underline-offset: .18em; }
+.shj-search a:focus-visible, .shj-search button:focus-visible, .shj-search input:focus-visible, .shj-search select:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.shj-search__status { min-height: 1.8rem; margin: 1rem 0; }
+.shj-search__result { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--surface); }
+.shj-search__result-title { margin: 0 0 .4rem; font-size: 1.2rem; overflow-wrap: anywhere; }
+.shj-search__states { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; }
+.shj-search__tag { display: inline-block; padding: .15rem .5rem; border: 1px solid var(--border); border-radius: 99rem; color: var(--ink); font-size: .9em; }
+.shj-search__excerpt { margin: .65rem 0; padding: .65rem .9rem; border-inline-start: 3px solid var(--accent); line-height: 1.8; overflow-wrap: anywhere; }
+.shj-search__assertions { margin: .5rem 0; }
+.shj-search__assertions summary { cursor: pointer; }
+.shj-search__pager { justify-content: center; margin-top: 1.5rem; }
+.shj-search__empty { padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; }
+.shj-search__retry { margin-top: .5rem; }
+
+.shj-search { min-width: 0; overflow-wrap: anywhere; }
+.shj-search a { display: inline-flex; align-items: center; min-height: 2.75rem; }
+
+/* P5-6 map: integrated shared styles. */
+.shj-map a { display: inline-block; min-height: 2.75rem; max-width: 100%; }
+.shj-map summary { min-height: 2.75rem; }
+.shj-map { max-width: 72rem; margin: 0 auto; overflow-wrap: anywhere; }
+.shj-map__notice { color: var(--muted); }
+.shj-map__chapters a { display: block; padding: 1rem; border: 1px solid var(--border); background: var(--surface); }
+.shj-map__detail:focus { outline: 2px solid var(--focus); outline-offset: 3px; }
+.shj-map__graph { margin: 1rem 0; max-width: 32rem; }
+.shj-map__graph figcaption { font-weight: bold; }
+.shj-map__graph ul { margin: .5rem 0 0 .5rem; padding: 0 0 0 1.5rem; border-left: 2px solid var(--accent); list-style: none; }
+.shj-map__graph li { position: relative; margin: .75rem 0; padding: .6rem; border: 1px solid var(--moss); overflow-wrap: anywhere; }
+.shj-map__graph li::before { content: ""; position: absolute; width: 1.5rem; border-top: 2px solid var(--accent); left: -1.5rem; top: 50%; }
+.shj-map__endpoint, .shj-map__review { border-top: 1px solid var(--border); padding: .6rem 0; }
+.shj-map__relations li { margin: .6rem 0; }
+.shj-map summary { cursor: pointer; font-weight: bold; }
 </style>
-  <style>.reader-directory-link{display:inline-block;margin:1rem max(5vw,1rem) 0;font-size:.9rem}</style>
 </head>
 <body>
-  <a class="skip-link" href="#reader">跳到正文</a>
-    <header class="site-header ls-site-header">
-      <div class="site-navigation">
-        <div class="brand">
-          <button class="nav-trigger" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="打开站点导航">
-            <svg class="brand-mark start-graphic" viewBox="0 0 420 420" aria-hidden="true"><circle class="graphic-ring" cx="210" cy="210" r="150" /><ellipse class="graphic-orbit" cx="210" cy="210" rx="186" ry="72" /><path class="graphic-letter" d="M166 129v133h111" /></svg>
-          </button>
-          <a class="brand-name" href="../../index.html">LinkStartR<span class="brand-period">.</span></a>
-        </div>
-        <nav class="site-menu" id="site-menu" hidden aria-label="站点导航">
-          <div class="menu-topline"><span>导航</span><button class="nav-close" type="button" aria-label="关闭站点导航">×</button></div>
-          <a class="menu-link" href="../../index.html"><span class="menu-number">00</span><span>首页</span><span class="menu-arrow" aria-hidden="true">↗</span></a>
-          <a class="menu-link" href="../../about/index.html"><span class="menu-number">01</span><span>关于</span><span class="menu-arrow" aria-hidden="true">↗</span></a>
-          <a class="menu-link" href="../../projects/index.html"><span class="menu-number">02</span><span>项目</span><span class="menu-arrow" aria-hidden="true">↗</span></a>
-          <a class="menu-link" href="../../pages/index.html" aria-current="page"><span class="menu-number">03</span><span>网页</span><span class="menu-arrow" aria-hidden="true">↗</span></a>
-          <a class="menu-link" href="../../contact/index.html"><span class="menu-number">04</span><span>联系</span><span class="menu-arrow" aria-hidden="true">↗</span></a>
-          <a class="menu-github" href="https://github.com/LinkStartR" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-          <button class="motion-toggle menu-motion-toggle" type="button" aria-pressed="false">暂停动画</button>
-        </nav>
-      </div>
-    </header>
-  <header class="masthead">
-    <a class="wordmark" href="#top" aria-label="山海经读本首页">山海经<span>读本</span></a>
-    <div class="masthead-note">古典文本 · 实验性整理</div>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <a class="wordmark" href="#/" data-route-target="home" aria-label="山海经数字读本首页">山海经<span>数字读本</span></a>
+    <nav class="main-nav" aria-label="主导航">
+      <a href="#/" data-route-target="home" data-nav="home">总览</a>
+      <a href="#/search" data-route-target="search" data-nav="search">检索</a>
+      <a href="#/map" data-route-target="map" data-nav="map">经文空间</a>
+      <a href="#/catalog" data-route-target="catalog" data-nav="catalog">分类册</a>
+    </nav>
   </header>
-  <main id="top">
-    <a class="reader-directory-link" href="../index.html">返回网页目录 ↗</a>
-    <section class="intro" aria-labelledby="page-title">
-      <p class="eyebrow" id="scope"></p>
-      <h1 id="page-title"></h1>
-      <p id="subtitle" class="subtitle"></p>
-      <p id="editorial-notice" class="editorial-notice"></p>
-    </section>
-    <section class="workspace" aria-label="阅读与检索">
-      <aside class="sidebar" aria-label="目录与筛选">
-        <form id="search-form" role="search">
-          <label for="search">检索全文与实体</label>
-          <div class="search-row"><input id="search" type="search" autocomplete="off" placeholder="原文、译文、别名、特征…"><button type="submit">查找</button></div>
-          <p class="search-help">支持简繁别名与原文检索</p>
-        </form>
-        <div class="filter-block">
-          <label for="category-filter">图鉴分类</label>
-          <select id="category-filter"><option value="">全部实验分类</option></select>
-        </div>
-        <div class="filter-block">
-          <label for="sort-order">实体排序</label>
-          <select id="sort-order"><option value="book">原书序</option><option value="name">名称</option></select>
-        </div>
-        <nav class="toc" aria-label="章段目录"><h2>章段</h2><ol id="passage-list"></ol></nav>
-        <nav class="entity-nav" aria-label="实体图鉴"><h2>实体图鉴 <span id="entity-count"></span></h2><ol id="entity-list"></ol></nav>
-      </aside>
-      <section class="reader" id="reader" aria-label="阅读内容" tabindex="-1">
-        <div class="results-bar"><p id="result-count" aria-live="polite"></p><button id="reset-button" class="text-button" type="button">重置检索与筛选</button></div>
-        <div id="empty-state" class="empty-state" hidden><h2>没有找到匹配内容</h2><p>试试更短的词，或清除当前检索和筛选。</p><button id="empty-reset" type="button">清除条件</button></div>
-        <div id="passages"></div>
-        <section class="entity-section" aria-labelledby="entities-heading"><div class="section-heading"><p class="eyebrow">索引</p><h2 id="entities-heading">山川神怪与异物</h2></div><div id="entities"></div></section>
-        <details class="sources"><summary>来源与整理说明</summary><div id="source-list"></div><p id="source-note"></p></details>
-      </section>
-    </section>
+  <main id="main" tabindex="-1">
+    <p class="reader-directory-link"><a href="../index.html">返回网页目录 ↗</a></p>
+    <div id="route-status" class="route-status" role="status" aria-live="polite" hidden></div>
+    <section id="route-view" aria-live="off" aria-busy="false"></section>
   </main>
-  <footer>本页为离线阅读实验 · 内容依据及整理性质见来源说明</footer>
-  <script>window.SAMPLE_DATA={"meta":{"title":"《山海經·南山經》四山記述小型樣本","subtitle":"招搖、堂庭、猨翼、杻陽","scope":"以古典文库《南山經》网页转录为工作底文，选取鹊山山系开篇四段连续山川记述；建立少量山、物条目以演示关联。","editorialNotice":"本样本是可追溯的数字文本整理，不是权威校勘本。原文保留主文本繁体字形与网页标点；译文为 AI 辅助试译，整理注为本样本原创说明。古籍关于食用、佩带或疾病功效的叙述只作为文本内容记录，不代表现实功效。视觉材料尚未制作。","generatedAt":"2026-10-22"},"sources":[{"id":"src-classics","title":"山海经 南山经 · 古典文库","url":"https://www.chinese-classics.org/read/mythology/ancient/shan-hai-jing/shan-hai-jing-001","kind":"全文数字文本（主文本）","accessed":"2026-10-22","note":"本样本四段原文的直接转录来源。网页呈现繁体字与现代标点；其所据底本、校勘过程及字形规范化程度，页面未在所用段落中说明。"},{"id":"src-wikisource","title":"山海经/南山经 · 维基文库","url":"https://zh.wikisource.org/zh-hans/南山經","kind":"另一份全文数字转录（交叉核对）","accessed":"2026-10-22","note":"用于核对四段文字及记录可见差异。页面含郭璞注及校记，本样本不复制其注译；此网页转录不作文本谱系独立的判断，且未逐字核对影印。"},{"id":"src-nlc","title":"山海经十八卷 · 中华古籍智慧化服务平台（国家图书馆）","url":"https://guji.nlc.cn/resource/resourceDetail?id=50","kind":"古籍目录记录（书目线索）","accessed":"2026-10-22","note":"目录页著录为（晋）郭璞注、（明）绘、明刻本，可作为后续选择书影和版本核查的线索；本次未打开或逐字核对该书影。"}],"passages":[{"id":"p-zhaoyao","order":1,"title":"招搖之山","chapter":"山經·南山經·鹊山山系","text":"南山經之首曰䧿山。其首曰招搖之山，臨於西海之上，多桂，多金玉。有草焉，其狀如韭而青華，其名曰祝餘，食之不饑。有木焉，其狀如榖而黑理，其華四照，其名曰迷穀，佩之不迷。有獸焉，其狀如禺而白耳，伏行人走，其名曰狌狌，食之善走。麗𪊨之水出焉，而西流注於海，其中多育沛，佩之無瘕疾。","sourceId":"src-classics","locator":"页面标题‘南山經之首’下首段","translation":{"text":"南山经开篇记载的首个山系叫䧿山（通行写法作鹊山）。其中第一座山叫招摇山，临近西海，山上多桂树，也多金玉。有一种草，形状像韭菜，开青色的花，名叫祝余；传说吃了它不会饥饿。有一种树，形状像构树，纹理呈黑色，花光四照，名叫迷谷；传说佩带它不会迷路。有一种兽，形状像禺（页面附注形容其似猕猴而更大），耳朵是白色的，伏地爬行、直立行走，名叫狌狌；传说吃了它可以善于奔走。丽𪊨水发源于此，向西流入海，水中多育沛；传说佩带育沛可以避免瘕疾。","kind":"AI辅助试译","by":"AI辅助，本样本整理"},"notes":[{"term":"段落范围","text":"按山名将一段山川记述整体收录；选取部分山、草木和异兽建立实验条目，未穷尽段中对象，条目不替代原文。","kind":"本实验整理注","sourceId":null,"locator":null},{"term":"篇首山系名","text":"主文本原字为‘䧿山’；译文括注‘鹊山’仅作通行字形提示，不据此判定字形关系。","kind":"本实验整理注","sourceId":null,"locator":null},{"term":"解释性译词","text":"译文将‘禺’保留为‘禺’，并括注页面附注称其似猕猴而更大；‘榖’暂译作构树，参考页面附注中的释义，但网页所见该语句处于‘璨曰’层。两者均为解释性对应，不是原文明示的现代物种定名。‘花光四照’参考页面附注对‘四照’的解释，视觉效果仍有推断成分。","kind":"来源解释参考","sourceId":"src-wikisource","locator":"‘南山经之首’招摇段；参考页面附注释义（含璨曰层），不将其当作原文"}],"entityIds":["e-zhaoyao","e-zhu-yu","e-mi-gu","e-xingxing"]},{"id":"p-tangting","order":2,"title":"堂庭之山","chapter":"山經·南山經·鹊山山系","text":"又東三百里，曰堂庭之山，多棪木，多白猿，多水玉，多黃金。","sourceId":"src-classics","locator":"页面标题‘南山經之首’下第二段","translation":{"text":"再向东三百里，称为堂庭山。山上多棪木、多白猿、多水玉，也多黄金。","kind":"AI辅助试译","by":"AI辅助，本样本整理"},"notes":[{"term":"段落范围","text":"此处‘又东三百里’承接前一山，作为独立阅读段落保存。","kind":"本实验整理注","sourceId":null,"locator":null},{"term":"山名异文","text":"独立转录标示‘堂’一作‘常’；主文本作‘堂庭’，本样本沿用主文本。","kind":"来源对读说明","sourceId":"src-wikisource","locator":"‘南山经之首’堂庭段"}],"entityIds":["e-tangting"]},{"id":"p-yuanyi","order":3,"title":"猨翼之山","chapter":"山經·南山經·鹊山山系","text":"又東三百八十里，曰猨翼之山，其中多怪獸，水多怪魚，多白玉，多腹虫，多怪蛇，多怪木，不可以上。","sourceId":"src-classics","locator":"页面标题‘南山經之首’下第三段","translation":{"text":"再向东三百八十里，称为猨翼山。山中多怪兽，水中多怪鱼，还多白玉、腹虫、怪蛇和怪木；人不能登上去。","kind":"AI辅助试译","by":"AI辅助，本样本整理"},"notes":[{"term":"段落范围","text":"本段以山名为中心保存整段概述；‘腹虫’等词义此处不强行现代定名。","kind":"本实验整理注","sourceId":null,"locator":null},{"term":"山名字形","text":"独立转录作‘猿翼’，主文本作‘猨翼’；本样本保留主文本字形。","kind":"来源对读说明","sourceId":"src-wikisource","locator":"‘南山经之首’猿翼段"}],"entityIds":["e-yuanyi"]},{"id":"p-niuyang","order":4,"title":"杻陽之山","chapter":"山經·南山經·鹊山山系","text":"又東三百七十里，曰杻陽之山，其陽多赤金，其陰多白金。有獸焉，其狀如馬而白首，其文如虎而赤尾，其音如謠，其名曰鹿蜀，佩之宜子孫。怪水出焉，而東流注於憲翼之水。其中多玄龜，其狀如龜而鳥首虺尾，其名曰旋龜，其音如判木，佩之不聾，可以為底。","sourceId":"src-classics","locator":"页面标题‘南山經之首’下第四段","translation":{"text":"再向东三百七十里，称为杻阳山。山的南坡多赤金，北坡多白金。有一种兽，形状像马，白色的头，身上的纹理像虎，红色的尾巴，叫声像歌谣，名叫鹿蜀；传说佩带它有利于子孙。怪水发源于此，向东流入宪翼水。水中多玄龟，形状像龟，长着鸟头和蛇尾，名叫旋龟，叫声像劈木声；原文说佩带它可以不耳聋，并说‘可以为底’（此处词义待核）。","kind":"AI辅助试译","by":"AI辅助，本样本整理"},"notes":[{"term":"方位表达","text":"译文暂将山之‘阳/阴’按常见山南/山北理解呈现；这是试译处理，不作为地理考证结论。","kind":"本实验整理注","sourceId":null,"locator":null},{"term":"功效叙述","text":"‘宜子孙’‘不聋’及‘可以为底’均作为古籍叙述翻译；不构成现实功效主张。‘为底’具体含义仍有解释空间。","kind":"本实验整理注","sourceId":null,"locator":null}],"entityIds":["e-niuyang","e-lushu","e-xuangui"]}],"entities":[{"id":"e-zhaoyao","name":"招搖之山","aliases":["招摇之山","招搖山","招摇山"],"category":"山川（实验标签）","tags":["山","鹊山山系"],"summary":"《南山經》鹊山山系记述的首山。","passageIds":["p-zhaoyao"],"features":[{"label":"方位与物产","text":"临于西海之上，多桂，多金玉。","evidence":"臨於西海之上，多桂，多金玉","passageId":"p-zhaoyao"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文记有临西海、多桂、多金玉"],"inference":["具体山体、海岸形态与物产分布的视觉构成需创作推断"],"unknown":["对应现实地理位置未由本样本确认"]}},{"id":"e-tangting","name":"堂庭之山","aliases":["堂庭山","常庭之山"],"category":"山川（实验标签）","tags":["山","鹊山山系"],"summary":"招摇山以东三百里的山。","passageIds":["p-tangting"],"features":[{"label":"记述物产","text":"多棪木，多白猿，多水玉，多黄金。","evidence":"多棪木，多白猿，多水玉，多黃金","passageId":"p-tangting"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文明记棪木、白猿、水玉、黄金"],"inference":["景观和物产的具体外观需创作推断"],"unknown":["棪木与水玉在此段的准确物种或矿物对应未确认"]}},{"id":"e-yuanyi","name":"猨翼之山","aliases":["猿翼之山","猨翼山","猿翼山"],"category":"山川（实验标签）","tags":["山","鹊山山系"],"summary":"堂庭山以东三百八十里的山；原文称其难以登临。","passageIds":["p-yuanyi"],"features":[{"label":"登临描述","text":"不可以上。","evidence":"不可以上","passageId":"p-yuanyi"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文称山中多怪兽、怪蛇、怪木且不可以上"],"inference":["险峻地貌属于视觉构想"],"unknown":["山体形态及各类‘怪’的具体所指未说明"]}},{"id":"e-niuyang","name":"杻陽之山","aliases":["杻阳之山","杻陽山","杻阳山"],"category":"山川（实验标签）","tags":["山","鹊山山系"],"summary":"猨翼山以东三百七十里的山，记有鹿蜀、玄龟及两条水名。","passageIds":["p-niuyang"],"features":[{"label":"山中物产","text":"其陽多赤金，其陰多白金。","evidence":"其陽多赤金，其陰多白金","passageId":"p-niuyang"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文记山阳赤金、山阴白金，并记鹿蜀与旋龟"],"inference":["山体与物产分布的图像化需推断"],"unknown":["对应现实地理位置未由本样本确认"]}},{"id":"e-zhu-yu","name":"祝餘","aliases":["祝余"],"category":"植物（实验标签）","tags":["草","招搖之山"],"summary":"原文所记一种形状如韭、青华的草。","passageIds":["p-zhaoyao"],"features":[{"label":"形态记述","text":"狀如韭而青華","evidence":"其狀如韭而青華","passageId":"p-zhaoyao"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文称形如韭而青华"],"inference":["叶片、花色的具体视觉细节需推断"],"unknown":["现实植物对应未确认"]}},{"id":"e-mi-gu","name":"迷穀","aliases":["迷谷"],"category":"植物（实验标签）","tags":["木","招搖之山"],"summary":"原文所记一种形状如榖、黑理且花光四照的木。","passageIds":["p-zhaoyao"],"features":[{"label":"形态记述","text":"狀如榖而黑理","evidence":"其狀如榖而黑理","passageId":"p-zhaoyao"},{"label":"花的描述","text":"其華四照","evidence":"其華四照","passageId":"p-zhaoyao"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文称形如榖、黑理、花四照"],"inference":["发光效果的具体表现属于创作表达"],"unknown":["榖的具体植物所指及光照机制未说明"]}},{"id":"e-xingxing","name":"狌狌","aliases":["猩猩","狌狌兽"],"category":"异兽（实验标签）","tags":["兽","招搖之山"],"summary":"原文所记白耳、伏行人走的兽。","passageIds":["p-zhaoyao"],"features":[{"label":"外形与行动","text":"其狀如禺而白耳，伏行人走","evidence":"其狀如禺而白耳，伏行人走","passageId":"p-zhaoyao"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文写如禺、白耳、伏行人走"],"inference":["将‘禺’解作类猿的外形参考页面附注；面部、毛色和体态细节需推断"],"unknown":["禺在此处所指及现实动物对应未确认"]}},{"id":"e-lushu","name":"鹿蜀","aliases":["鹿蜀兽"],"category":"异兽（实验标签）","tags":["兽","杻陽之山"],"summary":"原文所记白首、虎纹、赤尾且其声如谣的兽。","passageIds":["p-niuyang"],"features":[{"label":"外形与声音","text":"狀如馬而白首，其文如虎而赤尾，其音如謠","evidence":"其狀如馬而白首，其文如虎而赤尾，其音如謠","passageId":"p-niuyang"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文明确写马形、白首、虎纹、赤尾，声音如谣"],"inference":["体型比例、虎纹分布、色彩明暗与声音表现需创作推断"],"unknown":["原文未说明的解剖细节及现实物种对应"]}},{"id":"e-xuangui","name":"旋龜","aliases":["旋龟","玄龜","玄龟"],"category":"异兽（实验标签）","tags":["龟类异兽","杻陽之山"],"summary":"原文所记形如龟、鸟首虺尾、声如判木的水中异兽。","passageIds":["p-niuyang"],"features":[{"label":"形态","text":"形如龟而鸟首虺尾","evidence":"其狀如龜而鳥首虺尾","passageId":"p-niuyang"},{"label":"声音","text":"声如判木","evidence":"其音如判木","passageId":"p-niuyang"}],"media":{"image":null,"model":null},"visualBrief":{"basis":["原文明确写龟形、鸟首、虺尾，声音如判木"],"inference":["鸟首特征、尾部形态、体色、比例及声音表现需创作推断"],"unknown":["原文未说明的解剖细节与现实动物对应"]}}]};</script>
+  <footer class="site-footer">以经文和可追溯资料为依据 · 未定状态依来源保留</footer>
+  <script id="shj-bootstrap" type="application/json">{"schemaVersion":"p5-data-1.0","dataBase":"data/p5/v1/","manifestSha256":"079a7fb4fbbea3f545c797c8206797a7dc3b40019a0d0a426452e6f0f8b8d3c1","volumes":[{"volumeId":"fangtao-v01","order":1,"title":"卷一","chapterTitle":"南山经","coverage":{"p1BlockKinds":{"commentary":4,"heading":77,"note":91,"original":43,"separator":44,"translation":43},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":43,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":302,"p3EntityCandidates":213,"p3Entries":213,"p3Occurrences":213,"p4BlockReviews":43,"p4EndpointStatuses":{"bound":161,"unresolved":13},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":77},"p4Relations":77,"p4ReviewedBlocks":43,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":13}},{"volumeId":"fangtao-v02","order":2,"title":"卷二","chapterTitle":"西山经","coverage":{"p1BlockKinds":{"commentary":3,"heading":153,"note":205,"original":82,"separator":82,"translation":82},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":82,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":20,"unresolved":1},"translation":{"failed":0,"pending":0,"pendingModelReview":20,"unresolved":1}},"p1TotalBlocks":607,"p3EntityCandidates":600,"p3Entries":600,"p3Occurrences":600,"p4BlockReviews":82,"p4EndpointStatuses":{"bound":390,"unresolved":18},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":173},"p4Relations":173,"p4ReviewedBlocks":82,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":18}},{"volumeId":"fangtao-v03","order":3,"title":"卷三","chapterTitle":"北山经","coverage":{"p1BlockKinds":{"commentary":2,"heading":156,"note":154,"original":92,"separator":92,"translation":92},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":92,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":588,"p3EntityCandidates":528,"p3Entries":528,"p3Occurrences":528,"p4BlockReviews":92,"p4EndpointStatuses":{"bound":436,"unresolved":21},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":189},"p4Relations":189,"p4ReviewedBlocks":92,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":21}},{"volumeId":"fangtao-v04","order":4,"title":"卷四","chapterTitle":"东山经","coverage":{"p1BlockKinds":{"commentary":5,"heading":92,"note":83,"original":51,"separator":51,"translation":51},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":51,"p1PendingReview":0,"p1ReviewAccepted":8,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":8,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":8,"unresolved":0}},"p1TotalBlocks":333,"p3EntityCandidates":249,"p3Entries":249,"p3Occurrences":249,"p4BlockReviews":51,"p4EndpointStatuses":{"bound":191,"unresolved":6},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":90},"p4Relations":90,"p4ReviewedBlocks":51,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":6}},{"volumeId":"fangtao-v05","order":5,"title":"卷五","chapterTitle":"中山经","coverage":{"p1BlockKinds":{"commentary":4,"heading":351,"note":287,"original":213,"separator":213,"translation":213},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":213,"p1PendingReview":0,"p1ReviewAccepted":77,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":75,"unresolved":2},"translation":{"failed":0,"pending":0,"pendingModelReview":75,"unresolved":2}},"p1TotalBlocks":1281,"p3EntityCandidates":1352,"p3Entries":1352,"p3Occurrences":1352,"p4BlockReviews":213,"p4EndpointStatuses":{"bound":707,"unresolved":38},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":7,"explicit":324},"p4Relations":331,"p4ReviewedBlocks":203,"p4ReviewedWithAmbiguityBlocks":9,"p4UnresolvedEndpoints":38}},{"volumeId":"fangtao-v06","order":6,"title":"卷六","chapterTitle":"海外南经","coverage":{"p1BlockKinds":{"commentary":3,"heading":44,"note":22,"original":25,"separator":25,"translation":25},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":25,"p1PendingReview":0,"p1ReviewAccepted":18,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0}},"p1TotalBlocks":144,"p3EntityCandidates":117,"p3Entries":117,"p3Occurrences":117,"p4BlockReviews":25,"p4EndpointStatuses":{"ambiguous":3,"bound":73,"unresolved":24},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":48},"p4Relations":48,"p4ReviewedBlocks":10,"p4ReviewedWithAmbiguityBlocks":15,"p4UnresolvedEndpoints":27}},{"volumeId":"fangtao-v07","order":7,"title":"卷七","chapterTitle":"海外西经","coverage":{"p1BlockKinds":{"commentary":3,"heading":40,"note":23,"original":23,"separator":23,"translation":23},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":23,"p1PendingReview":0,"p1ReviewAccepted":16,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0}},"p1TotalBlocks":135,"p3EntityCandidates":108,"p3Entries":108,"p3Occurrences":108,"p4BlockReviews":23,"p4EndpointStatuses":{"ambiguous":3,"bound":78,"unresolved":7},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":40},"p4Relations":42,"p4ReviewedBlocks":20,"p4ReviewedWithAmbiguityBlocks":3,"p4UnresolvedEndpoints":10}},{"volumeId":"fangtao-v08","order":8,"title":"卷八","chapterTitle":"海外北经","coverage":{"p1BlockKinds":{"commentary":3,"heading":38,"note":26,"original":22,"separator":23,"translation":22},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":22,"p1PendingReview":0,"p1ReviewAccepted":17,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":17,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":17,"unresolved":0}},"p1TotalBlocks":134,"p3EntityCandidates":117,"p3Entries":117,"p3Occurrences":117,"p4BlockReviews":22,"p4EndpointStatuses":{"bound":74,"unresolved":10},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":40},"p4Relations":40,"p4ReviewedBlocks":15,"p4ReviewedWithAmbiguityBlocks":7,"p4UnresolvedEndpoints":10}},{"volumeId":"fangtao-v09","order":9,"title":"卷九","chapterTitle":"海外东经","coverage":{"p1BlockKinds":{"commentary":2,"heading":31,"note":18,"original":17,"separator":17,"translation":17},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":17,"p1PendingReview":0,"p1ReviewAccepted":15,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0}},"p1TotalBlocks":102,"p3EntityCandidates":100,"p3Entries":100,"p3Occurrences":100,"p4BlockReviews":17,"p4EndpointStatuses":{"ambiguous":8,"bound":67,"unresolved":8},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":1,"explicit":40},"p4Relations":41,"p4ReviewedBlocks":6,"p4ReviewedWithAmbiguityBlocks":10,"p4UnresolvedEndpoints":16}},{"volumeId":"fangtao-v10","order":10,"title":"卷十","chapterTitle":"海内南经","coverage":{"p1BlockKinds":{"commentary":4,"heading":32,"note":20,"original":17,"separator":17,"translation":17},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":17,"p1PendingReview":0,"p1ReviewAccepted":11,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":11,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":11,"unresolved":0}},"p1TotalBlocks":107,"p3EntityCandidates":42,"p3Entries":42,"p3Occurrences":42,"p4BlockReviews":17,"p4EndpointStatuses":{"bound":51,"unresolved":18},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":32},"p4Relations":32,"p4ReviewedBlocks":12,"p4ReviewedWithAmbiguityBlocks":5,"p4UnresolvedEndpoints":18}},{"volumeId":"fangtao-v11","order":11,"title":"卷十一","chapterTitle":"海内西经","coverage":{"p1BlockKinds":{"commentary":3,"heading":39,"note":27,"original":20,"separator":19,"translation":20},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":20,"p1PendingReview":0,"p1ReviewAccepted":14,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":14,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":14,"unresolved":0}},"p1TotalBlocks":128,"p3EntityCandidates":97,"p3Entries":97,"p3Occurrences":97,"p4BlockReviews":20,"p4EndpointStatuses":{"ambiguous":3,"bound":111,"unresolved":29},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":1,"explicit":50},"p4Relations":51,"p4ReviewedBlocks":11,"p4ReviewedWithAmbiguityBlocks":8,"p4UnresolvedEndpoints":32}},{"volumeId":"fangtao-v12","order":12,"title":"卷十二","chapterTitle":"海内北经","coverage":{"p1BlockKinds":{"commentary":2,"heading":51,"note":26,"original":29,"separator":29,"translation":29},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":29,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0}},"p1TotalBlocks":166,"p3EntityCandidates":64,"p3Entries":64,"p3Occurrences":64,"p4BlockReviews":29,"p4EndpointStatuses":{"ambiguous":2,"bound":49,"unresolved":19},"p4FailedBlocks":0,"p4NoRelationBlocks":9,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":32},"p4Relations":32,"p4ReviewedBlocks":14,"p4ReviewedWithAmbiguityBlocks":6,"p4UnresolvedEndpoints":21}},{"volumeId":"fangtao-v13","order":13,"title":"卷十三","chapterTitle":"海内东经","coverage":{"p1BlockKinds":{"commentary":3,"heading":32,"note":11,"original":18,"separator":18,"translation":18},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":18,"p1PendingReview":0,"p1ReviewAccepted":15,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0}},"p1TotalBlocks":100,"p3EntityCandidates":34,"p3Entries":34,"p3Occurrences":34,"p4BlockReviews":18,"p4EndpointStatuses":{"ambiguous":2,"bound":37,"unresolved":16},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":25},"p4Relations":27,"p4ReviewedBlocks":14,"p4ReviewedWithAmbiguityBlocks":4,"p4UnresolvedEndpoints":18}},{"volumeId":"fangtao-v14","order":14,"title":"卷十四","chapterTitle":"大荒东经","coverage":{"p1BlockKinds":{"commentary":3,"heading":57,"note":37,"original":36,"separator":36,"translation":36},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":36,"p1PendingReview":0,"p1ReviewAccepted":16,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0}},"p1TotalBlocks":205,"p3EntityCandidates":173,"p3Entries":173,"p3Occurrences":173,"p4BlockReviews":36,"p4EndpointStatuses":{"ambiguous":4,"bound":68,"unresolved":22},"p4FailedBlocks":0,"p4NoRelationBlocks":16,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":38},"p4Relations":40,"p4ReviewedBlocks":13,"p4ReviewedWithAmbiguityBlocks":7,"p4UnresolvedEndpoints":26}},{"volumeId":"fangtao-v15","order":15,"title":"卷十五","chapterTitle":"大荒南经","coverage":{"p1BlockKinds":{"commentary":3,"heading":49,"note":33,"original":30,"separator":30,"translation":30},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":30,"p1PendingReview":0,"p1ReviewAccepted":7,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":7,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":7,"unresolved":0}},"p1TotalBlocks":175,"p3EntityCandidates":210,"p3Entries":210,"p3Occurrences":210,"p4BlockReviews":30,"p4EndpointStatuses":{"ambiguous":4,"bound":73,"unresolved":19},"p4FailedBlocks":0,"p4NoRelationBlocks":8,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":45},"p4Relations":45,"p4ReviewedBlocks":10,"p4ReviewedWithAmbiguityBlocks":12,"p4UnresolvedEndpoints":23}},{"volumeId":"fangtao-v16","order":16,"title":"卷十六","chapterTitle":"大荒西经","coverage":{"p1BlockKinds":{"commentary":4,"heading":81,"note":43,"original":50,"separator":50,"translation":50},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":50,"p1PendingReview":0,"p1ReviewAccepted":18,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0}},"p1TotalBlocks":278,"p3EntityCandidates":223,"p3Entries":223,"p3Occurrences":223,"p4BlockReviews":50,"p4EndpointStatuses":{"bound":70,"unresolved":9},"p4FailedBlocks":0,"p4NoRelationBlocks":29,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":35},"p4Relations":35,"p4ReviewedBlocks":21,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":9}},{"volumeId":"fangtao-v17","order":17,"title":"卷十七","chapterTitle":"大荒北经","coverage":{"p1BlockKinds":{"commentary":4,"heading":57,"note":34,"original":32,"separator":32,"translation":32},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":32,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":191,"p3EntityCandidates":220,"p3Entries":220,"p3Occurrences":220,"p4BlockReviews":32,"p4EndpointStatuses":{"bound":64,"unresolved":6},"p4FailedBlocks":0,"p4NoRelationBlocks":16,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":5,"explicit":25},"p4Relations":30,"p4ReviewedBlocks":12,"p4ReviewedWithAmbiguityBlocks":4,"p4UnresolvedEndpoints":6}},{"volumeId":"fangtao-v18","order":18,"title":"卷十八","chapterTitle":"海内经","coverage":{"p1BlockKinds":{"commentary":5,"heading":67,"note":47,"original":39,"separator":39,"translation":39},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":39,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0}},"p1TotalBlocks":236,"p3EntityCandidates":224,"p3Entries":224,"p3Occurrences":224,"p4BlockReviews":39,"p4EndpointStatuses":{"bound":87,"unresolved":9},"p4FailedBlocks":0,"p4NoRelationBlocks":17,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":38},"p4Relations":40,"p4ReviewedBlocks":20,"p4ReviewedWithAmbiguityBlocks":2,"p4UnresolvedEndpoints":9}}],"categories":[{"categoryId":"geography.mountain","label":"山岳与山系"},{"categoryId":"geography.water","label":"水域与水系"},{"categoryId":"geography.other","label":"其他地域与地貌"},{"categoryId":"polity.state","label":"邦国"},{"categoryId":"population.group","label":"族群与人群"},{"categoryId":"deity.divine","label":"神祇与神灵"},{"categoryId":"person.individual","label":"人物"},{"categoryId":"animal.creature","label":"动物与异兽"},{"categoryId":"plant.flora","label":"植物"},{"categoryId":"mineral.earthstone","label":"矿物与土石"},{"categoryId":"artifact.built_object","label":"器物与建筑"},{"categoryId":"celestial.natural","label":"天体与自然现象"}],"coverage":{"p1BlockKinds":{"commentary":60,"heading":1447,"note":1187,"original":839,"separator":840,"translation":839},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":839,"p1PendingReview":0,"p1ReviewAccepted":331,"p1TotalBlocks":5212,"p3EntityCandidates":4671,"p3Entries":4671,"p3Occurrences":4671,"p4BlockReviews":839,"p4EndpointStatuses":{"ambiguous":29,"bound":2787,"unresolved":292},"p4FailedBlocks":0,"p4NoRelationBlocks":98,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":22,"explicit":1341},"p4Relations":1363,"p4ReviewedBlocks":649,"p4ReviewedWithAmbiguityBlocks":92,"p4UnresolvedEndpoints":321,"volumes":18}}</script>
   <script>(() => {
   "use strict";
-  const data = window.SAMPLE_DATA;
-  const $ = (s, root=document) => root.querySelector(s);
-  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  if (!data || !Array.isArray(data.passages) || !Array.isArray(data.entities)) {
-    document.body.innerHTML = '<main style="padding:2rem"><h1>读本数据不完整</h1><p>请确认 data/sample.json 符合约定后重新运行 python build.py。</p></main>'; return;
+
+  const bootstrapNode = document.getElementById("shj-bootstrap");
+  const bootstrap = JSON.parse(bootstrapNode.textContent);
+  const dataBase = new URL(bootstrap.dataBase, document.baseURI);
+  const view = document.getElementById("route-view");
+  const status = document.getElementById("route-status");
+  const cache = new Map();
+  const features = new Map();
+  const featureErrors = new Map();
+  const volumeById = new Map(bootstrap.volumes.map(volume => [volume.volumeId, volume]));
+  const categoryById = new Map(bootstrap.categories.map(category => [category.categoryId, category]));
+  let renderVersion = 0;
+  let activeController = null;
+  let activeCleanup = null;
+  let currentRoute = { type: "home" };
+
+  function fail(message, code = "invalid_route") {
+    const error = new Error(message);
+    error.code = code;
+    throw error;
   }
-  const meta = data.meta || {}, passages = data.passages, entities = data.entities;
-  const byPassage = new Map(passages.map(p => [p.id,p]));
-  const byEntity = new Map(entities.map(e => [e.id,e]));
-  const sources = new Map((data.sources || []).map(s => [s.id,s]));
-  const passageOrder = new Map(passages.map((p, i) => [p.id, Number.isFinite(Number(p.order)) ? Number(p.order) : i]));
-  const normalize = s => String(s || "").toLocaleLowerCase("zh-CN").normalize("NFKC").replace(/[\s，。；：、！？“”‘’「」『』（）()【】\[\]·]/g, "");
-  const state = {query:"", category:"", sort:"book"};
-  let openNotes = new Set();
-  const titleText = p => `${p.chapter || ""} ${p.title || ""}`.trim();
-  const entityText = e => [e.name,...(e.aliases||[]),e.category,...(e.tags||[]),e.summary,...(e.features||[]).flatMap(f=>[f.label,f.text,f.evidence])].join(" ");
-  const passageText = p => [p.title,p.chapter,p.text,p.translation?.text,...(p.notes||[]).flatMap(n=>[n.term,n.text])].join(" ");
-  const hasTerm = (hay, q) => !q || normalize(hay).includes(normalize(q));
-  const passageMatches = p => hasTerm(passageText(p), state.query) || (p.entityIds||[]).some(id => {const e=byEntity.get(id); return e && hasTerm(entityText(e),state.query);});
-  const entityMatches = e => (!state.category || e.category===state.category) && hasTerm(entityText(e),state.query);
-  function render() {
-    openNotes = new Set([...document.querySelectorAll(".passage")].filter(p=>p.querySelector("details")?.open).map(p=>p.dataset.id));
-    const matchingEntities = entities.filter(entityMatches).sort((a,b)=>state.sort==="name" ? a.name.localeCompare(b.name,"zh-CN") : minPassageOrder(a)-minPassageOrder(b));
-    const matchedPassages = passages.filter(passageMatches);
-    const linkedIds = new Set(matchedPassages.flatMap(p=>p.entityIds||[]));
-    const shownEntities = matchingEntities.filter(e => !state.query || linkedIds.has(e.id) || hasTerm(entityText(e),state.query));
-    const pNav = $("#passage-list"); pNav.innerHTML = matchedPassages.map(p=>`<li><a href="#passage-${encodeURIComponent(p.id)}">${esc(titleText(p))}</a></li>`).join("");
-    const eNav = $("#entity-list"); eNav.innerHTML = shownEntities.map(e=>`<li><a href="#entity-${encodeURIComponent(e.id)}">${esc(e.name)}</a></li>`).join("");
-    $("#entity-count").textContent = `（${shownEntities.length}）`;
-    $("#result-count").textContent = `显示 ${matchedPassages.length} 段原文 · ${shownEntities.length} 个实体`;
-    $("#passages").innerHTML = matchedPassages.map(p=>renderPassage(p,shownEntities)).join("");
-    document.querySelectorAll(".passage").forEach(p=>{const details=p.querySelector("details");if(details&&openNotes.has(p.dataset.id))details.open=true;});
-    $("#entities").innerHTML = shownEntities.map(renderEntity).join("");
-    const empty = matchedPassages.length===0 && shownEntities.length===0;
-    $("#empty-state").hidden = !empty;
-    $("#passages").hidden = empty;
-    $(".entity-section").hidden = empty;
-    updateCurrent();
+
+  function segment(value, label) {
+    if (typeof value !== "string" || !value.trim()) fail(`${label}不能为空。`);
+    return encodeURIComponent(value);
   }
-  function minPassageOrder(entity){const orders=(entity.passageIds||[]).map(id=>passageOrder.get(id)).filter(Number.isFinite);return orders.length?Math.min(...orders):Number.MAX_SAFE_INTEGER;}
-  function renderPassage(p, shownEntities) {
-    const source=sources.get(p.sourceId), related=(p.entityIds||[]).map(id=>byEntity.get(id)).filter(e=>e&&shownEntities.some(se=>se.id===e.id));
-    const notes=(p.notes||[]).map(n=>`<li class="note"><strong>${esc(n.term)}</strong> <span class="note-kind">${esc(n.kind||"整理注")}</span>：${esc(n.text)}${noteSource(n)}</li>`).join("");
-    return `<article class="passage" id="passage-${esc(p.id)}" data-id="${esc(p.id)}" tabindex="-1"><p class="eyebrow">${esc(p.chapter||"")}</p><h2>${esc(p.title)}</h2><p class="passage-meta">原书序 ${esc(p.order??"—")}${source?` · <a href="#source-${esc(source.id)}">${esc(source.title)}</a>`:""}${p.locator?` · ${esc(p.locator)}`:""}</p><div class="original" lang="zh-Hant">${esc(p.text)}</div>${p.translation?.text?`<div class="translation"><small>试译 · ${esc(p.translation.by||"AI辅助")}</small><div>${esc(p.translation.text)}</div></div>`:""}${notes?`<details><summary>整理注</summary><ul class="note-list">${notes}</ul></details>`:""}${related.length?`<div class="entity-links" aria-label="本段相关实体">${related.map(e=>`<a href="#entity-${encodeURIComponent(e.id)}">${esc(e.name)} ↗</a>`).join("")}</div>`:""}</article>`;
+
+  function linkTo(target) {
+    if (!target || typeof target !== "object") fail("链接目标格式无效。");
+    switch (target.type) {
+      case "home": return "#/";
+      case "reader": return `#/reader/${segment(target.volumeId, "volumeId")}${target.blockKey ? `/${segment(target.blockKey, "blockKey")}` : ""}`;
+      case "entry":
+      case "occurrence":
+      case "candidate": return `#/${target.type}/${segment(target.volumeId, "volumeId")}/${segment(target.id, "id")}`;
+      case "entity": return `#/entity/${segment(target.id, "entityId")}`;
+      case "catalog": return `#/catalog${target.categoryId ? `/${segment(target.categoryId, "categoryId")}` : ""}`;
+      case "search": return "#/search";
+      case "map": return target.volumeId ? "#/map/" + segment(target.volumeId, "volumeId") + (target.relationId ? "/" + segment(target.relationId, "relationId") : "") : "#/map";
+      default: fail(`不支持的路由类型：${String(target.type || "（空）")}`);
+    }
   }
-  function noteSource(n){const s=n.sourceId&&sources.get(n.sourceId); return s?` <small>（<a href="#source-${esc(s.id)}">${esc(s.title)}</a>${n.locator?`，${esc(n.locator)}`:""}）</small>`:n.locator?` <small>（${esc(n.locator)}）</small>`:"";}
-  function renderEntity(e) {
-    const features=(e.features||[]).map(f=>`<li><strong>${esc(f.label)}</strong>：${esc(f.text)}${f.evidence?`<blockquote class="evidence"><small>原文依据 · ${esc(byPassage.get(f.passageId)?.title||"")}</small><br>${esc(f.evidence)}</blockquote>`:""}</li>`).join("");
-    const brief=e.visualBrief||{};
-    const bullet=(label,items)=>items?.length?`<p><small>${label}</small>：${items.map(esc).join("；")}</p>`:"";
-    const refs=(e.passageIds||[]).map(id=>byPassage.get(id)).filter(Boolean);
-    return `<article class="entity-card" id="entity-${esc(e.id)}" tabindex="-1"><div><h3>${esc(e.name)}</h3><span class="category">${esc(e.category||"未分类")}</span></div>${e.aliases?.length?`<p class="aliases">检索别名 / 字形：${e.aliases.map(esc).join("、")}</p>`:""}<p class="summary">${esc(e.summary||"")}</p>${e.tags?.length?`<div class="tag-list">${e.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}${features?`<ul class="features">${features}</ul>`:""}<div class="visual-brief"><strong>视觉依据与边界</strong>${bullet("文本所见",brief.basis)}${bullet("整理推断",brief.inference)}${bullet("尚未知",brief.unknown)}</div>${refs.length?`<p class="entity-passages">见于：${refs.map(p=>`<a href="#passage-${encodeURIComponent(p.id)}">${esc(p.title)}</a>`).join("、")}</p>`:""}</article>`;
+
+  function decodePart(value) {
+    try { return decodeURIComponent(value); }
+    catch { fail("链接包含无效的编码。", "invalid_route"); }
   }
-  function fillStatic(){
-    $("#page-title").textContent=meta.title||"山海经"; $("#subtitle").textContent=meta.subtitle||""; $("#scope").textContent=meta.scope||"南山經开篇"; $("#editorial-notice").textContent=meta.editorialNotice||""; document.title=`${meta.title||"山海经"} · 读本`;
-    const cats=[...new Set(entities.map(e=>e.category).filter(Boolean))]; $("#category-filter").innerHTML='<option value="">全部实验分类</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
-    $("#source-list").innerHTML=(data.sources||[]).map(s=>`<article class="source-item" id="source-${esc(s.id)}" tabindex="-1"><p><strong>${esc(s.title)}</strong> · ${esc(s.kind||"")}${s.accessed?` · 查阅 ${esc(s.accessed)}`:""}</p><p>${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">打开来源</a> · `:""}${esc(s.note||"")}</p></article>`).join("");
-    $("#source-note").textContent=meta.editorialNotice||"原文依来源保留繁体；界面说明采用简体。试译与整理注为辅助内容，请以来源文本为准。";
+
+  function parseRoute(value = location.hash) {
+    let raw = String(value || "").trim();
+    if (raw.startsWith("#")) raw = raw.slice(1);
+    if (!raw || raw === "/") return { type: "home" };
+    if (!raw.startsWith("/")) fail("链接格式无效。", "invalid_route");
+    const parts = raw.slice(1).split("/").map(decodePart);
+    const [type, ...rest] = parts;
+    if (type === "home" && rest.length === 0) return { type: "home" };
+    if (type === "reader" && (rest.length === 1 || rest.length === 2)) return { type, volumeId: rest[0], ...(rest[1] ? { blockKey: rest[1] } : {}) };
+    if (["entry", "occurrence", "candidate"].includes(type) && rest.length === 2) return { type, volumeId: rest[0], id: rest[1] };
+    if (type === "entity" && rest.length === 1) return { type, id: rest[0] };
+    if (type === "catalog" && rest.length <= 1) return { type, ...(rest[0] ? { categoryId: rest[0] } : {}) };
+    if (type === "search" && rest.length === 0) return { type };
+    if (type === "map" && rest.length === 0) return { type };
+    if (type === "map" && (rest.length === 1 || rest.length === 2)) return { type, volumeId: rest[0], ...(rest[1] ? { relationId: rest[1] } : {}) };
+    fail("无法识别此链接。", "invalid_route");
   }
-  function updateCurrent(){const hash=decodeURIComponent(location.hash.slice(1)); document.querySelectorAll(".toc a[aria-current],.entity-nav a[aria-current]").forEach(a=>a.removeAttribute("aria-current")); if(hash.startsWith("passage-"))document.querySelector(`#passage-list a[href="#${CSS.escape(hash)}"]`)?.setAttribute("aria-current","location"); if(hash.startsWith("entity-"))document.querySelector(`#entity-list a[href="#${CSS.escape(hash)}"]`)?.setAttribute("aria-current","location");}
-  function goHash(){const hash=decodeURIComponent(location.hash.slice(1));if(!hash)return;let target=document.getElementById(hash);if(!target&&(hash.startsWith("passage-")||hash.startsWith("entity-"))){reset();target=document.getElementById(hash);}if(target){for(let parent=target.parentElement;parent;parent=parent.parentElement)if(parent instanceof HTMLDetailsElement)parent.open=true;requestAnimationFrame(()=>{target.scrollIntoView({block:"start"});target.focus({preventScroll:true});});}}
-  function reset(){state.query="";state.category="";state.sort="book";$("#search").value="";$("#category-filter").value="";$("#sort-order").value="book";render();}
-  $("#search-form").addEventListener("submit",e=>{e.preventDefault();state.query=$("#search").value;render();});
-  $("#search").addEventListener("input",e=>{state.query=e.target.value;render();});
-  $("#category-filter").addEventListener("change",e=>{state.category=e.target.value;render();});
-  $("#sort-order").addEventListener("change",e=>{state.sort=e.target.value;render();});
-  $("#reset-button").addEventListener("click",reset); $("#empty-reset").addEventListener("click",reset);
-  window.addEventListener("hashchange",()=>{updateCurrent();goHash();});
-  fillStatic();render();goHash();
+
+  function abortable(promise, signal) {
+    if (!signal) return promise;
+    if (signal.aborted) return Promise.reject(new DOMException("请求已取消", "AbortError"));
+    return new Promise((resolve, reject) => {
+      const abort = () => reject(new DOMException("请求已取消", "AbortError"));
+      signal.addEventListener("abort", abort, { once: true });
+      promise.then(
+        value => { signal.removeEventListener("abort", abort); resolve(value); },
+        error => { signal.removeEventListener("abort", abort); reject(error); }
+      );
+    });
+  }
+
+  function loadJson(key, path, signal) {
+    let request = cache.get(key);
+    if (!request) {
+      request = fetch(new URL(path, dataBase), { headers: { Accept: "application/json" } })
+        .then(response => {
+          if (!response.ok) throw new Error(`数据请求失败（HTTP ${response.status}）：${path}`);
+          return response.json();
+        })
+        .catch(error => {
+          if (cache.get(key) === request) cache.delete(key);
+          throw error;
+        });
+      cache.set(key, request);
+    }
+    return abortable(request, signal);
+  }
+
+  const data = Object.freeze({
+    getManifest: ({ signal } = {}) => loadJson("manifest", "manifest.json", signal),
+    getGlobal: ({ signal } = {}) => loadJson("global", "global.json", signal),
+    getVolume: (volumeId, { signal } = {}) => {
+      if (!volumeById.has(volumeId)) return Promise.reject(Object.assign(new Error(`没有卷 ${volumeId}。`), { code: "missing_volume" }));
+      return loadJson(`volume:${volumeId}`, `volumes/${encodeURIComponent(volumeId)}.json`, signal);
+    }
+  });
+  const ready = data.getManifest();
+  ready.catch(() => {});
+
+  function requireVolume(volumeId) {
+    if (!volumeById.has(volumeId)) fail(`没有卷 ${volumeId}。`, "missing_volume");
+  }
+
+  async function resolveTarget(route, { signal } = {}) {
+    if (route.type === "home" || route.type === "search") return { route };
+    if (route.type === "catalog") {
+      const global = await data.getGlobal({ signal });
+      const categories = global.taxonomy.categories;
+      const category = route.categoryId ? categories.find(item => item.categoryId === route.categoryId) : null;
+      if (route.categoryId && !category) fail(`分类 ${route.categoryId} 不存在。`, "missing_id");
+      return { route, global, category };
+    }
+    if (route.type === "entity") {
+      const global = await data.getGlobal({ signal });
+      const entity = global.identityOverlay.canonicalEntities.find(item => item.entityId === route.id);
+      if (!entity) fail(`实体 ${route.id} 不存在。`, "missing_id");
+      return { route, global, entity };
+    }
+    if (route.type === "map" && !route.volumeId) return { route };
+    requireVolume(route.volumeId);
+    const volume = await data.getVolume(route.volumeId, { signal });
+    if (route.type === "reader") {
+      let block = null;
+      if (route.blockKey) {
+        block = volume.p1.sourceBlocks.find(item => {
+          const id = item.blockId;
+          return `${id.volumeId}:${id.blockOrder}:${id.kind}` === route.blockKey;
+        });
+        if (!block) fail(`篇章位置 ${route.blockKey} 不存在。`, "missing_id");
+      }
+      return { route, volume, block };
+    }
+    if (route.type === "entry") {
+      const entry = volume.p3.entries.find(item => item.entryId === route.id);
+      if (!entry) fail(`条目 ${route.id} 不存在。`, "missing_id");
+      return { route, volume, entry };
+    }
+    if (route.type === "occurrence") {
+      const occurrence = volume.p3.occurrences.find(item => item.occurrenceId === route.id);
+      if (!occurrence) fail(`文本出现 ${route.id} 不存在。`, "missing_id");
+      return { route, volume, occurrence };
+    }
+    if (route.type === "candidate") {
+      const candidate = volume.p3.entityCandidates.find(item => item.entityCandidateId === route.id);
+      if (!candidate) fail(`实体候选 ${route.id} 不存在。`, "missing_id");
+      return { route, volume, candidate };
+    }
+    if (route.type === "map") {
+      const relation = route.relationId ? volume.p4Relations.find(item => item.relationId === route.relationId) : null;
+      if (route.relationId && !relation) fail(`空间关系 ${route.relationId} 不存在。`, "missing_id");
+      return { route, volume, relation };
+    }
+    fail(`不支持的路由类型：${route.type}`);
+  }
+
+  function navigate(target) {
+    const href = linkTo(target);
+    if (location.hash === href) void renderRoute(parseRoute(href), false);
+    else location.hash = href;
+    return href;
+  }
+
+  function registerFeature(name, mount) {
+    if (!["reader", "entry", "occurrence", "candidate", "entity", "catalog", "search", "map"].includes(name)) fail(`未知模块名：${name}`);
+    if (typeof mount !== "function") fail("模块挂载函数必须是函数。");
+    if (features.has(name)) fail("模块 " + name + " 已注册。");
+    features.set(name, mount);
+    if (currentRoute.type === name) void renderRoute(currentRoute, false);
+    return () => {
+      if (features.get(name) === mount) {
+        features.delete(name);
+        if (currentRoute.type === name) void renderRoute(currentRoute, false);
+      }
+    };
+  }
+
+  function makeLink(target, text, className = "action-link") {
+    const anchor = document.createElement("a");
+    anchor.className = className;
+    anchor.href = linkTo(target);
+    anchor.textContent = text;
+    return anchor;
+  }
+
+  function volumeLabel(volume) {
+    return volume.chapterTitle ? volume.title + " · " + volume.chapterTitle : volume.title;
+  }
+
+  function defaultRouteTitle(route, target) {
+    const pageLabels = { reader: "经文读本", entry: "条目", occurrence: "文本出现", candidate: "实体候选", entity: "整理实体", catalog: "分类册", search: "检索", map: "经文空间" };
+    if (route.type === "catalog" && target.category) return target.category.label + " · 山海经";
+    const volume = target.volume ? volumeLabel(target.volume) : "";
+    const page = pageLabels[route.type] || "山海经";
+    return volume ? page + " · " + volume + " · 山海经" : page + " · 山海经";
+  }
+
+  function setStatus(message, kind = "info", visible = true) {
+    status.textContent = message;
+    status.dataset.kind = kind;
+    status.hidden = !visible;
+  }
+
+  function setCurrentNavigation(route) {
+    const navName = route.type === "home" || route.type === "reader" ? "home" : route.type === "catalog" ? "catalog" : route.type === "search" ? "search" : route.type === "map" ? "map" : "";
+    document.querySelectorAll(".main-nav [aria-current]").forEach(link => link.removeAttribute("aria-current"));
+    if (navName) document.querySelector(`.main-nav [data-nav="${navName}"]`)?.setAttribute("aria-current", "page");
+  }
+
+  function showHome(manifest) {
+    const heading = document.createElement("header");
+    heading.className = "page-heading";
+    heading.innerHTML = '<p class="eyebrow">十八篇</p><h1>山海经</h1><p class="lede">选择一篇，进入经文与相关资料的浏览入口。</p>';
+    const list = document.createElement("ol");
+    list.className = "chapter-grid";
+    for (const chapter of bootstrap.volumes) {
+      const item = document.createElement("li");
+      const anchor = makeLink({ type: "reader", volumeId: chapter.volumeId }, "");
+      anchor.classList.add("chapter-link");
+      const number = document.createElement("span");
+      number.className = "chapter-number";
+      number.textContent = String(chapter.order).padStart(2, "0");
+      const title = document.createElement("span");
+      title.className = "chapter-title";
+      title.textContent = volumeLabel(chapter);
+      anchor.append(number, title);
+      item.append(anchor);
+      list.append(item);
+    }
+    const stats = document.createElement("p");
+    stats.className = "stats";
+    stats.textContent = `原文段落 ${manifest.coverage.p1OriginalBlocks} · 文本出现 ${manifest.coverage.p3Occurrences} · 空间关系 ${manifest.coverage.p4Relations}`;
+    view.replaceChildren(heading, list, stats);
+    document.title = "山海经 · 总览";
+  }
+
+  function showPlaceholder(target) {
+    const route = target.route;
+    const chapter = route.volumeId ? volumeById.get(route.volumeId) : null;
+    const section = document.createElement("section");
+    section.className = "route-panel";
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "eyebrow";
+    eyebrow.textContent = chapter ? volumeLabel(chapter) : "公共页面接口";
+    const title = document.createElement("h1");
+    const labels = { reader: "经文读本", entry: "条目", occurrence: "文本出现", candidate: "实体候选", entity: "整理实体", catalog: "分类册", search: "检索", map: "经文空间关系" };
+    title.textContent = labels[route.type] || "页面";
+    const description = document.createElement("p");
+    description.className = "lede";
+    description.textContent = features.has(route.type)
+      ? "模块正在准备内容。若内容未出现，请返回总览后重试。"
+      : "此页面入口和数据引用已就绪，具体浏览模块将在后续步骤接入。";
+    section.append(eyebrow, title, description);
+    if (route.id || route.blockKey || route.relationId) {
+      const id = document.createElement("p");
+      id.className = "id-value muted";
+      id.textContent = route.id || route.blockKey || route.relationId;
+      section.append(id);
+    }
+    if (route.type === "map" && !chapter) {
+      const chooser = document.createElement("ul");
+      chooser.className = "chapter-grid";
+      for (const item of bootstrap.volumes) {
+        const row = document.createElement("li");
+        row.append(makeLink({ type: "map", volumeId: item.volumeId }, volumeLabel(item), "chapter-link"));
+        chooser.append(row);
+      }
+      section.append(chooser);
+    }
+    const actions = document.createElement("div");
+    actions.className = "route-actions";
+    actions.append(makeLink(chapter ? { type: "reader", volumeId: chapter.volumeId } : { type: "home" }, chapter ? "打开本篇" : "返回总览"));
+    if (chapter) actions.append(makeLink({ type: "home" }, "选择其它篇" , "action-link secondary"));
+    section.append(actions);
+    view.replaceChildren(section);
+    document.title = `${title.textContent} · 山海经`;
+  }
+
+  function showError(error) {
+    const panel = document.createElement("section");
+    panel.className = "route-panel";
+    const title = document.createElement("h1");
+    title.className = "route-error";
+    title.textContent = error.code === "invalid_route" ? "链接无法打开" : "内容暂时无法读取";
+    const detail = document.createElement("p");
+    detail.textContent = error.message || "加载失败。";
+    const actions = document.createElement("div");
+    actions.className = "route-actions";
+    const retry = document.createElement("button");
+    retry.className = "action-button";
+    retry.type = "button";
+    retry.textContent = "重试";
+    retry.addEventListener("click", () => {
+      if (error.code === "feature_asset") location.reload();
+      else void renderRoute(currentRoute, false);
+    });
+    actions.append(retry, makeLink({ type: "home" }, "返回总览", "action-link secondary"));
+    panel.append(title, detail);
+    if (location.protocol === "file:") {
+      const command = document.createElement("p");
+      command.className = "muted";
+      command.textContent = "请在项目根目录启动本地服务后访问 http://localhost:8000：";
+      const code = document.createElement("code");
+      code.textContent = "python -m http.server 8000";
+      panel.append(command, code);
+    }
+    panel.append(actions);
+    view.replaceChildren(panel);
+    document.title = "无法打开 · 山海经";
+  }
+
+  async function renderRoute(route, focusHeading = true) {
+    currentRoute = route;
+    const version = ++renderVersion;
+    if (activeController) activeController.abort();
+    if (typeof activeCleanup === "function") {
+      try { activeCleanup(); } catch (error) { console.error("模块清理失败", error); }
+      activeCleanup = null;
+    }
+    view.replaceChildren();
+    const controller = new AbortController();
+    activeController = controller;
+    const { signal } = controller;
+    view.setAttribute("aria-busy", "true");
+    setStatus("正在读取页面数据…", "info", true);
+    setCurrentNavigation(route);
+    try {
+      const manifest = await data.getManifest({ signal });
+      if (featureErrors.has(route.type)) throw featureErrors.get(route.type);
+      const target = await resolveTarget(route, { signal });
+      if (version !== renderVersion || signal.aborted) return;
+      setStatus("", "info", false);
+      document.title = route.type === "home" ? "山海经 · 总览" : defaultRouteTitle(route, target);
+      const mount = features.get(route.type);
+      if (route.type === "home") showHome(manifest);
+      else if (!mount) showPlaceholder(target);
+      else {
+        const featureRoot = document.createElement("div");
+        featureRoot.className = "feature-mount";
+        view.replaceChildren(featureRoot);
+        const cleanups = [];
+        let returnedCleanup = null;
+        let returnedCleanupDone = false;
+        let disposed = false;
+        const cleanup = () => {
+          disposed = true;
+          for (const fn of cleanups.splice(0).reverse()) {
+            try { fn(); } catch (error) { console.error("模块清理失败", error); }
+          }
+          if (!returnedCleanupDone && typeof returnedCleanup === "function") {
+            returnedCleanupDone = true;
+            try { returnedCleanup(); } catch (error) { console.error("模块清理失败", error); }
+          }
+        };
+        activeCleanup = cleanup;
+        const context = Object.freeze({
+          container: featureRoot,
+          route,
+          target,
+          href: linkTo,
+          navigate,
+          data,
+          signal,
+          onCleanup(cleanupFn) {
+            if (typeof cleanupFn !== "function") fail("onCleanup 需要函数。");
+            if (disposed) cleanupFn();
+            else cleanups.push(cleanupFn);
+          }
+        });
+        try { returnedCleanup = await mount(featureRoot, context); }
+        catch (error) { cleanup(); throw error; }
+        if (version !== renderVersion || signal.aborted) cleanup();
+      }
+      if (version === renderVersion && focusHeading) {
+        if (route.type !== "reader" || !route.blockKey) {
+          window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        }
+        const heading = view.querySelector("h1");
+        if (heading) {
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+        }
+      }
+      void manifest;
+    } catch (error) {
+      if (signal.aborted || version !== renderVersion || error.name === "AbortError") return;
+      setStatus(error.message, "error", true);
+      showError(error);
+    } finally {
+      if (version === renderVersion) view.setAttribute("aria-busy", "false");
+    }
+  }
+
+  const api = Object.freeze({
+    ready,
+    bootstrap,
+    data,
+    linkTo,
+    parseRoute,
+    navigate,
+    resolveTarget,
+    registerFeature
+  });
+  window.SHJ = api;
+  window.addEventListener("error", event => {
+    const feature = event.target?.dataset?.feature;
+    if (event.target?.tagName !== "SCRIPT" || !["search", "map"].includes(feature)) return;
+    const label = feature === "map" ? "空间地图" : "检索";
+    featureErrors.set(feature, Object.assign(new Error(`${label}脚本未能加载，请重试重新加载页面。`), { code: "feature_asset" }));
+    if (currentRoute.type === feature) void renderRoute(currentRoute, false);
+  }, true);
+  document.querySelector(".skip-link").addEventListener("click", event => {
+    event.preventDefault();
+    const main = document.getElementById("main");
+    main.focus({ preventScroll: true });
+    main.scrollIntoView({ block: "start" });
+  });
+  window.addEventListener("hashchange", () => {
+    try { void renderRoute(parseRoute(location.hash)); }
+    catch (error) { currentRoute = { type: "unknown" }; void renderRoute({ type: "unknown", error }); }
+  });
+
+  try { void renderRoute(parseRoute(location.hash), false); }
+  catch (error) { currentRoute = { type: "unknown" }; void renderRoute({ type: "unknown", error }, false); }
 })();
 </script>
   <script>(() => {
-  const navigation = document.querySelector('.site-navigation');
-  const trigger = document.querySelector('.nav-trigger');
-  const menu = document.querySelector('#site-menu');
-  let closeTimer;
+  "use strict";
 
-  function cancelClose() {
-    clearTimeout(closeTimer);
+  const SHJ = window.SHJ;
+  if (!SHJ) throw new Error("读本模块须在公共 SHJ shell 之后加载。");
+
+  const KIND_LABELS = {
+    original: "经文原文",
+    translation: "原译文",
+    note: "原注释",
+    heading: "书内标题",
+    commentary: "书内说明",
+    separator: "分隔位置"
+  };
+  const RULE_LABELS = {
+    supported_by_unique_name_evidence: "原规则检查支持",
+    pending_model_review: "规则证据不足或存在竞争解释",
+    unresolved_material_conflict: "规则发现方向或距离冲突",
+    supported_by_reciprocal_xhtml_anchor: "书内互向注释锚点"
+  };
+  const REVIEW_LABELS = {
+    model_supported: "复核支持",
+    model_rejected: "复核不支持",
+    model_unresolved: "复核仍未定"
+  };
+  const NOTE_REVIEW_LABELS = {
+    source_note_blocks_provided_without_independent_anchor_claim: "复核提供了注释块，但未声称存在独立锚点",
+    no_note_block_in_queue: "此项复核未涉及注释块"
+  };
+  const MARKER_PREFIX = String.fromCodePoint(0x3014, 0x5b57, 0x5f62, 0x56fe, 0x3a);
+  const MARKER_SUFFIX = String.fromCodePoint(0x3015);
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
   }
 
-  function openMenu() {
-    cancelClose();
-    menu.hidden = false;
-    trigger.setAttribute('aria-expanded', 'true');
-    trigger.setAttribute('aria-label', '关闭站点导航');
+  function idKey(id) {
+    return [id.volumeId, id.blockOrder, id.kind].join(":");
   }
 
-  function closeMenu(returnFocus = false) {
-    cancelClose();
-    menu.hidden = true;
-    trigger.setAttribute('aria-expanded', 'false');
-    trigger.setAttribute('aria-label', '打开站点导航');
-    if (returnFocus) trigger.focus();
+  function refsKey(row) {
+    return ["sourceBlocks", "translationBlocks", "noteBlocks"]
+      .map(role => (row[role] || []).map(ref => idKey(ref)).sort().join(","))
+      .join("|");
   }
 
-  if (navigation && trigger && menu) {
-    trigger.addEventListener('pointerenter', event => {
-      if (event.pointerType === 'mouse' && matchMedia('(hover: hover)').matches) openMenu();
-    });
-    navigation.addEventListener('pointerenter', cancelClose);
-    navigation.addEventListener('pointerleave', event => {
-      if (event.pointerType === 'mouse' && !navigation.contains(document.activeElement)) {
-        closeTimer = setTimeout(() => closeMenu(), 180);
+  function readableIssue(issue) {
+    if (issue === null || issue === undefined) return "";
+    if (typeof issue === "string" || typeof issue === "number" || typeof issue === "boolean") return String(issue);
+    if (Array.isArray(issue)) return issue.map(readableIssue).filter(Boolean).join("；");
+    if (typeof issue === "object") {
+      return Object.entries(issue)
+        .map(([key, value]) => key + "：" + readableIssue(value))
+        .filter(part => !part.endsWith("："))
+        .join("；");
+    }
+    return "";
+  }
+
+  function blockDomId(block) {
+    return "reader-block-" + block.blockId.blockOrder + "-" + block.blockId.kind;
+  }
+
+  function routeForRef(ref) {
+    return {
+      type: "reader",
+      volumeId: ref.volumeId,
+      blockKey: idKey(ref)
+    };
+  }
+
+  function addBlockLinks(parent, label, refs) {
+    const section = element("div", "shj-reader__relation-role");
+    section.append(element("span", "shj-reader__relation-label", label));
+    const list = element("ul", "shj-reader__block-links");
+    if (!refs || refs.length === 0) {
+      list.append(element("li", "shj-reader__not-linked", "未链接此类块"));
+    } else {
+      for (const ref of refs) {
+        const item = element("li");
+        const link = element("a", "shj-reader__block-link", `${KIND_LABELS[ref.kind] || ref.kind} · 块 ${ref.blockOrder}`);
+        link.href = SHJ.linkTo(routeForRef(ref));
+        item.append(link);
+        list.append(item);
       }
-    });
-    trigger.addEventListener('click', () => {
-      if (menu.hidden) openMenu();
-      else closeMenu();
-    });
-    trigger.addEventListener('keydown', event => {
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        openMenu();
-        menu.querySelector('a').focus();
-      }
-    });
-    menu.querySelector('.nav-close').addEventListener('click', () => closeMenu(true));
-    menu.addEventListener('click', event => {
-      if (event.target.closest('a')) closeMenu();
-    });
-    navigation.addEventListener('focusout', event => {
-      if (event.relatedTarget && !navigation.contains(event.relatedTarget)) closeMenu();
-    });
-    document.addEventListener('pointerdown', event => {
-      if (!menu.hidden && !navigation.contains(event.target)) closeMenu();
-    });
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !menu.hidden) closeMenu(true);
-    });
+    }
+    section.append(list);
+    parent.append(section);
   }
 
-  const motionToggles = document.querySelectorAll('.motion-toggle');
-  motionToggles.forEach(motionToggle => {
-    motionToggle.addEventListener('click', () => {
-      const paused = document.body.classList.toggle('motion-paused');
-      motionToggles.forEach(button => {
-        button.setAttribute('aria-pressed', String(paused));
-        button.textContent = paused ? '继续动画' : '暂停动画';
+  function showReview(parent, pair, review) {
+    const summary = element("div", "shj-reader__review-summary");
+    summary.append(element("span", "shj-reader__relation-label", "原规则状态"));
+    summary.append(element("span", "shj-reader__status", RULE_LABELS[pair.status] || pair.status));
+    if (review) {
+      const status = REVIEW_LABELS[review.alignmentStatus] || review.alignmentStatus || "复核状态未提供";
+      summary.append(element("span", "shj-reader__review-status", "实际复核：" + status));
+      if (review.noteRelationStatus) {
+        summary.append(element("span", "shj-reader__review-note", NOTE_REVIEW_LABELS[review.noteRelationStatus] || "注释复核状态已记录"));
+      }
+      if (review.interpretationIssues && review.interpretationIssues.length) {
+        const issues = element("details", "shj-reader__issues");
+        issues.append(element("summary", null, `解释分歧或限制 ${review.interpretationIssues.length} 项`));
+        const list = element("ul");
+        for (const issue of review.interpretationIssues) list.append(element("li", null, readableIssue(issue)));
+        issues.append(list);
+        summary.append(issues);
+      }
+    } else if (pair.status === "supported_by_unique_name_evidence") {
+      summary.append(element("span", "shj-reader__review-status", "本项保留规则检查结果，未另列模型复核"));
+    } else {
+      summary.append(element("span", "shj-reader__review-status", "待处理：原规则结果需要复核，但没有对应的实际复核记录"));
+    }
+    parent.append(summary);
+  }
+
+  function relationCard(type, row, review) {
+    const details = element("details", "shj-reader__relation-card");
+    const summary = element("summary");
+    const id = row.relationId || row.pairId || "";
+    const label = type === "note" ? "注释锚点" : type === "structure" ? "结构分组" : "原译对应检查";
+    summary.textContent = label + (id ? " · " + id : "");
+    details.append(summary);
+    if (type === "pair") showReview(details, row, review);
+    else details.append(element("p", "shj-reader__status", "规则状态：" + (RULE_LABELS[row.status] || row.status || "未提供")));
+    addBlockLinks(details, "原文块", row.sourceBlocks);
+    addBlockLinks(details, "译文块", row.translationBlocks);
+    addBlockLinks(details, "注释块", row.noteBlocks);
+    if (row.interveningBlocks && row.interveningBlocks.length) addBlockLinks(details, "中间块", row.interveningBlocks);
+    if (row.reason) details.append(element("p", "shj-reader__reason", row.reason));
+    if (row.evidence && row.evidence.noteHref) {
+      const source = element("p", "shj-reader__evidence", "书内注释锚点：" + row.evidence.noteHref);
+      details.append(source);
+    }
+    return details;
+  }
+
+  function glyphStatus(record) {
+    if (!record) return "识读状态未提供";
+    if (record.status === "unresolved") return "识读未定";
+    if (record.status === "candidate") return "保留候选，未确认";
+    return "来源状态：" + record.status;
+  }
+
+  function appendGlyph(parent, row, record, baseUrl, rawGlyphs, sourceToken) {
+    const wrapper = element("span", "shj-reader__glyph");
+    wrapper.dataset.sourceToken = sourceToken;
+    wrapper.dataset.referenceId = row.reference.referenceId;
+    const link = element("a", "shj-reader__glyph-link");
+    link.href = new URL(row.targetPath, baseUrl).href;
+    link.target = "_blank";
+    link.rel = "noopener";
+    const image = element("img", "shj-reader__glyph-image");
+    image.src = link.href;
+    image.alt = "嵌字图像预览；不代表字形已识读";
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.width = 52;
+    image.height = 42;
+    image.addEventListener("error", () => {
+      wrapper.replaceChildren(document.createTextNode(sourceToken));
+      wrapper.classList.add("shj-reader__glyph--fallback");
+    }, { once: true });
+    link.append(image);
+    wrapper.append(link);
+    parent.append(wrapper);
+    rawGlyphs.push({ row, status: glyphStatus(record), sourceToken, glyphRendered: true });
+  }
+
+  function appendSourceText(parent, block, glyphRows, glyphRecords, baseUrl) {
+    const rawText = block.text || "";
+    const rawGlyphs = [];
+    const refs = glyphRows.slice().sort((a, b) => a.reference.offset - b.reference.offset);
+    if (!refs.length) {
+      parent.append(document.createTextNode(rawText));
+      return rawGlyphs;
+    }
+    const codepoints = Array.from(rawText);
+    let cursor = 0;
+    let found = false;
+    for (const row of refs) {
+      const start = row.reference.offset;
+      const token = MARKER_PREFIX + row.reference.imagePathInEpub + MARKER_SUFFIX;
+      const end = start + Array.from(token).length;
+      if (row.mappingStatus !== "mapped") {
+        rawGlyphs.push({ row, status: "资源引用未映射，保留原始占位符", sourceToken: token, glyphRendered: false });
+        continue;
+      }
+      if (start < cursor || codepoints.slice(start, end).join("") !== token) {
+        rawGlyphs.push({ row, status: "源文本偏移未匹配，保留原始文本", sourceToken: token, glyphRendered: false });
+        continue;
+      }
+      parent.append(document.createTextNode(codepoints.slice(cursor, start).join("")));
+      appendGlyph(parent, row, glyphRecords.get(row.stableId), baseUrl, rawGlyphs, token);
+      cursor = end;
+      found = true;
+    }
+    if (!found) {
+      parent.append(document.createTextNode(rawText));
+      return rawGlyphs;
+    }
+    parent.append(document.createTextNode(codepoints.slice(cursor).join("")));
+    return rawGlyphs;
+  }
+
+  function sourceDetails(block, volume) {
+    const details = element("details", "shj-reader__source-details");
+    details.append(element("summary", null, "来源与位置"));
+    const list = element("dl", "shj-reader__source-list");
+    const rows = [
+      ["篇章 ID", volume.volumeId],
+      ["P1 块序", block.blockId.blockOrder],
+      ["块类型", KIND_LABELS[block.blockId.kind] || block.blockId.kind],
+      ["XHTML 位置", block.xhtmlPath || "未提供"]
+    ];
+    for (const [label, value] of rows) {
+      list.append(element("dt", null, label), element("dd", null, value));
+    }
+    const linkLabel = element("dt", null, "此块深链");
+    const linkCell = element("dd");
+    const deepLink = element("a", null, "打开此块");
+    deepLink.href = SHJ.linkTo({ type: "reader", volumeId: volume.volumeId, blockKey: idKey(block.blockId) });
+    linkCell.append(deepLink);
+    list.append(linkLabel, linkCell);
+    details.append(list);
+    return details;
+  }
+
+  function indexRelations(volume, reviewMap) {
+    const bySource = new Map();
+    function attach(type, row, review) {
+      const seen = new Set();
+      const refs = [
+        ...(row.sourceBlocks || []),
+        ...(row.translationBlocks || []),
+        ...(row.noteBlocks || []),
+        ...(row.interveningBlocks || [])
+      ];
+      for (const ref of refs) {
+        const key = idKey(ref);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (!bySource.has(key)) bySource.set(key, []);
+        bySource.get(key).push({ type, row, review });
+      }
+    }
+    for (const row of volume.p1.noteRelations) attach("note", row, null);
+    for (const row of volume.p1.structuralGroups) attach("structure", row, null);
+    for (const row of volume.p1.contentPairChecks) attach("pair", row, reviewMap.get(refsKey(row)) || null);
+    return bySource;
+  }
+
+  function reviewIndex(globalData, volumeId) {
+    const byPair = new Map();
+    const sides = globalData.p1ReviewDetails[volumeId] || {};
+    for (const reviewPack of Object.values(sides)) {
+      for (const row of reviewPack.reviews || []) byPair.set(refsKey(row), row);
+    }
+    return byPair;
+  }
+
+  function addReviewSummary(parent, globalData, volumeId) {
+    const status = (globalData.p1ReviewStatus.volumes || []).find(row => row.volumeId === volumeId);
+    if (!status) return;
+    const details = element("details", "shj-reader__review-details");
+    details.append(element("summary", null, "本篇复核与未定状态"));
+    const summary = element("p", "shj-reader__review-totals");
+    summary.textContent = "实际复核记录 " + status.reviewsAccepted + "/" + status.ruleQueueItems + " 项；复核不支持 " + status.modelRejected + " 项；复核未定 " + status.modelUnresolved + " 项；尚待复核 " + status.pendingReview + " 项；解释分歧 " + status.interpretationIssueItems + " 项。";
+    details.append(summary);
+    if (status.ruleQueueItems > 0 && status.pendingReview === 0 && status.reviewsAccepted === status.ruleQueueItems) {
+      details.append(element("p", "shj-reader__note", "原规则记录了 " + status.rulePendingModelReview + " 项待复核和 " + status.ruleUnresolved + " 项未定；复核队列的实际记录均已到齐，规则状态与实际复核结论分别保留。"));
+    } else if (status.pendingReview > 0 || status.reviewsAccepted < status.ruleQueueItems) {
+      const outstanding = Math.max(status.pendingReview, status.ruleQueueItems - status.reviewsAccepted);
+      details.append(element("p", "shj-reader__note", "仍有 " + outstanding + " 项复核队列没有对应的已接收实际复核记录，保留为待处理。"));
+    }
+    parent.append(details);
+  }
+  function renderBlock(block, volume, relations, glyphByBlock, glyphRecords, baseUrl, deepBlockKey) {
+    const id = block.blockId;
+    const article = element("article", "shj-reader__block");
+    article.id = blockDomId(block);
+    article.tabIndex = -1;
+    article.dataset.blockKey = idKey(id);
+    article.dataset.kind = id.kind;
+    if (idKey(id) === deepBlockKey) article.classList.add("shj-reader__block--target");
+    const heading = element("header", "shj-reader__block-header");
+    heading.append(element("span", "shj-reader__kind", KIND_LABELS[id.kind] || id.kind));
+    heading.append(element("span", "shj-reader__block-number", "块 " + id.blockOrder));
+    if (block.sectionLabel) heading.append(element("span", "shj-reader__section-label", block.sectionLabel));
+    article.append(heading);
+    const content = element(id.kind === "heading" ? "h2" : "p", "shj-reader__text");
+    if (id.kind !== "heading") content.lang = id.kind === "original" ? "zh-Hant" : "zh";
+    const glyphReferences = (glyphByBlock.get(idKey(id)) || []).filter(row => row.reference.xhtmlPath === block.xhtmlPath);
+    const rawGlyphs = appendSourceText(content, block, glyphReferences, glyphRecords, baseUrl);
+    if (block.text) article.append(content);
+    else article.append(element("div", "shj-reader__separator", "书内分隔位置"));
+    if (rawGlyphs.length) {
+      const glyphDetails = element("details", "shj-reader__glyph-source");
+      glyphDetails.append(element("summary", null, "原始字形占位与资源 " + rawGlyphs.length + " 处"));
+      for (const item of rawGlyphs) {
+        const row = item.row;
+        const note = element("p", "shj-reader__glyph-note");
+        note.append(element("code", null, item.sourceToken));
+        note.append(document.createTextNode(" · " + item.status + " · " + row.reference.xhtmlPath + " · 字符偏移 " + row.reference.offset + " · "));
+        if (item.glyphRendered) {
+          const asset = element("a", null, "打开图像预览");
+          asset.href = new URL(row.targetPath, baseUrl).href;
+          asset.target = "_blank";
+          asset.rel = "noopener";
+          note.append(asset);
+        }
+        glyphDetails.append(note);
+      }
+      article.append(glyphDetails);
+    }
+    if (relations.length) {
+      const index = element("details", "shj-reader__relations");
+      index.append(element("summary", null, `相关关系与复核 ${relations.length} 项`));
+      for (const relation of relations) index.append(relationCard(relation.type, relation.row, relation.review));
+      article.append(index);
+    }
+    article.append(sourceDetails(block, volume));
+    return article;
+  }
+
+  async function mountReader(container, context) {
+    container.classList.add("shj-reader");
+    const volume = context.target.volume;
+    const globalData = await context.data.getGlobal({ signal: context.signal });
+    const summary = (globalData.p1ReviewStatus.volumes || []).find(row => row.volumeId === volume.volumeId);
+    const title = element("header", "shj-reader__heading");
+    title.append(element("p", "shj-reader__eyebrow", volume.title));
+    title.append(element("h1", "shj-reader__title", volume.chapterTitle));
+    const identity = globalData.sourceIdentity;
+    const edition = identity.edition;
+    const authors = (edition.authors || []).map(author => author.name + (author.role ? " · " + author.role : "")).join("；");
+    const sourceLine = [edition.title, authors, edition.publisher, edition.publicationYear, edition.isbn].filter(Boolean).join(" · ");
+    if (sourceLine) title.append(element("p", "shj-reader__source-line", sourceLine));
+    title.append(element("p", "shj-reader__source-note", "原文、译文与注释来自项目登记的方韬译注用户副本；译注以原导入身份展示，本模块不补译或改写。"));
+
+    const controls = element("div", "shj-reader__controls");
+    const label = element("label", "shj-reader__volume-label", "选择篇章");
+    const select = element("select", "shj-reader__volume-select");
+    select.id = "shj-reader-volume-select";
+    for (const item of SHJ.bootstrap.volumes) {
+      const option = element("option", null, item.title + (item.chapterTitle ? " · " + item.chapterTitle : ""));
+      option.value = item.volumeId;
+      option.selected = item.volumeId === volume.volumeId;
+      select.append(option);
+    }
+    label.htmlFor = select.id;
+    controls.append(label, select);
+    const summaryCounts = element("p", "shj-reader__counts");
+    const kindCounts = volume.coverage.p1BlockKinds || {};
+    summaryCounts.textContent = `原文 ${kindCounts.original || 0} 块 · 译文 ${kindCounts.translation || 0} 块 · 注释 ${kindCounts.note || 0} 块`;
+    controls.append(summaryCounts);
+    if (summary) addReviewSummary(controls, globalData, volume.volumeId);
+
+    const originalBlocks = volume.p1.sourceBlocks.filter(block => block.blockId.kind === "original");
+    const toc = element("details", "shj-reader__toc");
+    toc.append(element("summary", null, `本篇原文目录 ${originalBlocks.length} 段`));
+    const tocList = element("ol", "shj-reader__toc-list");
+    for (const block of originalBlocks) {
+      const row = element("li");
+      const link = element("a", "shj-reader__toc-link", "原文块 " + block.blockId.blockOrder);
+      link.href = SHJ.linkTo({ type: "reader", volumeId: volume.volumeId, blockKey: idKey(block.blockId) });
+      row.append(link);
+      tocList.append(row);
+    }
+    toc.append(tocList);
+
+    const rawBlocks = volume.p1.sourceBlocks.slice().sort((a, b) => a.blockId.blockOrder - b.blockId.blockOrder);
+    const reviewMap = reviewIndex(globalData, volume.volumeId);
+    const relationIndex = indexRelations(volume, reviewMap);
+    const glyphRecords = new Map(globalData.glyphCandidates.records.map(record => [record.stableId, record]));
+    const glyphByBlock = new Map();
+    for (const row of globalData.glyphReferenceIndex) {
+      if (row.reference.volumeId !== volume.volumeId) continue;
+      const key = [row.reference.volumeId, row.reference.blockOrder, row.blockKind].join(":");
+      if (!glyphByBlock.has(key)) glyphByBlock.set(key, []);
+      glyphByBlock.get(key).push(row);
+    }
+    const baseUrl = new URL(SHJ.bootstrap.dataBase, document.baseURI);
+    const stream = element("div", "shj-reader__stream");
+    const deepBlockKey = context.route.blockKey || null;
+    for (const block of rawBlocks) {
+      stream.append(renderBlock(block, volume, relationIndex.get(idKey(block.blockId)) || [], glyphByBlock, glyphRecords, baseUrl, deepBlockKey));
+    }
+    const sourceDetailsElement = element("details", "shj-reader__edition-details");
+    sourceDetailsElement.append(element("summary", null, "版本来源说明"));
+    if (edition.editionStatement) sourceDetailsElement.append(element("p", null, edition.editionStatement));
+    if (identity.source.copyrightAndProvenance) sourceDetailsElement.append(element("p", null, identity.source.copyrightAndProvenance));
+
+    container.replaceChildren(title, controls, toc, sourceDetailsElement, stream);
+    const onVolumeChange = () => SHJ.navigate({ type: "reader", volumeId: select.value });
+    select.addEventListener("change", onVolumeChange);
+    if (context.target.block) {
+      const targetId = blockDomId(context.target.block);
+      requestAnimationFrame(() => {
+        if (context.signal.aborted) return;
+        const target = container.querySelector("#" + CSS.escape(targetId));
+        if (target) {
+          target.scrollIntoView({ block: "start" });
+          target.focus({ preventScroll: true });
+        }
       });
-    });
-  });
+    }
+    return () => {
+      select.removeEventListener("change", onVolumeChange);
+      container.replaceChildren();
+    };
+  }
+
+  SHJ.registerFeature("reader", mountReader);
 })();
 </script>
+  <script>(function registerEntryFeatures() {
+  "use strict";
+
+  const SHJ = window.SHJ;
+  const OCCURRENCE_STATUS = {
+    named: "具名出现",
+    descriptive: "描述性出现",
+    unresolved: "出现身份未定"
+  };
+  const ENTRY_STATUS = {
+    semantic_candidate: "整理条目候选",
+    accepted: "整理条目已接受",
+    unresolved: "整理条目未定"
+  };
+  const IDENTITY_STATUS = {
+    unmerged_candidate: "尚未归并的实体候选",
+    unresolved: "实体身份未定",
+    ambiguous: "实体身份有歧义",
+    pending: "身份待处理"
+  };
+  const BETWEEN_PARTITION_STATUS = {
+    distinct_entities: "分区间判为不同指称",
+    unresolved: "分区间身份尚未确定"
+  };
+  const REFERENT_LEVEL = {
+    individual: "个体",
+    place: "地点",
+    kind: "类别或种类",
+    collective: "群体",
+    undetermined: "指称层级尚未确定"
+  };
+  const IDENTITY_BASIS = {
+    original_explicit: "原文直接依据",
+    insufficient: "依据不足",
+    auxiliary_interpretation: "辅助释读依据"
+  };
+  const SOURCE_LAYER = { original: "原文" };
+  const REVIEW_STATUS = {
+    reviewed: "已复核",
+    reviewed_with_ambiguity: "复核含歧义"
+  };
+  const CATEGORY_STATUS = {
+    supported: "分类规则支持",
+    candidate: "分类候选",
+    unresolved: "分类未定",
+    pending: "分类待处理",
+    rejected: "分类未接受",
+    rule_boundary_flag: "分类边界待核"
+  };
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+
+  function heading(parent, level, text, className) {
+    const node = el("h" + level, className, text);
+    parent.append(node);
+    return node;
+  }
+
+  function link(target, label, className) {
+    const node = el("a", className, label);
+    node.href = SHJ.linkTo(target);
+    return node;
+  }
+
+  function statusText(map, value, fallback) {
+    return map[value] || (value ? String(value) : fallback);
+  }
+
+  function volumeLabel(volume) {
+    return [volume.title, volume.chapterTitle].filter(Boolean).join(" · ");
+  }
+
+  function addStatus(parent, label, value, map, fallback) {
+    const row = el("p", "shj-entry__status-row");
+    row.append(el("strong", null, label + "："), document.createTextNode(statusText(map, value, fallback)));
+    parent.append(row);
+  }
+
+  function addSourceLink(parent, occurrence) {
+    parent.append(link({
+      type: "reader",
+      volumeId: occurrence.volumeId,
+      blockKey: [occurrence.volumeId, occurrence.blockOrder, occurrence.sourceLayer || "original"].join(":")
+    }, `原文块 ${occurrence.blockOrder} · 字符 ${occurrence.start}–${occurrence.end}`, "shj-entry__source-link"));
+  }
+
+  function findOccurrence(volume, id) {
+    return volume.p3.occurrences.find(row => row.occurrenceId === id) || null;
+  }
+
+  function findBlock(volume, occurrence) {
+    return volume.p1.sourceBlocks.find(block =>
+      block.blockId.volumeId === occurrence.volumeId &&
+      block.blockId.blockOrder === occurrence.blockOrder &&
+      block.blockId.kind === occurrence.sourceLayer
+    ) || null;
+  }
+
+  function sourceSpan(volume, occurrence) {
+    const block = findBlock(volume, occurrence);
+    if (!block || typeof block.text !== "string") return null;
+    const text = Array.from(block.text);
+    if (occurrence.start < 0 || occurrence.end < occurrence.start || occurrence.end > text.length) return null;
+    return { block, text: text.slice(occurrence.start, occurrence.end).join("") };
+  }
+
+  function categoriesFor(volume, occurrenceId) {
+    return volume.p3.categoryOverlay.filter(row => row.occurrenceId === occurrenceId);
+  }
+
+  function addCategoryEvidence(parent, volume, occurrence, globalData) {
+    const overlays = categoriesFor(volume, occurrence.occurrenceId);
+    const details = el("details", "shj-entry__details");
+    details.append(el("summary", null, "分类判定与证据 " + overlays.length + " 项"));
+    if (!overlays.length) details.append(el("p", "shj-entry__muted", "本出现没有分类 overlay 记录；这不表示已确认无类别。"));
+    const categoryById = new Map((globalData.taxonomy.categories || []).map(row => [row.categoryId, row]));
+    for (const row of overlays) {
+      const names = (row.categoryIds || []).map(id => {
+        const category = categoryById.get(id);
+        return category ? category.label + "（" + id + "）" : id;
+      });
+      const item = el("section", "shj-entry__evidence");
+      item.append(el("h4", null, names.length ? names.join("、") : "未给出类别"));
+      addStatus(item, "类别状态", row.categoryStatus, CATEGORY_STATUS, "未提供");
+      addStatus(item, "复核状态", row.reviewStatus, REVIEW_STATUS, "未提供");
+      if (row.contextQuote) item.append(el("blockquote", "shj-entry__quote", row.contextQuote));
+      if (row.rationale) item.append(el("p", "shj-entry__reason", row.rationale));
+      details.append(item);
+    }
+    parent.append(details);
+  }
+
+  function addIdentityEvidence(parent, candidate, globalData) {
+    const candidateId = candidate.entityCandidateId;
+    const canonical = globalData.identityOverlay.canonicalEntities.find(entity => entity.candidateIds.includes(candidateId));
+    if (canonical) {
+      const accepted = el("section", "shj-entry__evidence");
+      accepted.append(el("p", null, "身份整理记录中有明确的整理实体归并记录："));
+      accepted.append(link({ type: "entity", id: canonical.entityId }, "查看整理实体 " + canonical.entityId));
+      if (canonical.reason) accepted.append(el("p", "shj-entry__reason", canonical.reason));
+      parent.append(accepted);
+    }
+    const findings = (globalData.identityOverlay.nonPhysicalFindings || []).filter(row => (row.memberCandidateIds || []).includes(candidateId));
+    for (const finding of findings) {
+      const note = el("section", "shj-entry__evidence");
+      note.append(el("p", null, "非个体或地点实体的身份记录：" + statusText(REFERENT_LEVEL, finding.referentLevel, "指称层级未提供") + " · " + statusText({ same_entity: "归为同一指称" }, finding.status, "状态未提供")));
+      if (finding.reason) note.append(el("p", "shj-entry__reason", finding.reason));
+      if (finding.basis) note.append(el("p", "shj-entry__muted", "依据：" + statusText(IDENTITY_BASIS, finding.basis, finding.basis)));
+      if (finding.taskId) note.append(el("p", "shj-entry__muted", "身份任务：" + finding.taskId));
+      const links = el("div", "shj-entry__links");
+      for (const id of finding.evidenceOccurrenceIds || []) {
+        const volumeRow = SHJ.bootstrap.volumes.find(row => String(id).startsWith(row.volumeId + "-"));
+        if (volumeRow) links.append(link({ type: "occurrence", volumeId: volumeRow.volumeId, id }, "身份依据出现 · " + volumeRow.title));
+      }
+      if (links.childNodes.length) note.append(links);
+      parent.append(note);
+    }
+    const decisions = (globalData.identityOverlay.decisions || []).filter(decision =>
+      (decision.partitions || []).some(partition => (partition.memberCandidateIds || []).includes(candidateId))
+    );
+    for (const decision of decisions) {
+      const partitions = decision.partitions.filter(partition => (partition.memberCandidateIds || []).includes(candidateId));
+      for (const partition of partitions) {
+        const note = el("section", "shj-entry__evidence");
+        note.append(el("p", null, "身份复核分区 · " + statusText({
+          same_entity: "判为同一指称",
+          distinct_entities: "判为不同指称",
+          unresolved: "身份未定"
+        }, partition.status, "分区状态未提供")));
+        if (decision.betweenPartitionsStatus) note.append(el("p", "shj-entry__muted", "分区之间状态：" + statusText(BETWEEN_PARTITION_STATUS, decision.betweenPartitionsStatus, decision.betweenPartitionsStatus)));
+        if (partition.referentLevel) note.append(el("p", "shj-entry__muted", "指称层级：" + statusText(REFERENT_LEVEL, partition.referentLevel, partition.referentLevel)));
+        if (partition.basis) note.append(el("p", "shj-entry__muted", "依据类型：" + statusText(IDENTITY_BASIS, partition.basis, partition.basis)));
+        if (partition.reason) note.append(el("p", "shj-entry__reason", partition.reason));
+        if (decision.betweenPartitionsReason) note.append(el("p", "shj-entry__reason", "分区间判断：" + decision.betweenPartitionsReason));
+        if (decision.taskId) note.append(el("p", "shj-entry__muted", "身份任务：" + decision.taskId));
+        const evidenceIds = [...new Set([...(partition.evidenceOccurrenceIds || []), ...(decision.betweenPartitionsEvidenceOccurrenceIds || [])])];
+        if (evidenceIds.length) {
+          const evidenceLinks = el("div", "shj-entry__links");
+          for (const id of evidenceIds) {
+            const volumeRow = SHJ.bootstrap.volumes.find(row => String(id).startsWith(row.volumeId + "-"));
+            if (volumeRow) evidenceLinks.append(link({ type: "occurrence", volumeId: volumeRow.volumeId, id }, "身份依据出现 · " + volumeRow.title));
+            else evidenceLinks.append(el("span", "shj-entry__muted", "未绑定篇章的身份引用：" + id));
+          }
+          note.append(evidenceLinks);
+        }
+        const auxiliary = [...new Set([...(partition.auxiliaryRefs || []), ...(decision.betweenPartitionsAuxiliaryRefs || [])])];
+        if (auxiliary.length) note.append(el("p", "shj-entry__muted", "辅助引用：" + auxiliary.join("；")));
+        parent.append(note);
+      }
+    }
+    if (!canonical && !findings.length && !decisions.length) parent.append(el("p", "shj-entry__muted", "身份整理记录未将此候选归并为整理实体，也未登记非个体/地点身份或复核分区结论；候选状态继续单独保留。"));
+    return canonical;
+  }
+
+  function appendOccurrenceCard(parent, volume, occurrence, globalData, opts = {}) {
+    const card = el("article", "shj-entry__card");
+    card.dataset.occurrenceId = occurrence.occurrenceId;
+    const span = sourceSpan(volume, occurrence);
+    card.append(el("h3", "shj-entry__card-title", span ? span.text : occurrence.surface || "原文跨度不可用"));
+    addStatus(card, "出现形式", occurrence.mentionForm, OCCURRENCE_STATUS, "已记录");
+    addStatus(card, "来源层", occurrence.sourceLayer, SOURCE_LAYER, "未提供");
+    card.append(el("p", "shj-entry__location", `${volumeLabel(volume)} · 原文块 ${occurrence.blockOrder} · 字符 ${occurrence.start}–${occurrence.end}`));
+    const nav = el("div", "shj-entry__links");
+    nav.append(link({ type: "occurrence", volumeId: volume.volumeId, id: occurrence.occurrenceId }, "查看文本出现"));
+    nav.append(link({ type: "candidate", volumeId: volume.volumeId, id: occurrence.entityCandidateId }, "查看实体候选"));
+    if (occurrence.entryId) nav.append(link({ type: "entry", volumeId: volume.volumeId, id: occurrence.entryId }, "查看整理条目"));
+    nav.append(link({ type: "reader", volumeId: volume.volumeId, blockKey: [volume.volumeId, occurrence.blockOrder, occurrence.sourceLayer || "original"].join(":") }, "打开读本原文"));
+    card.append(nav);
+    if (span && span.text !== occurrence.surface) {
+      card.append(el("p", "shj-entry__muted", "原始抽取记录的显示词形与当前原文跨度不同，二者均保留。"));
+    }
+    if (opts.includeCategories) addCategoryEvidence(card, volume, occurrence, globalData);
+    parent.append(card);
+    return card;
+  }
+
+  async function mountEntry(container, context) {
+    const { volume, entry } = context.target;
+    const globalData = await context.data.getGlobal({ signal: context.signal });
+    const root = el("div", "shj-entry");
+    root.dataset.entryId = entry.entryId;
+    root.append(el("p", "shj-entry__eyebrow", volumeLabel(volume)));
+    heading(root, 1, entry.displayText || "未命名条目", "shj-entry__title");
+    addStatus(root, "整理条目状态", entry.status, ENTRY_STATUS, "未提供");
+    root.append(el("p", "shj-entry__muted", "整理条目是对文本材料的组织记录；它不等同于实体确认。"));
+    const related = el("section", "shj-entry__section");
+    heading(related, 2, "文本出现与实体候选");
+    const occurrences = (entry.occurrenceRefs || []).map(id => findOccurrence(volume, id)).filter(Boolean);
+    if (!occurrences.length) related.append(el("p", "shj-entry__muted", "没有可回指的文本出现记录。"));
+    for (const occurrence of occurrences) appendOccurrenceCard(related, volume, occurrence, globalData, { includeCategories: true });
+    root.append(related);
+    container.replaceChildren(root);
+    document.title = (entry.displayText || "条目") + " · 山海经";
+    return () => container.replaceChildren();
+  }
+
+  async function mountOccurrence(container, context) {
+    const { volume, occurrence } = context.target;
+    const globalData = await context.data.getGlobal({ signal: context.signal });
+    const root = el("div", "shj-entry");
+    root.dataset.occurrenceId = occurrence.occurrenceId;
+    root.append(el("p", "shj-entry__eyebrow", volumeLabel(volume) + " · 文本出现"));
+    const span = sourceSpan(volume, occurrence);
+    heading(root, 1, span ? span.text : occurrence.surface || "文本出现", "shj-entry__title");
+    addStatus(root, "出现形式", occurrence.mentionForm, OCCURRENCE_STATUS, "已记录");
+    root.append(el("p", "shj-entry__location", `原文块 ${occurrence.blockOrder} · 字符 ${occurrence.start}–${occurrence.end} · 来源哈希 ${occurrence.sourceTextSha256 || "未提供"}`));
+    const candidate = volume.p3.entityCandidates.find(row => row.entityCandidateId === occurrence.entityCandidateId);
+    const entry = volume.p3.entries.find(row => row.entryId === occurrence.entryId);
+    if (entry) {
+      addStatus(root, "整理条目状态", entry.status, ENTRY_STATUS, "未提供");
+      root.append(link({ type: "entry", volumeId: volume.volumeId, id: entry.entryId }, "打开整理条目"));
+    }
+    if (candidate) {
+      addStatus(root, "原始候选状态", candidate.identityStatus, IDENTITY_STATUS, "候选身份已记录");
+      root.append(link({ type: "candidate", volumeId: volume.volumeId, id: candidate.entityCandidateId }, "打开实体候选"));
+      addIdentityEvidence(root, candidate, globalData);
+    }
+    const evidence = el("section", "shj-entry__section");
+    heading(evidence, 2, "原文来源");
+    if (span) {
+      const quote = el("blockquote", "shj-entry__quote");
+      const sourceCodepoints = Array.from(span.block.text);
+      quote.append(document.createTextNode(sourceCodepoints.slice(Math.max(0, occurrence.start - 32), occurrence.start).join("")));
+      const mark = el("mark", null, span.text);
+      quote.append(mark);
+      quote.append(document.createTextNode(sourceCodepoints.slice(occurrence.end, occurrence.end + 32).join("")));
+      evidence.append(quote);
+    } else {
+      evidence.append(el("p", "shj-entry__muted", "原文块或字符跨度无法在当前冻结数据中解析。"));
+    }
+    const sourceNav = el("div", "shj-entry__links");
+    addSourceLink(sourceNav, occurrence);
+    evidence.append(sourceNav);
+    root.append(evidence);
+    addCategoryEvidence(root, volume, occurrence, globalData);
+    container.replaceChildren(root);
+    document.title = (span ? span.text : "文本出现") + " · 山海经";
+    return () => container.replaceChildren();
+  }
+
+  async function mountCandidate(container, context) {
+    const { volume, candidate } = context.target;
+    const globalData = await context.data.getGlobal({ signal: context.signal });
+    const root = el("div", "shj-entry");
+    root.dataset.candidateId = candidate.entityCandidateId;
+    root.append(el("p", "shj-entry__eyebrow", volumeLabel(volume) + " · 实体候选"));
+    const entry = volume.p3.entries.find(row => (candidate.entryRefs || []).includes(row.entryId));
+    heading(root, 1, entry ? entry.displayText : candidate.entityCandidateId, "shj-entry__title");
+    addStatus(root, "原始候选状态", candidate.identityStatus, IDENTITY_STATUS, "候选，身份状态未提供");
+    root.append(el("p", "shj-entry__muted", "实体候选保持独立身份；本页不会因同名或相似词形合并其他候选。"));
+    addIdentityEvidence(root, candidate, globalData);
+    const referencedEntries = (candidate.entryRefs || []).map(id => volume.p3.entries.find(row => row.entryId === id)).filter(Boolean);
+    const section = el("section", "shj-entry__section");
+    heading(section, 2, "关联整理条目 " + referencedEntries.length + "/" + (candidate.entryRefs || []).length);
+    for (const relatedEntry of referencedEntries) {
+      const item = el("article", "shj-entry__card");
+      const h = el("h3", "shj-entry__card-title");
+      h.append(link({ type: "entry", volumeId: volume.volumeId, id: relatedEntry.entryId }, relatedEntry.displayText || relatedEntry.entryId));
+      item.append(h);
+      addStatus(item, "条目状态", relatedEntry.status, ENTRY_STATUS, "未提供");
+      section.append(item);
+    }
+    const occurrenceIds = [...new Set(referencedEntries.flatMap(row => row.occurrenceRefs || []))].filter(id => {
+      const occurrence = findOccurrence(volume, id);
+      return occurrence && occurrence.entityCandidateId === candidate.entityCandidateId;
+    });
+    heading(section, 2, "关联文本出现 " + occurrenceIds.length);
+    for (const id of occurrenceIds) {
+      const occurrence = findOccurrence(volume, id);
+      appendOccurrenceCard(section, volume, occurrence, globalData, { includeCategories: true });
+    }
+    if (!occurrenceIds.length) section.append(el("p", "shj-entry__muted", "没有可回指的出现记录。"));
+    root.append(section);
+    container.replaceChildren(root);
+    document.title = (entry ? entry.displayText : "实体候选") + " · 山海经";
+    return () => container.replaceChildren();
+  }
+
+  function volumeForObjectId(id) {
+    return SHJ.bootstrap.volumes.find(row => String(id).startsWith(row.volumeId + "-"));
+  }
+
+  async function mountEntity(container, context) {
+    const { entity } = context.target;
+    const globalData = await context.data.getGlobal({ signal: context.signal });
+    const referencedIds = [...new Set([...(entity.candidateIds || []), ...(entity.evidenceOccurrenceIds || [])])];
+    const volumeRows = new Map();
+    for (let i = 0; i < referencedIds.length; i += 3) {
+      if (context.signal.aborted) throw new DOMException("导航已取消", "AbortError");
+      const batch = referencedIds.slice(i, i + 3).map(volumeForObjectId).filter(Boolean);
+      const unique = [...new Map(batch.map(row => [row.volumeId, row])).values()]
+        .filter(row => !volumeRows.has(row.volumeId));
+      const loaded = await Promise.all(unique.map(row => context.data.getVolume(row.volumeId, { signal: context.signal })));
+      for (const volume of loaded) volumeRows.set(volume.volumeId, volume);
+    }
+    const candidates = (entity.candidateIds || []).map(id => {
+      for (const volume of volumeRows.values()) {
+        const candidate = volume.p3.entityCandidates.find(row => row.entityCandidateId === id);
+        if (candidate) return { volume, candidate };
+      }
+      return null;
+    }).filter(Boolean);
+    const root = el("div", "shj-entry");
+    root.append(el("p", "shj-entry__eyebrow", "跨篇身份整理"));
+    heading(root, 1, entity.entityId, "shj-entry__title");
+    addStatus(root, "整理身份", "canonical", { canonical: "身份整理记录中已确认的整理实体" }, "未提供");
+    addStatus(root, "指称层级", entity.referentLevel, REFERENT_LEVEL, "未提供");
+    root.append(el("p", "shj-entry__muted", "本页只呈现身份整理记录明确列出的候选成员与证据出现。实体归并依据来自已验收的身份记录；名称相似本身不作为归并依据。"));
+    if (entity.reason) root.append(el("p", "shj-entry__reason", entity.reason));
+    const identityMeta = el("section", "shj-entry__evidence");
+    heading(identityMeta, 2, "归并记录");
+    addStatus(identityMeta, "身份任务", (entity.taskIds || []).join("；"), {}, "未提供");
+    if (entity.auxiliaryRefs && entity.auxiliaryRefs.length) identityMeta.append(el("p", "shj-entry__muted", "辅助引用：" + entity.auxiliaryRefs.join("；")));
+    const canonicalEvidence = el("div", "shj-entry__links");
+    for (const id of entity.evidenceOccurrenceIds || []) {
+      const volumeRow = volumeForObjectId(id);
+      if (volumeRow) canonicalEvidence.append(link({ type: "occurrence", volumeId: volumeRow.volumeId, id }, "身份依据出现 · " + volumeRow.title));
+      else canonicalEvidence.append(el("span", "shj-entry__muted", "未绑定篇章的身份引用：" + id));
+    }
+    if (canonicalEvidence.childNodes.length) identityMeta.append(canonicalEvidence);
+    root.append(identityMeta);
+    const memberSection = el("section", "shj-entry__section");
+    heading(memberSection, 2, "归并记录中的实体候选 " + candidates.length + "/" + (entity.candidateIds || []).length);
+    for (const { volume, candidate } of candidates) {
+      const item = el("article", "shj-entry__card");
+      item.dataset.candidateId = candidate.entityCandidateId;
+      const entry = volume.p3.entries.find(row => (candidate.entryRefs || []).includes(row.entryId));
+      const h = el("h3", "shj-entry__card-title");
+      h.append(link({ type: "candidate", volumeId: volume.volumeId, id: candidate.entityCandidateId }, entry ? entry.displayText : candidate.entityCandidateId));
+      item.append(h);
+      item.append(el("p", "shj-entry__location", volumeLabel(volume) + " · " + statusText(IDENTITY_STATUS, candidate.identityStatus, "候选身份已记录")));
+      memberSection.append(item);
+    }
+    if (!candidates.length) memberSection.append(el("p", "shj-entry__muted", "引用的候选数据未能从当前按篇包中解析；原 candidate ID 仍保留在下方证据引用中。"));
+    root.append(memberSection);
+    const evidenceSection = el("section", "shj-entry__section");
+    heading(evidenceSection, 2, "身份证据出现 " + (entity.evidenceOccurrenceIds || []).length + " 项");
+    let evidenceCount = 0;
+    for (const id of entity.evidenceOccurrenceIds || []) {
+      const volumeRow = volumeForObjectId(id);
+      const volume = volumeRow && volumeRows.get(volumeRow.volumeId);
+      const occurrence = volume && findOccurrence(volume, id);
+      if (!occurrence) {
+        const missing = el("p", "shj-entry__muted", "证据出现引用未能在冻结篇包中解析：" + id);
+        evidenceSection.append(missing);
+        continue;
+      }
+      const card = el("article", "shj-entry__card");
+      const span = sourceSpan(volume, occurrence);
+      card.append(el("h3", "shj-entry__card-title", span ? span.text : occurrence.surface || id));
+      card.append(el("p", "shj-entry__location", volumeLabel(volume) + " · 原文块 " + occurrence.blockOrder));
+      card.append(link({ type: "occurrence", volumeId: volume.volumeId, id: occurrence.occurrenceId }, "查看文本出现"));
+      card.append(link({ type: "reader", volumeId: volume.volumeId, blockKey: [volume.volumeId, occurrence.blockOrder, occurrence.sourceLayer || "original"].join(":") }, "打开读本原文"));
+      evidenceSection.append(card);
+      evidenceCount += 1;
+    }
+    if (!evidenceCount && !(entity.evidenceOccurrenceIds || []).length) evidenceSection.append(el("p", "shj-entry__muted", "未提供证据出现引用。"));
+    root.append(evidenceSection);
+    if (entity.auxiliaryRefs && entity.auxiliaryRefs.length) {
+      const auxiliary = el("details", "shj-entry__details");
+      auxiliary.append(el("summary", null, "辅助引用 " + entity.auxiliaryRefs.length + " 项"));
+      for (const ref of entity.auxiliaryRefs) auxiliary.append(el("p", "shj-entry__muted", ref));
+      root.append(auxiliary);
+    }
+    container.replaceChildren(root);
+    document.title = entity.entityId + " · 山海经";
+    return () => container.replaceChildren();
+  }
+
+  SHJ.registerFeature("entry", mountEntry);
+  SHJ.registerFeature("occurrence", mountOccurrence);
+  SHJ.registerFeature("candidate", mountCandidate);
+  SHJ.registerFeature("entity", mountEntity);
+})();
+</script>
+  <script>(function registerCatalogFeature() {
+  "use strict";
+
+  const SHJ = window.SHJ;
+  const CANDIDATE_STATUS = {
+    unmerged_candidate: "尚未归并的候选",
+    unresolved: "身份尚未确定",
+    ambiguous: "身份存在歧义",
+    pending: "身份待处理"
+  };
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+
+  function link(target, label) {
+    const node = el("a", null, label);
+    node.href = SHJ.linkTo(target);
+    return node;
+  }
+
+  function statusLabel(status) {
+    const labels = {
+      supported: "分类规则支持",
+      candidate: "分类候选",
+      unresolved: "分类未定",
+      pending: "分类待处理",
+      rejected: "分类未接受",
+      rule_boundary_flag: "分类边界待核"
+    };
+    return labels[status] || status || "未提供";
+  }
+
+  function findOccurrence(volume, id) {
+    return volume.p3.occurrences.find(row => row.occurrenceId === id) || null;
+  }
+
+  function entryFor(volume, occurrence) {
+    return volume.p3.entries.find(row => row.entryId === occurrence.entryId) || null;
+  }
+
+  function volumeLabel(volume) {
+    return [volume.title, volume.chapterTitle].filter(Boolean).join(" · ");
+  }
+
+  function catalogueName(category) {
+    return category.categoryId === "deity.divine" ? "神祇录" : category.label;
+  }
+
+  function renderCategoryLinks(parent, categories, selectedId) {
+    const nav = el("nav", "shj-catalog__category-nav");
+    nav.setAttribute("aria-label", "十二类录册");
+    const all = link({ type: "catalog" }, "全部录册");
+    if (!selectedId) all.setAttribute("aria-current", "page");
+    nav.append(all);
+    for (const category of categories) {
+      const anchor = link({ type: "catalog", categoryId: category.categoryId }, catalogueName(category));
+      anchor.dataset.categoryId = category.categoryId;
+      if (category.categoryId === selectedId) anchor.setAttribute("aria-current", "page");
+      nav.append(anchor);
+    }
+    parent.append(nav);
+  }
+
+  function renderOccurrence(volume, overlay, occurrence, globalData) {
+    const card = el("article", "shj-catalog__item");
+    card.dataset.occurrenceId = occurrence.occurrenceId;
+    card.dataset.categoryIds = (overlay.categoryIds || []).join(",");
+    card.dataset.categoryStatus = overlay.categoryStatus || "";
+    const entry = entryFor(volume, occurrence);
+    if (entry) card.dataset.entryId = entry.entryId;
+    card.dataset.candidateId = occurrence.entityCandidateId || "";
+    const title = entry && entry.displayText || occurrence.surface || occurrence.occurrenceId;
+    const h = el("h4");
+    h.append(link({ type: "occurrence", volumeId: volume.volumeId, id: occurrence.occurrenceId }, title));
+    card.append(h);
+    card.append(el("p", "shj-catalog__status", statusLabel(overlay.categoryStatus) + " · 出现 " + occurrence.occurrenceId));
+    if (overlay.contextQuote) card.append(el("blockquote", "shj-catalog__quote", overlay.contextQuote));
+    if (overlay.rationale) card.append(el("p", "shj-catalog__reason", overlay.rationale));
+    const links = el("div", "shj-catalog__links");
+    if (entry) links.append(link({ type: "entry", volumeId: volume.volumeId, id: entry.entryId }, "整理条目"));
+    links.append(link({ type: "candidate", volumeId: volume.volumeId, id: occurrence.entityCandidateId }, "实体候选"));
+    links.append(link({
+      type: "reader",
+      volumeId: volume.volumeId,
+      blockKey: [volume.volumeId, occurrence.blockOrder, occurrence.sourceLayer || "original"].join(":")
+    }, `读本原文块 ${occurrence.blockOrder}`));
+    card.append(links);
+    const candidate = volume.p3.entityCandidates.find(row => row.entityCandidateId === occurrence.entityCandidateId);
+    if (candidate) card.append(el("p", "shj-catalog__status", "原始候选状态：" + (CANDIDATE_STATUS[candidate.identityStatus] || candidate.identityStatus || "未提供")));
+    const canonical = candidate && globalData.identityOverlay.canonicalEntities.find(row => row.candidateIds.includes(candidate.entityCandidateId));
+    if (canonical) card.append(link({ type: "entity", id: canonical.entityId }, "已归并整理实体 " + canonical.entityId));
+    return card;
+  }
+
+  function createLazyVolumeGroup(volumeRef, context, globalData, predicate, emptyText, cleanups) {
+    const group = el("details", "shj-catalog__volume");
+    group.dataset.volumeId = volumeRef.volumeId;
+    group.dataset.loadState = "idle";
+    const summary = el("summary");
+    summary.dataset.action = "load-volume";
+    summary.dataset.volumeId = volumeRef.volumeId;
+    summary.append(document.createTextNode(volumeLabel(volumeRef) + " · 按需载入"));
+    const contents = el("div", "shj-catalog__volume-content");
+    contents.append(el("p", "shj-catalog__empty", "展开后仅读取本篇并回接逐出现分类记录。"));
+    group.append(summary, contents);
+    let state = "idle";
+    const loadGroup = async () => {
+      if (state === "loading" || state === "loaded" || context.signal.aborted) return;
+      state = "loading";
+      group.dataset.loadState = state;
+      contents.replaceChildren(el("p", "shj-catalog__empty", "正在读取本篇分类记录…"));
+      try {
+        const volume = await context.data.getVolume(volumeRef.volumeId, { signal: context.signal });
+        if (context.signal.aborted) return;
+        const rows = volume.p3.categoryOverlay.filter(predicate);
+        const byOccurrence = new Map(rows.map(row => [row.occurrenceId, row]));
+        const matches = volume.p3.occurrences.filter(row => byOccurrence.has(row.occurrenceId));
+        summary.textContent = volumeLabel(volume) + " · " + matches.length + " 项";
+        summary.dataset.itemCount = String(matches.length);
+        group.dataset.itemCount = String(matches.length);
+        const content = document.createDocumentFragment();
+        content.append(link({ type: "reader", volumeId: volume.volumeId }, "打开本篇读本"));
+        if (!matches.length) content.append(el("p", "shj-catalog__empty", emptyText));
+        for (const occurrence of matches) content.append(renderOccurrence(volume, byOccurrence.get(occurrence.occurrenceId), occurrence, globalData));
+        contents.replaceChildren(content);
+        state = "loaded";
+        group.dataset.loadState = state;
+      } catch (error) {
+        if (context.signal.aborted) return;
+        state = "error";
+        group.dataset.loadState = state;
+        const message = el("p", "shj-catalog__empty", "本篇读取失败：" + (error && error.message || "未知错误"));
+        const retry = el("button", "shj-catalog__retry", "重试读取本篇");
+        const onRetry = () => loadGroup();
+        retry.addEventListener("click", onRetry);
+        cleanups.push(() => retry.removeEventListener("click", onRetry));
+        contents.replaceChildren(message, retry);
+      }
+    };
+    const onToggle = () => { if (group.open) loadGroup(); };
+    group.addEventListener("toggle", onToggle);
+    cleanups.push(() => group.removeEventListener("toggle", onToggle));
+    return group;
+  }
+
+  async function mountCatalog(container, context) {
+    const globalData = await context.data.getGlobal({ signal: context.signal });
+    const categories = globalData.taxonomy.categories || [];
+    const selectedId = context.target.category ? context.target.category.categoryId : null;
+    const selected = selectedId ? categories.find(row => row.categoryId === selectedId) : null;
+    const root = el("div", "shj-catalog");
+    if (selectedId) root.dataset.categoryId = selectedId;
+    root.append(el("p", "shj-catalog__eyebrow", "十二类录册 · 十八篇"));
+    const title = el("h1", "shj-catalog__title", selected ? catalogueName(selected) : "分类册");
+    root.append(title);
+    if (selected && selected.categoryId === "deity.divine") {
+      root.append(el("p", "shj-catalog__definition", "分类：" + selected.label));
+    }
+    renderCategoryLinks(root, categories, selectedId);
+    if (selected) {
+      if (selected.definition) root.append(el("p", "shj-catalog__definition", selected.definition));
+      root.append(el("p", "shj-catalog__policy", "按已有分类判定展示适用出现；候选和未定状态仍保留，不按同名合并。卡片中的身份状态是原始候选状态，正式身份复核见实体候选详情。"));
+    } else {
+      root.append(el("p", "shj-catalog__policy", "选择类别查看该类在十八篇中的适用条目。目录依据已确认的分类规范；各项按逐出现判定展示。"));
+      const summaries = el("div", "shj-catalog__overview");
+      for (const category of categories) {
+        const card = el("article", "shj-catalog__category");
+        const h = el("h2");
+        h.append(link({ type: "catalog", categoryId: category.categoryId }, catalogueName(category)));
+        card.append(h);
+        if (category.definition) card.append(el("p", null, category.definition));
+        summaries.append(card);
+      }
+      root.append(summaries);
+      const unresolved = el("details", "shj-catalog__unresolved");
+      unresolved.dataset.categoryId = "unresolved";
+      const unresolvedSummary = el("summary", null, "尚未确定类别 · 尚未归入十二类");
+      unresolvedSummary.dataset.action = "show-unresolved";
+      unresolved.append(unresolvedSummary);
+      unresolved.append(el("p", "shj-catalog__policy", "此处收录尚未确定类别的逐出现记录，保留其原分类状态、上下文与理由；不替它指定类别。"));
+      const unresolvedVolumes = el("div", "shj-catalog__results");
+      const cleanupList = [];
+      for (const volumeRef of SHJ.bootstrap.volumes) {
+        unresolvedVolumes.append(createLazyVolumeGroup(
+          volumeRef,
+          context,
+          globalData,
+          row => !(row.categoryIds || []).length,
+          "本篇没有尚未确定类别的记录。",
+          cleanupList
+        ));
+      }
+      unresolved.append(unresolvedVolumes);
+      root.append(unresolved);
+      context.onCleanup(() => cleanupList.forEach(cleanup => cleanup()));
+    }
+    if (selected) {
+      const results = el("section", "shj-catalog__results");
+      const groupCleanups = [];
+      for (const volumeRef of SHJ.bootstrap.volumes) {
+        results.append(createLazyVolumeGroup(
+          volumeRef,
+          context,
+          globalData,
+          row => (row.categoryIds || []).includes(selected.categoryId),
+          "本篇没有已记录的该类别适用出现。",
+          groupCleanups
+        ));
+      }
+      root.append(el("p", "shj-catalog__count", "十八篇按篇列出；展开任一篇时才读取该篇并显示逐出现记录。"));
+      root.append(results);
+      container.replaceChildren(root);
+      document.title = catalogueName(selected) + " · 山海经";
+      return () => {
+        for (const cleanup of groupCleanups) cleanup();
+        container.replaceChildren();
+      };
+    }
+    container.replaceChildren(root);
+    document.title = (selected ? selected.label : "分类册") + " · 山海经";
+    return () => container.replaceChildren();
+  }
+
+  SHJ.registerFeature("catalog", mountCatalog);
+})();
+</script>
+  <script src="output/site-assets/search-service.js?v=100c5ea33136128c" data-feature="search"></script>
+  <script src="output/site-assets/search.js?v=ff5c8de04a41cc7d" data-feature="search"></script>
+  <script src="output/site-assets/map.js?v=27d13827c1411022" data-feature="map"></script>
 </body>
 </html>

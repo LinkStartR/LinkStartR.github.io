@@ -1,0 +1,1063 @@
+{
+  "schemaVersion": "p5-data-1.0",
+  "coverage": {
+    "p1BlockKinds": {
+      "commentary": 60,
+      "heading": 1447,
+      "note": 1187,
+      "original": 839,
+      "separator": 840,
+      "translation": 839
+    },
+    "p1FailedBlocks": 0,
+    "p1ModelUnresolved": 0,
+    "p1OriginalBlocks": 839,
+    "p1PendingReview": 0,
+    "p1ReviewAccepted": 331,
+    "p1TotalBlocks": 5212,
+    "p3EntityCandidates": 4671,
+    "p3Entries": 4671,
+    "p3Occurrences": 4671,
+    "p4BlockReviews": 839,
+    "p4EndpointStatuses": {
+      "ambiguous": 29,
+      "bound": 2787,
+      "unresolved": 292
+    },
+    "p4FailedBlocks": 0,
+    "p4NoRelationBlocks": 98,
+    "p4PendingBlocks": 0,
+    "p4RelationStatuses": {
+      "ambiguous": 22,
+      "explicit": 1341
+    },
+    "p4Relations": 1363,
+    "p4ReviewedBlocks": 649,
+    "p4ReviewedWithAmbiguityBlocks": 92,
+    "p4UnresolvedEndpoints": 321,
+    "volumes": 18
+  },
+  "unresolved": {
+    "p1GlyphUnresolvedReferences": 796,
+    "p1PendingReview": 0,
+    "p3IdentityMaterialUnresolvedTasks": 268,
+    "p3IdentityPendingTasks": 0,
+    "p4UnresolvedEndpoints": 321
+  },
+  "files": {
+    "assets/glyph-images/00efaed54162ddcb.jpeg": {
+      "bytes": 1272,
+      "sha256": "00efaed54162ddcb75b3626a5e9cb8b68f595fe9b84d96b96ac4c6f744207584"
+    },
+    "assets/glyph-images/01a38d3cc8fb2eb4.jpeg": {
+      "bytes": 1204,
+      "sha256": "01a38d3cc8fb2eb4b85a3faafe387263b94e527330551a351b318504a81cdde6"
+    },
+    "assets/glyph-images/02559d94a3c6dbd0.jpeg": {
+      "bytes": 1284,
+      "sha256": "02559d94a3c6dbd0930206d78cb8b8bc767109eeaf0101ea96d27d19625fe848"
+    },
+    "assets/glyph-images/02d4584c73f2190d.jpeg": {
+      "bytes": 1172,
+      "sha256": "02d4584c73f2190d011a1226e0d431caa273f3daffdd9054fc66d3c2c34db76e"
+    },
+    "assets/glyph-images/0650895e7ea45f0a.jpeg": {
+      "bytes": 1204,
+      "sha256": "0650895e7ea45f0ab2dad2e186db41b8bbebc18fff6fb7a27b041fd7f1cda4b2"
+    },
+    "assets/glyph-images/06e4ff7ba42647b3.jpeg": {
+      "bytes": 1236,
+      "sha256": "06e4ff7ba42647b305c3510234de1b2ced81767472cb38f041256120639fe240"
+    },
+    "assets/glyph-images/087501f111ed9804.jpeg": {
+      "bytes": 1192,
+      "sha256": "087501f111ed980455c67391aea86febcc38ce214432611795d43abf235b6f29"
+    },
+    "assets/glyph-images/08dcd09f95e13122.jpeg": {
+      "bytes": 1132,
+      "sha256": "08dcd09f95e13122d985f6e6fae1984e61db29ece7a8f32d5270bac62adfd1aa"
+    },
+    "assets/glyph-images/0a7bb150f077ebd7.jpeg": {
+      "bytes": 1212,
+      "sha256": "0a7bb150f077ebd7b8f9bf75214c1f3f530b83c164c66650fabb5c361271e876"
+    },
+    "assets/glyph-images/0a8cb98e18b61777.jpeg": {
+      "bytes": 1240,
+      "sha256": "0a8cb98e18b61777d032d1d844fced72ea0f8e2be1ec7003704dbf10088565fd"
+    },
+    "assets/glyph-images/0b786d09f5713afc.jpeg": {
+      "bytes": 1168,
+      "sha256": "0b786d09f5713afc362d933ef842a6db67c67b11bbf81116d9ad7a62c353a5f9"
+    },
+    "assets/glyph-images/0d5331d24c79b06e.jpeg": {
+      "bytes": 1216,
+      "sha256": "0d5331d24c79b06eb83dac9d453a292043f4012434245939f0b0e8fdf944fb23"
+    },
+    "assets/glyph-images/0d799c3d60e111ae.jpeg": {
+      "bytes": 1216,
+      "sha256": "0d799c3d60e111aeb0609ee22c6ff8d54b58d83704837a63ab1dfb0e6fb28feb"
+    },
+    "assets/glyph-images/0d8e1771e1bb5752.jpeg": {
+      "bytes": 1060,
+      "sha256": "0d8e1771e1bb5752950c462137e144923b9852eec9a432cc03023d9d4ad69984"
+    },
+    "assets/glyph-images/0da26a8b2e58aedb.jpeg": {
+      "bytes": 1216,
+      "sha256": "0da26a8b2e58aedbcb434c11c7a613d34efee25448ad4a5d5711c7812d5375af"
+    },
+    "assets/glyph-images/0e1ceb8b2fbe2d0c.jpeg": {
+      "bytes": 1232,
+      "sha256": "0e1ceb8b2fbe2d0c13ad34ac56d2769537263d1ed727601ea3090b548d291197"
+    },
+    "assets/glyph-images/0fe7111b30ec44bd.jpeg": {
+      "bytes": 1152,
+      "sha256": "0fe7111b30ec44bd7a3a699a84c3448a1e46d853d5134c5345312e247265cb17"
+    },
+    "assets/glyph-images/105cd0db0d0ce56f.jpeg": {
+      "bytes": 1232,
+      "sha256": "105cd0db0d0ce56ff835e86db391d654cb3ebc1eaaa6aea5789b59262df8b1cf"
+    },
+    "assets/glyph-images/1096e1b6dcd52d3d.jpeg": {
+      "bytes": 1140,
+      "sha256": "1096e1b6dcd52d3d1dd706c624a6128aff68378a09102bffdeddfeecb2373b79"
+    },
+    "assets/glyph-images/10d67c839e5f82e1.jpeg": {
+      "bytes": 1196,
+      "sha256": "10d67c839e5f82e152b062b3655009967fdbbef85f145662f91050d516a583d2"
+    },
+    "assets/glyph-images/132b5c1c2ed0d902.jpeg": {
+      "bytes": 1136,
+      "sha256": "132b5c1c2ed0d902b5787b48f2ad95e9987307bbb3a4827ad07ae04a9816181d"
+    },
+    "assets/glyph-images/14158e796aaa9b4e.jpeg": {
+      "bytes": 1136,
+      "sha256": "14158e796aaa9b4ebf1caf11f30d2b302e3f717816ca47f04f7c85c050295a1a"
+    },
+    "assets/glyph-images/148d955c447ba1a1.jpeg": {
+      "bytes": 1248,
+      "sha256": "148d955c447ba1a1170ac41972140addd91b947cd15660ec9d4a96da1d7e36a1"
+    },
+    "assets/glyph-images/15692dbcab56fadd.jpeg": {
+      "bytes": 1092,
+      "sha256": "15692dbcab56fadd3bae4f56c1c4c345d410a9d9ea3bd65dc4c0ef734fd03fc1"
+    },
+    "assets/glyph-images/158a8e7f0404cf07.jpeg": {
+      "bytes": 1208,
+      "sha256": "158a8e7f0404cf079fc3ea46fd37456f814d2cb9c4e9245931da01b541b333a0"
+    },
+    "assets/glyph-images/15c5667702247306.jpeg": {
+      "bytes": 1252,
+      "sha256": "15c5667702247306ff1ed9bf9b96c3f7f926e8f09b778a799fb32425a90db594"
+    },
+    "assets/glyph-images/1891e94a5065ae7a.jpeg": {
+      "bytes": 1068,
+      "sha256": "1891e94a5065ae7ab36dfd858a6d2974fef4fd7e2a153256faafeb013fde074e"
+    },
+    "assets/glyph-images/1aa022c68d98e051.jpeg": {
+      "bytes": 1252,
+      "sha256": "1aa022c68d98e051bc1e25ae9efdd301354d9e69bf8a5beb365746923da90120"
+    },
+    "assets/glyph-images/1f1dc1351ebc843c.jpeg": {
+      "bytes": 1236,
+      "sha256": "1f1dc1351ebc843cb8aa6b101f6b6a61ba14933b66d00f0792b5d551c4dc5898"
+    },
+    "assets/glyph-images/202b5faa30c44492.jpeg": {
+      "bytes": 1072,
+      "sha256": "202b5faa30c444922270790b2acfcbb55a0ec1b1d799406ef5a4729b4181844d"
+    },
+    "assets/glyph-images/2200350324ae0cf1.jpeg": {
+      "bytes": 1100,
+      "sha256": "2200350324ae0cf114782611726a6078a4b4fad407ce91e12547f020e3d5752b"
+    },
+    "assets/glyph-images/22f4337b72427e5f.jpeg": {
+      "bytes": 1200,
+      "sha256": "22f4337b72427e5ff714e542a1de5e0557b6b51473ae5978689569052ecbc046"
+    },
+    "assets/glyph-images/24f836f5032dc408.jpeg": {
+      "bytes": 1176,
+      "sha256": "24f836f5032dc408c980cfb2bea0ffa2b0b67eb0a508ff7b558185cf64e0a14d"
+    },
+    "assets/glyph-images/2661a2809f40d7f4.jpeg": {
+      "bytes": 1172,
+      "sha256": "2661a2809f40d7f43b9deb3cd4550791e854923b5c9a5600d1954948515914d9"
+    },
+    "assets/glyph-images/269f954f05ef445e.jpeg": {
+      "bytes": 1132,
+      "sha256": "269f954f05ef445e1ea170ae3c63b814e2e908f8a18a0583e5698099014cd0a3"
+    },
+    "assets/glyph-images/26c589a86b0c32cc.jpeg": {
+      "bytes": 1260,
+      "sha256": "26c589a86b0c32cc738a5a0591177e526e4ca5d80a7432a7d0e1a15d1d382965"
+    },
+    "assets/glyph-images/282ae82c91b6cac8.jpeg": {
+      "bytes": 1224,
+      "sha256": "282ae82c91b6cac85618c9af5e115f59d04dd2d60655eb466943d0293d581320"
+    },
+    "assets/glyph-images/295bc1f339aed6c6.jpeg": {
+      "bytes": 1252,
+      "sha256": "295bc1f339aed6c6f09e6be898c39a33f2a333a04255d86e6c5ef793ec66c6b1"
+    },
+    "assets/glyph-images/2a3b285c4a98951b.jpeg": {
+      "bytes": 1172,
+      "sha256": "2a3b285c4a98951bd4839ed83b99089a8b3e95cdc7bfd355688e9f2cdd878876"
+    },
+    "assets/glyph-images/2b558adce6e5bf49.jpeg": {
+      "bytes": 1176,
+      "sha256": "2b558adce6e5bf49959e031462ac48da616fc9583677fb1fe56c8fa638ea5ca0"
+    },
+    "assets/glyph-images/2be2f77ececf121e.jpeg": {
+      "bytes": 1148,
+      "sha256": "2be2f77ececf121e525456d46678bc14181913de5632aba9bcd35ee557ad8702"
+    },
+    "assets/glyph-images/2d405ff6d6ed8736.jpeg": {
+      "bytes": 1212,
+      "sha256": "2d405ff6d6ed87363de7209074158d8cbbe41f8041bec4130fefc9d4f8f1d406"
+    },
+    "assets/glyph-images/2e1786c1e53cb9ee.jpeg": {
+      "bytes": 1172,
+      "sha256": "2e1786c1e53cb9eeb1a92845fb1b2e0b3e5af233d880ca90d9bb4ae0bfaa0b5a"
+    },
+    "assets/glyph-images/30fd5a502075a723.jpeg": {
+      "bytes": 1144,
+      "sha256": "30fd5a502075a723db147b851dc3cfca1fd7cba810315b41618fe6723e1dbfea"
+    },
+    "assets/glyph-images/317741f890a3ea09.jpeg": {
+      "bytes": 1296,
+      "sha256": "317741f890a3ea09bdc68932d4f26c22a28a67651719f37faac767c61043be32"
+    },
+    "assets/glyph-images/31a68e5800d58b31.jpeg": {
+      "bytes": 1220,
+      "sha256": "31a68e5800d58b31996a9c8f0379a333590abb8471b1257d50a5650c447c56ad"
+    },
+    "assets/glyph-images/31aba61f6a33aa00.jpeg": {
+      "bytes": 1240,
+      "sha256": "31aba61f6a33aa00ef251c2084ad2729f524828d07756e1c26f08ba6f5908fc1"
+    },
+    "assets/glyph-images/34d24a76ff450070.jpeg": {
+      "bytes": 1204,
+      "sha256": "34d24a76ff4500704f9fc4073b4fa17fa584933cc335737b33fc784758e5e261"
+    },
+    "assets/glyph-images/3adb2302a2812043.jpeg": {
+      "bytes": 1136,
+      "sha256": "3adb2302a28120430f1dfe0bc905366f871ae23a92b0f99afc094ff8b1845c33"
+    },
+    "assets/glyph-images/3b6652d058aa3fa5.jpeg": {
+      "bytes": 1204,
+      "sha256": "3b6652d058aa3fa54b96317a5cd7f814f54852c87c874996fb7b6b81477925e7"
+    },
+    "assets/glyph-images/3b928c3bab94ba6c.jpeg": {
+      "bytes": 1200,
+      "sha256": "3b928c3bab94ba6c8d650174abd268336673036c9ffc19ea33c3990b53c29bab"
+    },
+    "assets/glyph-images/3bfd78826f4efcf4.jpeg": {
+      "bytes": 1256,
+      "sha256": "3bfd78826f4efcf471869ee2151ece128533b9a382ec82220e872dfba922c703"
+    },
+    "assets/glyph-images/3c1358ee30af4a60.jpeg": {
+      "bytes": 1172,
+      "sha256": "3c1358ee30af4a60d15e7b393bd4331a5a205d69e8cec6d7f8c72287efcc4ced"
+    },
+    "assets/glyph-images/3c37834208dc61f5.jpeg": {
+      "bytes": 1284,
+      "sha256": "3c37834208dc61f5895d2d512cbe420f71d18582324dcb9ebac46af99dc8398d"
+    },
+    "assets/glyph-images/3db2db268a308e94.jpeg": {
+      "bytes": 1128,
+      "sha256": "3db2db268a308e943e0eee6ac3dc39d2d2a1e66eccdf2410e644317d5428c262"
+    },
+    "assets/glyph-images/3f1a6ffc1f79daa3.jpeg": {
+      "bytes": 1272,
+      "sha256": "3f1a6ffc1f79daa3551ceb131cd1b08366f93486cdbfd53a3e03012f425eb1c4"
+    },
+    "assets/glyph-images/4176351409daa470.jpeg": {
+      "bytes": 1228,
+      "sha256": "4176351409daa47068240b849b8b3656b64f76dc23fe47cbd9ec6b629e107e8c"
+    },
+    "assets/glyph-images/41bec4bb7e4cbe37.jpeg": {
+      "bytes": 1164,
+      "sha256": "41bec4bb7e4cbe3719249567fac66e640e771e6fa7b296bd5029add5c26271b0"
+    },
+    "assets/glyph-images/41c312165e90294c.jpeg": {
+      "bytes": 1108,
+      "sha256": "41c312165e90294c79264eae4e0e6bc4b24d3209e5000ca96c7cb8fe45b274e1"
+    },
+    "assets/glyph-images/4210c248dd175984.jpeg": {
+      "bytes": 1108,
+      "sha256": "4210c248dd175984340575b35ee526c2d8ad919de6c8fbc1765c2baa75d1e4a1"
+    },
+    "assets/glyph-images/422403c6ebd33b2d.jpeg": {
+      "bytes": 1156,
+      "sha256": "422403c6ebd33b2dd1548c663672c80c45313be79df283f439d6756a845da679"
+    },
+    "assets/glyph-images/454af9ea5f5824de.jpeg": {
+      "bytes": 1220,
+      "sha256": "454af9ea5f5824de832fb3b538ee2d412bc202431a9b03e7ea3383dd3f9ec289"
+    },
+    "assets/glyph-images/45c34145e26b0e4f.jpeg": {
+      "bytes": 1072,
+      "sha256": "45c34145e26b0e4f1834cebe43589e312d64f144d8e01051b3b518d4c9b53f9e"
+    },
+    "assets/glyph-images/46d588dd5d97474d.jpeg": {
+      "bytes": 1120,
+      "sha256": "46d588dd5d97474dc9eb4dfba55ea32f7283cf56155e99248820bce081712c09"
+    },
+    "assets/glyph-images/491873bc12a709e0.jpeg": {
+      "bytes": 1200,
+      "sha256": "491873bc12a709e035e1ed16a5b471216bd5c2e1fbe36fa1c9bc6e273913da0b"
+    },
+    "assets/glyph-images/4936058098f0580d.jpeg": {
+      "bytes": 1164,
+      "sha256": "4936058098f0580d925fc0ee851b0adb3244aa003ff5055f1a924bd4ba1fc36f"
+    },
+    "assets/glyph-images/495e22c3a9e56e82.jpeg": {
+      "bytes": 1264,
+      "sha256": "495e22c3a9e56e829e4264628d8e826dff1e9247c2f69c119ee48564b0bc8ae3"
+    },
+    "assets/glyph-images/4a37057f3c331697.jpeg": {
+      "bytes": 1116,
+      "sha256": "4a37057f3c331697285230fe5aa154966271af49d2524feded7af613fe8d5a88"
+    },
+    "assets/glyph-images/4b5ad1a95e981814.jpeg": {
+      "bytes": 1228,
+      "sha256": "4b5ad1a95e9818148642d05c1b3dfc312584585c925b6f4f42151eef71f3ca39"
+    },
+    "assets/glyph-images/4c09999e78a3c628.jpeg": {
+      "bytes": 1224,
+      "sha256": "4c09999e78a3c6283db858e26585f71e68179f27f9d23f1b54c690223508ac36"
+    },
+    "assets/glyph-images/4dc2fe615df91b13.jpeg": {
+      "bytes": 1220,
+      "sha256": "4dc2fe615df91b132ebe2b806201a762eea36c94397afd202bb7e6dd2138628f"
+    },
+    "assets/glyph-images/4e17df5da3fcd6b1.jpeg": {
+      "bytes": 1232,
+      "sha256": "4e17df5da3fcd6b1eabc59beaee394e2216f342216940c19acb947a59af67e12"
+    },
+    "assets/glyph-images/4f7a5db9d8f4e49e.jpeg": {
+      "bytes": 1220,
+      "sha256": "4f7a5db9d8f4e49e7eb7b760b72031e473702c43d8ef270b678436c803ac93b9"
+    },
+    "assets/glyph-images/503ad6799725b1b7.jpeg": {
+      "bytes": 1168,
+      "sha256": "503ad6799725b1b787eacdfc02a60925e24deb0e90204be00abd6fe00bda1cfd"
+    },
+    "assets/glyph-images/5129ec13cb85f01e.jpeg": {
+      "bytes": 1140,
+      "sha256": "5129ec13cb85f01e4e1946b4ba14feebb6826f4703ec039f80eb311a190e7353"
+    },
+    "assets/glyph-images/547274efefe93649.jpeg": {
+      "bytes": 1168,
+      "sha256": "547274efefe936498babe9c7ddf31d7b4940bf92284f9ed5278d58980c916489"
+    },
+    "assets/glyph-images/5671b6de63a87547.jpeg": {
+      "bytes": 1208,
+      "sha256": "5671b6de63a87547108b16e0c182458d1ed82438911040a46b043096b0490ea6"
+    },
+    "assets/glyph-images/57cdcfd6227610b0.jpeg": {
+      "bytes": 1144,
+      "sha256": "57cdcfd6227610b089e860ba1eeffc73744d1a4938b3aa5d68f31d28c02c8e21"
+    },
+    "assets/glyph-images/598b20b6f0f1e889.jpeg": {
+      "bytes": 1180,
+      "sha256": "598b20b6f0f1e88907093088dedd059073c4cefdbc3efac9fb607dc9d87cbd19"
+    },
+    "assets/glyph-images/59bd7c3a1d2db8a5.jpeg": {
+      "bytes": 1124,
+      "sha256": "59bd7c3a1d2db8a5de70e0feba1c7d5d4a747967ecb1e4058faca831a1da8186"
+    },
+    "assets/glyph-images/5b4831f189c7da0b.jpeg": {
+      "bytes": 1212,
+      "sha256": "5b4831f189c7da0b0d9c2811c6f3464e0501c3960c87c960389d6294dca23867"
+    },
+    "assets/glyph-images/5c1b23135075be7a.jpeg": {
+      "bytes": 1152,
+      "sha256": "5c1b23135075be7aeee446e9eabc5f8d24fca9b8dae2d383956ca7edc454f252"
+    },
+    "assets/glyph-images/5d2a8bd92790dc96.jpeg": {
+      "bytes": 1188,
+      "sha256": "5d2a8bd92790dc960fec61b1d53b64bce6624d0bf162d8f8046353076ff06d4e"
+    },
+    "assets/glyph-images/5ddc61f3a39ff306.jpeg": {
+      "bytes": 1116,
+      "sha256": "5ddc61f3a39ff3060702dc05be657ded9b53e6c19b996ac9ac77fa01445eaa60"
+    },
+    "assets/glyph-images/5ef2f000a38cb71d.jpeg": {
+      "bytes": 1140,
+      "sha256": "5ef2f000a38cb71ddd8ee21fa2a1c87fed55736064be96dddad10238179bbfbb"
+    },
+    "assets/glyph-images/5f3183cf972ee66b.jpeg": {
+      "bytes": 1188,
+      "sha256": "5f3183cf972ee66bb97299321a2a728e35f165c8c923a1c01ef3e4ed07d3fdc4"
+    },
+    "assets/glyph-images/5f3cbf7739dc0645.jpeg": {
+      "bytes": 1068,
+      "sha256": "5f3cbf7739dc06456b86d35ef680aedbdd98e504a626a3002c86b1862974981c"
+    },
+    "assets/glyph-images/60034490703931cf.jpeg": {
+      "bytes": 1220,
+      "sha256": "60034490703931cf5efdfaeb3d5216b402341fa5d714d7a2e97831428857e58b"
+    },
+    "assets/glyph-images/604cf1c18c9b4721.jpeg": {
+      "bytes": 1220,
+      "sha256": "604cf1c18c9b472137b26f4221cb88b45f9421c8773fd0f305c3843acb702bbc"
+    },
+    "assets/glyph-images/60997c1dc93a5d7a.jpeg": {
+      "bytes": 1316,
+      "sha256": "60997c1dc93a5d7af843ddb9160630eca9dcbdfc32d10dc8e3ce2daab1ee2abb"
+    },
+    "assets/glyph-images/626595744818f1d6.jpeg": {
+      "bytes": 1288,
+      "sha256": "626595744818f1d68e327e784af7028cf91e6913c1cff22919cc65fe6fe7a659"
+    },
+    "assets/glyph-images/62c348b4cb5a5b0e.jpeg": {
+      "bytes": 1256,
+      "sha256": "62c348b4cb5a5b0e7f3f41b9626d73997e6530b37eabb4b1e51cce5ae526a933"
+    },
+    "assets/glyph-images/62d4d5b8bb69b238.jpeg": {
+      "bytes": 1240,
+      "sha256": "62d4d5b8bb69b2384956d4e9eae754936462ca1f6761d611a31ae0fe19a323ed"
+    },
+    "assets/glyph-images/62d7868d4319aefa.jpeg": {
+      "bytes": 1256,
+      "sha256": "62d7868d4319aefac306a4915669f6200794a34dd78e2da5ede2113a70d9e52c"
+    },
+    "assets/glyph-images/63959ac5b8e32724.jpeg": {
+      "bytes": 1152,
+      "sha256": "63959ac5b8e32724d12161de427502d941b49c288df4353fbcb0dcb2e86bd265"
+    },
+    "assets/glyph-images/6568e521840194f4.jpeg": {
+      "bytes": 1212,
+      "sha256": "6568e521840194f4ae1c80d6e9f5c3dcc81f35cdd1dc55dfe2cf7b35eba01ae5"
+    },
+    "assets/glyph-images/6871308cc24c0153.jpeg": {
+      "bytes": 1100,
+      "sha256": "6871308cc24c0153860cd6c5a433c656056249ecea513d0321e99bc3563203af"
+    },
+    "assets/glyph-images/69087390f8384067.jpeg": {
+      "bytes": 1140,
+      "sha256": "69087390f83840670dbdeaf110074d4fd32c3617d59810da761e8f5b3c60f56a"
+    },
+    "assets/glyph-images/6e1c7a5eba3fe5c1.jpeg": {
+      "bytes": 1132,
+      "sha256": "6e1c7a5eba3fe5c16fd8b0b244385dec626ac057ece9acf195611bb42158eef8"
+    },
+    "assets/glyph-images/703d38ce03e304a1.jpeg": {
+      "bytes": 1052,
+      "sha256": "703d38ce03e304a10a9a3f18608e54aa01ae1a124765b6b5b1b2f9cf1f2e8411"
+    },
+    "assets/glyph-images/72ca3543aa7b78b6.jpeg": {
+      "bytes": 1184,
+      "sha256": "72ca3543aa7b78b6eb7888d6f5749fd884b16a66d072be9f34360ed48967c24b"
+    },
+    "assets/glyph-images/7321f3165d21b2c9.jpeg": {
+      "bytes": 1184,
+      "sha256": "7321f3165d21b2c99ef27ad4244ff04e72b31695a8320ed935571e980984e800"
+    },
+    "assets/glyph-images/7343f389246f38ba.jpeg": {
+      "bytes": 1200,
+      "sha256": "7343f389246f38baf104d9179ca2f0b09bcf1adc99908fb66e976258bb842f3c"
+    },
+    "assets/glyph-images/742dd1eb8eb189f8.jpeg": {
+      "bytes": 1064,
+      "sha256": "742dd1eb8eb189f8687be898fc84d0ea65c55ffba2452f0d4fbf76a0208c0733"
+    },
+    "assets/glyph-images/746e9632588c2acd.jpeg": {
+      "bytes": 1260,
+      "sha256": "746e9632588c2acd3c6a19e0cd8b7a3d917a8ec75ecdfb995f7ad24cc3530141"
+    },
+    "assets/glyph-images/74a6def959c5fdb5.jpeg": {
+      "bytes": 1304,
+      "sha256": "74a6def959c5fdb51e85dd1a479f5c2af47f251d27f073c33a5e7498b16f6f23"
+    },
+    "assets/glyph-images/75678bc6c1db5ae6.jpeg": {
+      "bytes": 1212,
+      "sha256": "75678bc6c1db5ae6e651b22d8512b2fc4073e402581b0548713622cd01d9bc04"
+    },
+    "assets/glyph-images/772cf675e31b6c2e.jpeg": {
+      "bytes": 1128,
+      "sha256": "772cf675e31b6c2e9b039a881e58026042ec69e89cfb997e48cc50f8bfc28523"
+    },
+    "assets/glyph-images/778f7d31125ea1a0.jpeg": {
+      "bytes": 1084,
+      "sha256": "778f7d31125ea1a0705e3a3a54a1f18eb356bd1f8e4ea575d943d9a2da191799"
+    },
+    "assets/glyph-images/78c3d6dc662e5f0d.jpeg": {
+      "bytes": 1216,
+      "sha256": "78c3d6dc662e5f0db1947f865e8fdc09c5aa04f79b30fdb016f6dbfca7d55c31"
+    },
+    "assets/glyph-images/793883195077e473.jpeg": {
+      "bytes": 1184,
+      "sha256": "793883195077e473a6c442b96243a8e4668f9ec42cc4763ccd38a8d3a96b47a2"
+    },
+    "assets/glyph-images/7946adf63ed1e171.jpeg": {
+      "bytes": 1084,
+      "sha256": "7946adf63ed1e171f6477e623b60072b3fc9c46eaf682a8da218f0685a45255e"
+    },
+    "assets/glyph-images/7dc682d5f826241d.jpeg": {
+      "bytes": 1208,
+      "sha256": "7dc682d5f826241d0bcdc1b8c6c399cfe627fead4876fa96752655cc72688424"
+    },
+    "assets/glyph-images/7f6b32354dfa2030.jpeg": {
+      "bytes": 1228,
+      "sha256": "7f6b32354dfa2030e562bc7339344fa4fcf53676aef23734a990b97ea40e1e02"
+    },
+    "assets/glyph-images/7fed83b5bf2b508b.jpeg": {
+      "bytes": 1240,
+      "sha256": "7fed83b5bf2b508b76f5f0ad6a58e934b950210311cd16e86b5e4e63324df8c6"
+    },
+    "assets/glyph-images/80ad3d50ce2b7513.jpeg": {
+      "bytes": 1264,
+      "sha256": "80ad3d50ce2b7513e811f713c118da1f21c9397fae0f564aae9c2325a5f8fbe1"
+    },
+    "assets/glyph-images/819928a8fcc5723e.jpeg": {
+      "bytes": 1116,
+      "sha256": "819928a8fcc5723e7d74a15e74f933943be3bde02ede3adffe22a161ea6f1945"
+    },
+    "assets/glyph-images/833b45d983143891.jpeg": {
+      "bytes": 1316,
+      "sha256": "833b45d983143891136a15f04a50ba2b195c604d494fed38167cef243482602b"
+    },
+    "assets/glyph-images/86063e509a3c6fd0.jpeg": {
+      "bytes": 1260,
+      "sha256": "86063e509a3c6fd0fddb7bbe720482c89ca006955f1757be74c1109975164af9"
+    },
+    "assets/glyph-images/86f4185cbc6a6210.jpeg": {
+      "bytes": 1260,
+      "sha256": "86f4185cbc6a6210ed26b10ce8159578b06e03fd9b155b261df40c4c5efe65e2"
+    },
+    "assets/glyph-images/87d6fd33831d9b7b.jpeg": {
+      "bytes": 1092,
+      "sha256": "87d6fd33831d9b7bbf02501a9fbffef24276632a93e4664d955e4480bad08bc6"
+    },
+    "assets/glyph-images/88f9b7fe5d758188.jpeg": {
+      "bytes": 1048,
+      "sha256": "88f9b7fe5d758188b4f1a9882f6d282236d98e81a916f4d24f68e33a410eda3e"
+    },
+    "assets/glyph-images/893f42094db0f068.jpeg": {
+      "bytes": 1240,
+      "sha256": "893f42094db0f06801b5d621f60b06e39f49a622bc72979d199db7cfddcad3dc"
+    },
+    "assets/glyph-images/897de7188153aacf.jpeg": {
+      "bytes": 1108,
+      "sha256": "897de7188153aacf706ceffd704865fb316d3a051d1d9986cb2df2141a0f2660"
+    },
+    "assets/glyph-images/8a379406214be878.jpeg": {
+      "bytes": 1088,
+      "sha256": "8a379406214be878191ad2b2c412ad1fae1db4e2258c08ccda3fb571958da6de"
+    },
+    "assets/glyph-images/8aa520119e2a1e11.jpeg": {
+      "bytes": 1304,
+      "sha256": "8aa520119e2a1e11e35b3d393f06b9b3050ccf2de3340d617c457967fb250319"
+    },
+    "assets/glyph-images/8b0a77d80ca01379.jpeg": {
+      "bytes": 1204,
+      "sha256": "8b0a77d80ca013796fce58c9247a015592869fce4683c2f8deeb96d666e31722"
+    },
+    "assets/glyph-images/8b0e4876a9ad3f91.jpeg": {
+      "bytes": 1120,
+      "sha256": "8b0e4876a9ad3f9103d733c767e59a22c590dd25103973ef817dc15452f05638"
+    },
+    "assets/glyph-images/8c7fe20cd5519fb6.jpeg": {
+      "bytes": 1204,
+      "sha256": "8c7fe20cd5519fb65a72a093580e1ccd4e97f380df3afb8de7bfa9f881f4761c"
+    },
+    "assets/glyph-images/8c8e3cc3009a4a31.jpeg": {
+      "bytes": 1236,
+      "sha256": "8c8e3cc3009a4a31af07670e54baa8636a4fe3de8e669aea9603db6eabfcb7bc"
+    },
+    "assets/glyph-images/8ccd46736b85ba02.jpeg": {
+      "bytes": 1200,
+      "sha256": "8ccd46736b85ba02ea704a9d2bce28963eed00c9613a4116c281ddbbf6100970"
+    },
+    "assets/glyph-images/8d4653a244d42f9b.jpeg": {
+      "bytes": 1240,
+      "sha256": "8d4653a244d42f9b617c3e592c25088dacf22ac82351790a2479ec6d88ff1d6d"
+    },
+    "assets/glyph-images/8d7fc0413058fdd5.jpeg": {
+      "bytes": 1256,
+      "sha256": "8d7fc0413058fdd53841752fff2481a28a936c1013e0dce7583e6f69f15a5c63"
+    },
+    "assets/glyph-images/8de5a9395f216ef1.jpeg": {
+      "bytes": 1268,
+      "sha256": "8de5a9395f216ef17b72eb67dc18e10f8b0873be35a89a737b9d5087f085e992"
+    },
+    "assets/glyph-images/8ef25d6e0e10d9ca.jpeg": {
+      "bytes": 1160,
+      "sha256": "8ef25d6e0e10d9cae37b05aaab011fb9cf6a64a0e772152647faf2c04c28f81f"
+    },
+    "assets/glyph-images/8f69c1c8528fabc9.jpeg": {
+      "bytes": 1260,
+      "sha256": "8f69c1c8528fabc9a7636efdc0d9b4eb3465e2471cced44010ce254abc4f52c9"
+    },
+    "assets/glyph-images/8fc9abb4bccf0f55.jpeg": {
+      "bytes": 1148,
+      "sha256": "8fc9abb4bccf0f55fc25c23d9b0966cd54e6eb83ea9511825dd038a7fdebbaf3"
+    },
+    "assets/glyph-images/9162ee4f2e7a1c9b.jpeg": {
+      "bytes": 1252,
+      "sha256": "9162ee4f2e7a1c9b009e3850ac809c6388ef703e1bef91eff36105f13c03158f"
+    },
+    "assets/glyph-images/9226e95d5d735676.jpeg": {
+      "bytes": 1228,
+      "sha256": "9226e95d5d7356764e46ebb0113adc625a8712c0d55b4bd74e4c21abed017151"
+    },
+    "assets/glyph-images/92ce16a653c3b1b3.jpeg": {
+      "bytes": 1244,
+      "sha256": "92ce16a653c3b1b3b57a745bc35c5689a997255a214bf9a4453a2495b47e311e"
+    },
+    "assets/glyph-images/93989bd977108e51.jpeg": {
+      "bytes": 1264,
+      "sha256": "93989bd977108e516cf527b1d25a7e202d947276fd0750cbc2335b159a42b830"
+    },
+    "assets/glyph-images/95a09affd73cd654.jpeg": {
+      "bytes": 1216,
+      "sha256": "95a09affd73cd654c0a1c6275f5887d8e61b6fa27e321a45c94d4bd088bcfe56"
+    },
+    "assets/glyph-images/96e16403859efbce.jpeg": {
+      "bytes": 1220,
+      "sha256": "96e16403859efbce1f89f43acf9578871c69af97dfab57cac96d58f868809ff8"
+    },
+    "assets/glyph-images/998e399d97497e62.jpeg": {
+      "bytes": 1192,
+      "sha256": "998e399d97497e628a877c8ca1fbfd1b91fbd3093748a002461dc1dd914d9a24"
+    },
+    "assets/glyph-images/99b549ff00ae76f4.jpeg": {
+      "bytes": 1312,
+      "sha256": "99b549ff00ae76f4a4c51cccf1ebcba3da8616ef0fe9d4e23a21af49436466c8"
+    },
+    "assets/glyph-images/99fd35cbc8188a02.jpeg": {
+      "bytes": 1216,
+      "sha256": "99fd35cbc8188a0235c74838012ca2d3979e5e7350641ddd082cb3242e3c51f9"
+    },
+    "assets/glyph-images/9afa7e773fa08222.jpeg": {
+      "bytes": 1220,
+      "sha256": "9afa7e773fa08222bd6b2ffbe95c88b3bb884577351a3ca8394bceafddfadddf"
+    },
+    "assets/glyph-images/9b919b4f236db1d7.jpeg": {
+      "bytes": 1304,
+      "sha256": "9b919b4f236db1d7d9b02cbf074c445ebde7bc5c878c0e0432a5dae8bc24787f"
+    },
+    "assets/glyph-images/9bec87823e276d0a.jpeg": {
+      "bytes": 1124,
+      "sha256": "9bec87823e276d0a6ee7389ce0751c15d2f72045d470e43e236d51a1da6c3168"
+    },
+    "assets/glyph-images/9c994f1dcac9fd3f.jpeg": {
+      "bytes": 1144,
+      "sha256": "9c994f1dcac9fd3f29fd7a39ee33c0825059cadfe52de7b7627818bb7e7ebca9"
+    },
+    "assets/glyph-images/9cc11b69aa7ac8f1.jpeg": {
+      "bytes": 1132,
+      "sha256": "9cc11b69aa7ac8f10228029385fdb525f7c1220bd5e9ed1ff6803320f23d51cb"
+    },
+    "assets/glyph-images/9cc9b56c5694337a.jpeg": {
+      "bytes": 1172,
+      "sha256": "9cc9b56c5694337aa09dbc8d56a1e8a3143eb052a5775f7199d33285230b234e"
+    },
+    "assets/glyph-images/9e0e00bb4ffa1645.jpeg": {
+      "bytes": 1204,
+      "sha256": "9e0e00bb4ffa1645183a56e3e39b46a893d9712265d7e193f10bba176afd132c"
+    },
+    "assets/glyph-images/9e8dc4aeab3334c8.jpeg": {
+      "bytes": 1140,
+      "sha256": "9e8dc4aeab3334c8c1821f10e92895d981d837ba8f4e2608ac08fa49fb2bb076"
+    },
+    "assets/glyph-images/a0a09b362ccd9b6e.jpeg": {
+      "bytes": 1188,
+      "sha256": "a0a09b362ccd9b6e074e2cf0bc47b8921e27b52ca0036bb3694d942369975a77"
+    },
+    "assets/glyph-images/a0b4c73567dae3d4.jpeg": {
+      "bytes": 1188,
+      "sha256": "a0b4c73567dae3d4221392cc02ead528bc4a4e0841d49f54b15deabdf76507ff"
+    },
+    "assets/glyph-images/a1dd575fc42a18fe.jpeg": {
+      "bytes": 1116,
+      "sha256": "a1dd575fc42a18fe50d3c8f72ee3fe84d83a7f7d897a3bb787eaa930eeedc4cd"
+    },
+    "assets/glyph-images/a1e6a1e5f377ccea.jpeg": {
+      "bytes": 1120,
+      "sha256": "a1e6a1e5f377ccea4e6c33ff53c08569a8c75ab921cb179c2545849dd4d2fbae"
+    },
+    "assets/glyph-images/a27db35b1e1cc091.jpeg": {
+      "bytes": 1168,
+      "sha256": "a27db35b1e1cc091e79e109db98772dd3c78ada79203fd9569549926fcaa790c"
+    },
+    "assets/glyph-images/a6097b962853c3ef.jpeg": {
+      "bytes": 1064,
+      "sha256": "a6097b962853c3efd0a3e440a91863dee61012b26dcae512f1918181f4cdddcf"
+    },
+    "assets/glyph-images/a6f82aab842080ee.jpeg": {
+      "bytes": 1204,
+      "sha256": "a6f82aab842080eeec9bc6381eba20a3a170e4a860284a2f181a979cae5aa5e2"
+    },
+    "assets/glyph-images/a9c23d5c856bd8ad.jpeg": {
+      "bytes": 1212,
+      "sha256": "a9c23d5c856bd8ad7e1adc5d09f5b30ee749def3034721359dd4a69919e3bffc"
+    },
+    "assets/glyph-images/aa8e666676499cd2.jpeg": {
+      "bytes": 1300,
+      "sha256": "aa8e666676499cd2e1e886b5fd77c6a4f803b4b8a9e096f8157ce49d2b904cbe"
+    },
+    "assets/glyph-images/abef0d8c810d6bd5.jpeg": {
+      "bytes": 1224,
+      "sha256": "abef0d8c810d6bd5f5372bb3e739265e4ee3b0849631c863b6408da74e0613f4"
+    },
+    "assets/glyph-images/ae2d0cf07b0f27e5.jpeg": {
+      "bytes": 1268,
+      "sha256": "ae2d0cf07b0f27e535eca53a49dcdbd0332cf8f253df1e9b3a5ce372620f3bcd"
+    },
+    "assets/glyph-images/b13f4d76e91c2392.jpeg": {
+      "bytes": 1112,
+      "sha256": "b13f4d76e91c2392e3a429c84984767ae7aa2d945b84e5082f20c19fa78d2ddb"
+    },
+    "assets/glyph-images/b2fdb211069ff1ab.jpeg": {
+      "bytes": 1112,
+      "sha256": "b2fdb211069ff1ab2188e0f683d92da95a63e6f7a8417729de3f8791340eecd8"
+    },
+    "assets/glyph-images/b5086570b38b3e3a.jpeg": {
+      "bytes": 1152,
+      "sha256": "b5086570b38b3e3a6b925e5e7b0c10f1a15c974f829aff945448b4cd2b8f035e"
+    },
+    "assets/glyph-images/b75ea6908aa50a0e.jpeg": {
+      "bytes": 1164,
+      "sha256": "b75ea6908aa50a0ec519113c2b3f18bca097c50dc55be61e8781c55a08a8bb4b"
+    },
+    "assets/glyph-images/b7fa53a8ac8538f4.jpeg": {
+      "bytes": 1212,
+      "sha256": "b7fa53a8ac8538f41813adbeaa30301a109a6bf9f4ab14adaeb3a390d10bc0a5"
+    },
+    "assets/glyph-images/ba3ef5ecf5afd924.jpeg": {
+      "bytes": 1184,
+      "sha256": "ba3ef5ecf5afd92427e0584e90fbb5abaa5e57d2b029e87cc02e9f59a11d95c9"
+    },
+    "assets/glyph-images/bae67152470b9fb5.jpeg": {
+      "bytes": 1140,
+      "sha256": "bae67152470b9fb52f8b579803e5eae009c8a87fcd1c6beec4e2bcc6320ecb8d"
+    },
+    "assets/glyph-images/bc7bec09b6d29794.jpeg": {
+      "bytes": 1216,
+      "sha256": "bc7bec09b6d297941cc46fbdbbf3d09c9fa61fe7a7c8e48d70685b544246abeb"
+    },
+    "assets/glyph-images/bc90d484ef23341a.jpeg": {
+      "bytes": 1180,
+      "sha256": "bc90d484ef23341adb5e8c4afa130c88ea3948f40a46e665d560db9a5b9ddf35"
+    },
+    "assets/glyph-images/bd734b15e31cf091.jpeg": {
+      "bytes": 1108,
+      "sha256": "bd734b15e31cf091c5acd9fda601445b50263fde095a8df86fdbcc9020322deb"
+    },
+    "assets/glyph-images/c0054d6a3515d61a.jpeg": {
+      "bytes": 1116,
+      "sha256": "c0054d6a3515d61ac6dc55d4e88787e06bde3fa5b2ceba66edbed7ff9ea0b4ac"
+    },
+    "assets/glyph-images/c034a44ac01aec85.jpeg": {
+      "bytes": 1160,
+      "sha256": "c034a44ac01aec85836fdb3fcf90d682a5895984dd2316986dbc022566ba7e97"
+    },
+    "assets/glyph-images/c041ba08d2e63a4b.jpeg": {
+      "bytes": 1268,
+      "sha256": "c041ba08d2e63a4b01da90d7aafd4f535eef1f26d3219770e51dd67ea8e3d45e"
+    },
+    "assets/glyph-images/c185b5d34f19590f.jpeg": {
+      "bytes": 1176,
+      "sha256": "c185b5d34f19590f4f04070232a998fdb5f4b2330da653c4d030d98f08b81940"
+    },
+    "assets/glyph-images/c2acc4f40966a612.jpeg": {
+      "bytes": 1012,
+      "sha256": "c2acc4f40966a6121b378bfb8b3152fd9a23d85477f846aab798287d9dcc66cb"
+    },
+    "assets/glyph-images/c30a62538f9f123b.jpeg": {
+      "bytes": 1136,
+      "sha256": "c30a62538f9f123b2a00562545ed297f36ec9ed755a35e36a9a6c7c3d7189a18"
+    },
+    "assets/glyph-images/c31f0eb05cb79ee2.jpeg": {
+      "bytes": 1160,
+      "sha256": "c31f0eb05cb79ee2ede80413543e074f904daa6c312bcfadaebb42caaea42036"
+    },
+    "assets/glyph-images/c3b477f2f097a958.jpeg": {
+      "bytes": 1112,
+      "sha256": "c3b477f2f097a958fcb39f0b952164e22782e5fec5cd1e60c1c4ae48bf82e5e7"
+    },
+    "assets/glyph-images/c53df791b69e5ff6.jpeg": {
+      "bytes": 1264,
+      "sha256": "c53df791b69e5ff69c31e6ee57511bde1c40a0265720aba468ce2a2deb4eec53"
+    },
+    "assets/glyph-images/c5ba01f2ad8efc20.jpeg": {
+      "bytes": 1280,
+      "sha256": "c5ba01f2ad8efc20852fcc42638429bfe74588dc7d25cce867719a1884176fe6"
+    },
+    "assets/glyph-images/c63b819f69a4ea26.jpeg": {
+      "bytes": 1268,
+      "sha256": "c63b819f69a4ea2637d8c919559017e686cc2ea7de2cea1ed0ddda07642c9522"
+    },
+    "assets/glyph-images/c78e86b3f9f7c58b.jpeg": {
+      "bytes": 1196,
+      "sha256": "c78e86b3f9f7c58b68fa10fe53c9646018493616b5c65ec2038604a45d001522"
+    },
+    "assets/glyph-images/c7ee6b2429615484.jpeg": {
+      "bytes": 1184,
+      "sha256": "c7ee6b2429615484ebf1859b08c053c092937f81d213dafc0c23dddc90c6fdf4"
+    },
+    "assets/glyph-images/c908e957850a38fa.jpeg": {
+      "bytes": 1224,
+      "sha256": "c908e957850a38fa5b5ed1beb4985fabca654d2a8b7f532276e96c3ed3e10981"
+    },
+    "assets/glyph-images/caace38503f6899e.jpeg": {
+      "bytes": 1176,
+      "sha256": "caace38503f6899e09a9db2ebb0f6810bf7d677450cc0a6b984a06bf1ea4901f"
+    },
+    "assets/glyph-images/ccc84933285ba405.jpeg": {
+      "bytes": 1128,
+      "sha256": "ccc84933285ba4051bc383b7bc8d66f69f311b26f4c1797984bfa9c44d77a965"
+    },
+    "assets/glyph-images/ce0127823b47f0ce.jpeg": {
+      "bytes": 1280,
+      "sha256": "ce0127823b47f0ce2832bc83c396031fab1c326e9d8b17c7b732d9029902932a"
+    },
+    "assets/glyph-images/cea25ad886b6c5ad.jpeg": {
+      "bytes": 1092,
+      "sha256": "cea25ad886b6c5adc16951c2ba83526b2f5f517e9dd00a0ce413cee1ec107226"
+    },
+    "assets/glyph-images/d027311f1dd2ef10.jpeg": {
+      "bytes": 1140,
+      "sha256": "d027311f1dd2ef104527d50d10cbd01b6bcca3e893780c15e87fc4436f18be6b"
+    },
+    "assets/glyph-images/d3df5e1a3d13225c.jpeg": {
+      "bytes": 1208,
+      "sha256": "d3df5e1a3d13225c9973144005b9de2fc695df31f8d04cd455e04e549117ffba"
+    },
+    "assets/glyph-images/d4057ebcf14161fd.jpeg": {
+      "bytes": 1212,
+      "sha256": "d4057ebcf14161fd4c5790d274b2b99a16153c384883d01f2c505f995b4925a7"
+    },
+    "assets/glyph-images/d45c8ceea205364d.jpeg": {
+      "bytes": 1072,
+      "sha256": "d45c8ceea205364d30702bd4e0120ddcd1853ae8cf1f853f11801f076f635e14"
+    },
+    "assets/glyph-images/d46e4fcc56c8f54b.jpeg": {
+      "bytes": 1032,
+      "sha256": "d46e4fcc56c8f54bb131ff58e10854c0f42755c75beb7d2393d738cbbf72d5b6"
+    },
+    "assets/glyph-images/d49de5bd21e604f2.jpeg": {
+      "bytes": 1076,
+      "sha256": "d49de5bd21e604f2e1b02bc4e8b37037ee5f3085fb250975d1fdc928a82e1b37"
+    },
+    "assets/glyph-images/d695ea40d6272172.jpeg": {
+      "bytes": 1236,
+      "sha256": "d695ea40d6272172926b0ff04d37daa4639370950f633764b311f0d8cd0ce731"
+    },
+    "assets/glyph-images/d8d4731fade32475.jpeg": {
+      "bytes": 1252,
+      "sha256": "d8d4731fade3247549e369fbb88a7c02232dcba203c8f7d3c865526a1faf68b3"
+    },
+    "assets/glyph-images/d8dbde4402ef734b.jpeg": {
+      "bytes": 1072,
+      "sha256": "d8dbde4402ef734bf56cfe0af34ad77a6e1899259f9898678df28a64981ad8f2"
+    },
+    "assets/glyph-images/da18031a3577a707.jpeg": {
+      "bytes": 1196,
+      "sha256": "da18031a3577a7071fef5e1789ecd8bb5ff97eb8c7e988e1ce6d6f95a7e7003f"
+    },
+    "assets/glyph-images/da99e30aa72b6b96.jpeg": {
+      "bytes": 1304,
+      "sha256": "da99e30aa72b6b962f8f3712b5004ae0041e395564178ffa1d47369e26845f55"
+    },
+    "assets/glyph-images/dd87adeae97f5519.jpeg": {
+      "bytes": 1256,
+      "sha256": "dd87adeae97f5519141330a32fc18ae119cd6d95e7d7f987558195d0c3bc4e65"
+    },
+    "assets/glyph-images/deedd7dfdd36ebb4.jpeg": {
+      "bytes": 1156,
+      "sha256": "deedd7dfdd36ebb4d5ec036a6f6c9bb4284b1f9f2ec8d82ef39a4172f5f03395"
+    },
+    "assets/glyph-images/e17e4b64394756b0.jpeg": {
+      "bytes": 1112,
+      "sha256": "e17e4b64394756b0b67dcb3e02837fa5d566b2723e3e0335c8b0293b7ede22ad"
+    },
+    "assets/glyph-images/e49f34c25316493d.jpeg": {
+      "bytes": 1160,
+      "sha256": "e49f34c25316493da4aa939c110942c0afc3a576081084b1f7b47dfa13c14a54"
+    },
+    "assets/glyph-images/e7edb88270db3dc8.jpeg": {
+      "bytes": 1224,
+      "sha256": "e7edb88270db3dc8331b1affcd87aa608411d772a906bc4348bdabe64f06bb0f"
+    },
+    "assets/glyph-images/e7ef329647c09f62.jpeg": {
+      "bytes": 1184,
+      "sha256": "e7ef329647c09f623e1e6cfc1775f2e374b67f737f7215584a4b1735e46e544f"
+    },
+    "assets/glyph-images/e8fadda11b175052.jpeg": {
+      "bytes": 1284,
+      "sha256": "e8fadda11b17505236d73485c18a61efc7764de1116b7676aa541f6e1c10414d"
+    },
+    "assets/glyph-images/e99f4c11cf3cadae.jpeg": {
+      "bytes": 1216,
+      "sha256": "e99f4c11cf3cadae699291a7832b262a8271094db52656459904cc170827a495"
+    },
+    "assets/glyph-images/ebe6281a4c2c1441.jpeg": {
+      "bytes": 1120,
+      "sha256": "ebe6281a4c2c144106a43b05cf9bced5c63b314a5818f019ecd5f25a094b2fa4"
+    },
+    "assets/glyph-images/ecc8041e6473a475.jpeg": {
+      "bytes": 1248,
+      "sha256": "ecc8041e6473a47538515fe40b2d4132cc9136e01caf4928f3e8c17aef9338e5"
+    },
+    "assets/glyph-images/eda3bfd477e392fb.jpeg": {
+      "bytes": 1148,
+      "sha256": "eda3bfd477e392fb425066a48f4164c81ea20d2f1421175c08ca150d337fad96"
+    },
+    "assets/glyph-images/edc27d5a1539748c.jpeg": {
+      "bytes": 1212,
+      "sha256": "edc27d5a1539748c40e19bc7873d70973979659cb0bc3f5647428c792770a02b"
+    },
+    "assets/glyph-images/ee0961022e6d6f45.jpeg": {
+      "bytes": 1164,
+      "sha256": "ee0961022e6d6f456110e138cb88202d187ba8a25f9a4af1f32565155f381dcf"
+    },
+    "assets/glyph-images/ef3b5d8a6259c4e0.jpeg": {
+      "bytes": 1200,
+      "sha256": "ef3b5d8a6259c4e0f5f5f8707f57db18bb3a236c476b2e6fce9aa91187926028"
+    },
+    "assets/glyph-images/f05d45d479072a08.jpeg": {
+      "bytes": 1164,
+      "sha256": "f05d45d479072a08721d37e583070ac93afb19f88bbe4a91dd2599bf0c18eec7"
+    },
+    "assets/glyph-images/f13f40bc47a99b38.jpeg": {
+      "bytes": 1032,
+      "sha256": "f13f40bc47a99b3807345995510dacecd836fa014e7556e035d12d310b122940"
+    },
+    "assets/glyph-images/f259c713338c46a0.jpeg": {
+      "bytes": 1188,
+      "sha256": "f259c713338c46a0ad241f5d34c50e2c0b3ac050b0c6b32bc29c830a187f43ff"
+    },
+    "assets/glyph-images/f54cdb6ebb879249.jpeg": {
+      "bytes": 1216,
+      "sha256": "f54cdb6ebb8792493178b96624e9f19e31fa6456b8538d080f00332ff4d52699"
+    },
+    "assets/glyph-images/f66890739d36165e.jpeg": {
+      "bytes": 1144,
+      "sha256": "f66890739d36165ed2c2117179de0d78a59ff6d3459155a5ed6e23b84bedc78e"
+    },
+    "assets/glyph-images/f74ee943c9f1559c.jpeg": {
+      "bytes": 1276,
+      "sha256": "f74ee943c9f1559cc9a2be4ce9574f9f9729c41dd3e4ece40c45d1ef650d2e0c"
+    },
+    "assets/glyph-images/f889b9792250073d.jpeg": {
+      "bytes": 1204,
+      "sha256": "f889b9792250073df09bb73f0875bd01a60d9f2b5bb379efb8828dd05ac13f39"
+    },
+    "assets/glyph-images/f89f4af08a235af6.jpeg": {
+      "bytes": 1236,
+      "sha256": "f89f4af08a235af6ac13f895120127d94b49c50f155c1919028acbb588ef3aa0"
+    },
+    "assets/glyph-images/f8c099ed4135bf5a.jpeg": {
+      "bytes": 1180,
+      "sha256": "f8c099ed4135bf5a3caa8e53210d4f5d1c0449a64be6f95ff80f38095aa68832"
+    },
+    "assets/glyph-images/fc3983bb6f90ed7d.jpeg": {
+      "bytes": 1176,
+      "sha256": "fc3983bb6f90ed7d46939ddc873d973b787d46532fe63827ac1c4a533e6fc713"
+    },
+    "assets/glyph-images/fc60277a2783b382.jpeg": {
+      "bytes": 1128,
+      "sha256": "fc60277a2783b382441209fd45f390bc5b49bf6440896265107e34816593eb91"
+    },
+    "assets/glyph-images/fc76e313eb4b2a54.jpeg": {
+      "bytes": 1160,
+      "sha256": "fc76e313eb4b2a54a1c71e9e96039df25c743c5913acbf28bb88fce3b674ab48"
+    },
+    "assets/glyph-images/fe5c4e3f7226d42d.jpeg": {
+      "bytes": 1236,
+      "sha256": "fe5c4e3f7226d42d172201060273b75d5358b7c6c62174ff6bfb5f611814852e"
+    },
+    "assets/glyph-images/ff74181275cffada.jpeg": {
+      "bytes": 1132,
+      "sha256": "ff74181275cffada9505be11dfed94047841f4aabf11039e6b6b1ddad68c362b"
+    },
+    "assets/glyph-images/ff92d252c449b89f.jpeg": {
+      "bytes": 1180,
+      "sha256": "ff92d252c449b89f965a04f3fd6cebf0d3814fbda61a91de306f55c65eca7e8c"
+    },
+    "global.json": {
+      "bytes": 2785898,
+      "sha256": "ac35ebc009ca9d6e820bd8aa93de8f38c3b413775ff28b6790bb80a2aa7217f6"
+    },
+    "volumes/fangtao-v01.json": {
+      "bytes": 582839,
+      "sha256": "c071a9d27edb65ab9358b5c2e861cd52b54420e673133d7b9ff8a109ffb525c9"
+    },
+    "volumes/fangtao-v02.json": {
+      "bytes": 1453725,
+      "sha256": "3ac4d6ac11e635ec3f58cc5e20732ef734a266e4f160cb1094438be4d9e3c79d"
+    },
+    "volumes/fangtao-v03.json": {
+      "bytes": 1333106,
+      "sha256": "77d48bf939343b08f31e5db3ed2161c7b4c62bcebda38598a572357570e0b691"
+    },
+    "volumes/fangtao-v04.json": {
+      "bytes": 661396,
+      "sha256": "4342b36f2cc4d6e6132fb87685249a59ad54d42bd64002ac82d2bb0ed69dae79"
+    },
+    "volumes/fangtao-v05.json": {
+      "bytes": 3056263,
+      "sha256": "3a0210036d3d113a8ad82f6526af750de484c806f845daa9e55ccd0514df4de0"
+    },
+    "volumes/fangtao-v06.json": {
+      "bytes": 275768,
+      "sha256": "01f58a4a91151f6f9bdbd8b6a270f6651e5732a47b865359bb5e12371a9d9e4b"
+    },
+    "volumes/fangtao-v07.json": {
+      "bytes": 250098,
+      "sha256": "f876ed5e122634341981f9a551738c2e821512f770741071e0635ebde2bddf68"
+    },
+    "volumes/fangtao-v08.json": {
+      "bytes": 259139,
+      "sha256": "e27e432ec47667f504abce31f2552a0a9f492c32546bc177334fc8c2e23fd3e4"
+    },
+    "volumes/fangtao-v09.json": {
+      "bytes": 222239,
+      "sha256": "b64c7f0f7a46d3e9fce6d4253d93524bd477eef3f5e8451361fbbbae193e8a8c"
+    },
+    "volumes/fangtao-v10.json": {
+      "bytes": 157862,
+      "sha256": "1dab32582b6ed78ccaab5d26bb1a5565e643e414d081375990def3f2c99bdacd"
+    },
+    "volumes/fangtao-v11.json": {
+      "bytes": 277048,
+      "sha256": "2203d6929e6883be9260d8512c23b70ca4dc13fb1e71e6842e6daaa92ab311c4"
+    },
+    "volumes/fangtao-v12.json": {
+      "bytes": 217288,
+      "sha256": "48270d1fb7f4d1fb43cc2853c8b843ce2162dc6655549936c47bfdb7f445c340"
+    },
+    "volumes/fangtao-v13.json": {
+      "bytes": 124471,
+      "sha256": "c5b08e989e11d12c8e4859c368d3f599d10449bb6d8ff378d738307ad5a8cc4f"
+    },
+    "volumes/fangtao-v14.json": {
+      "bytes": 389119,
+      "sha256": "a93be4a964ea985542df0b720a4016729aa14f4455005ab7434fc6ed720795dc"
+    },
+    "volumes/fangtao-v15.json": {
+      "bytes": 419132,
+      "sha256": "73ae12ed401cd0bba0991a0759aae5c92cd79390a27e64ccc645bec558eaa93c"
+    },
+    "volumes/fangtao-v16.json": {
+      "bytes": 497269,
+      "sha256": "c9515f0c225a8a1e830a45a41fea80336f30d2d6dcb6b86571f6cfe1695a7210"
+    },
+    "volumes/fangtao-v17.json": {
+      "bytes": 437386,
+      "sha256": "9a3aa457fc3ac8d38b93bc98d8f8f74d34e893e371ba097aa3967be7691475d5"
+    },
+    "volumes/fangtao-v18.json": {
+      "bytes": 472640,
+      "sha256": "a5e915614474e2b3f2e2043c0a511e31599658b384c15512979e0339737b2614"
+    }
+  },
+  "inputVersions": {
+    "p1": "v1.0.4",
+    "p3Graph": "v1.3",
+    "p3Identity": "v1.2",
+    "p4": "v1.1"
+  }
+}
