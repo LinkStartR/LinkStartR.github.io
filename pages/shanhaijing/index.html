@@ -83,13 +83,50 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
   .main-nav { width: 100%; justify-content: flex-start; gap: .15rem; }
   .main-nav a { padding-inline: .55rem; }
   main { width: min(100% - 1.25rem, var(--content-width)); padding-block: 1.3rem; }
-  .chapter-grid { grid-template-columns: 1fr; }
+  .chapter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .35rem; }
   .chapter-link, .action-link.chapter-link { min-height: 3rem; }
+  .chapter-link { grid-template-columns: 1.8rem minmax(0, 1fr); gap: .35rem; padding: .45rem; }
+  .chapter-guide { grid-column: 2; font-size: .78rem; line-height: 1.4; }
+  .main-nav { overflow-x: auto; flex-wrap: nowrap; }
+  .main-nav a { flex: 0 0 auto; }
+  .shj-catalog__category-nav { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+.shj-home__entrances, .shj-home__preview-grid, .shj-catalog__preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: .75rem; margin-block: 1rem 2rem; }
+.shj-home__entrances .action-link { min-height: 3.5rem; }
+.shj-home__previews { margin-block: 2rem; }
+.shj-home__preview, .shj-catalog__preview-grid > article { min-width: 0; padding: 1rem; border: 1px solid var(--border); background: var(--surface); }
+.shj-home__preview h3 { margin: 0 0 .5rem; font-size: 1.1rem; }
+.shj-home__preview p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
+.shj-home__guide, .shj-home__attribution, .shj-catalog__translation-label { color: var(--muted); font-size: .9rem; }
+.shj-home__coverage { margin-block: 1rem; color: var(--muted); }
+.chapter-link { grid-template-rows: auto auto; }
+.chapter-guide { grid-column: 2; color: var(--muted); font-size: .85rem; line-height: 1.5; }
+.shj-search__examples { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin-block: .25rem 1rem; }
+.shj-search__example { min-height: 2.5rem; padding-inline: .7rem; border: 1px solid var(--border); background: var(--surface); color: var(--moss); font: inherit; cursor: pointer; }
+.shj-search__advanced { margin-block: .75rem; border-block: 1px solid var(--border); }
+.shj-search__advanced > summary { min-height: 2.75rem; align-content: center; color: var(--moss); cursor: pointer; }
+.shj-search__advanced-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: .75rem; padding-block: .75rem; }
+.shj-catalog__featured { margin-block: 1.25rem 2rem; padding-block: .75rem; border-block: 1px solid var(--border); }
+.shj-catalog__preview-grid > article { display: grid; align-content: start; gap: .4rem; }
+.shj-catalog__preview-grid h4, .shj-catalog__preview-grid p { margin: .2rem 0; }
+.shj-catalog__translation { padding-inline-start: .75rem; border-inline-start: 2px solid var(--moss); }
+.shj-reader__translation-links { margin-block: .8rem; padding: .7rem; border-inline-start: 2px solid var(--moss); background: var(--surface); }
+.shj-entry__translation { padding-inline-start: .75rem; border-inline-start: 2px solid var(--moss); }
+.shj-reader__translation-links h3 { margin: 0; font-size: 1rem; color: var(--moss); }
+.shj-reader__translation-unresolved { padding-inline-start: .75rem; border-inline-start: 2px solid var(--border); color: var(--muted); font-size: .92rem; }
+.shj-reader__note-links { margin-block: .6rem; padding-inline-start: .7rem; border-inline-start: 1px solid var(--border); }
+.shj-search__scope { margin-block-start: .5rem; }
+.shj-catalog__more, .shj-reader__source-mode { min-height: 2.75rem; padding: .45rem .85rem; border: 1px solid var(--moss); background: var(--moss); color: #fff; font: inherit; cursor: pointer; }
+.shj-catalog__more:disabled { opacity: .6; cursor: wait; }
+.shj-map__overview { margin-block: 1rem; }
+.shj-map__segment { border-top: 1px solid var(--border); padding-block: .5rem; }
+.shj-map__segment ol { padding-inline-start: 1.5rem; }
+.shj-map__segment li { margin-block: .35rem; }
 
 /* P5 reader: shared namespace styles. */
 .shj-reader { min-width: 0; }
@@ -180,6 +217,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
 .shj-catalog__eyebrow, .shj-catalog__policy, .shj-catalog__status, .shj-catalog__empty { color: var(--muted); }
 .shj-catalog__title { margin: .25rem 0 1rem; font-size: clamp(1.8rem, 4vw, 2.7rem); }
 .shj-catalog__category-nav { display: flex; flex-wrap: wrap; gap: .5rem .9rem; padding: 1rem 0; border-block: 1px solid var(--border); }
+.shj-catalog__category-switcher > summary { min-height: 2.75rem; align-content: center; color: var(--moss); cursor: pointer; }
 .shj-catalog__category-nav a[aria-current="page"] { font-weight: 700; text-decoration-thickness: 2px; }
 .shj-catalog a { color: var(--moss); text-underline-offset: .18em; }
 .shj-catalog a:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
@@ -267,7 +305,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     <section id="route-view" aria-live="off" aria-busy="false"></section>
   </main>
   <footer class="site-footer">以经文和可追溯资料为依据 · 未定状态依来源保留</footer>
-  <script id="shj-bootstrap" type="application/json">{"schemaVersion":"p5-data-1.0","dataBase":"data/p5/v1/","manifestSha256":"079a7fb4fbbea3f545c797c8206797a7dc3b40019a0d0a426452e6f0f8b8d3c1","volumes":[{"volumeId":"fangtao-v01","order":1,"title":"卷一","chapterTitle":"南山经","coverage":{"p1BlockKinds":{"commentary":4,"heading":77,"note":91,"original":43,"separator":44,"translation":43},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":43,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":302,"p3EntityCandidates":213,"p3Entries":213,"p3Occurrences":213,"p4BlockReviews":43,"p4EndpointStatuses":{"bound":161,"unresolved":13},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":77},"p4Relations":77,"p4ReviewedBlocks":43,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":13}},{"volumeId":"fangtao-v02","order":2,"title":"卷二","chapterTitle":"西山经","coverage":{"p1BlockKinds":{"commentary":3,"heading":153,"note":205,"original":82,"separator":82,"translation":82},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":82,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":20,"unresolved":1},"translation":{"failed":0,"pending":0,"pendingModelReview":20,"unresolved":1}},"p1TotalBlocks":607,"p3EntityCandidates":600,"p3Entries":600,"p3Occurrences":600,"p4BlockReviews":82,"p4EndpointStatuses":{"bound":390,"unresolved":18},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":173},"p4Relations":173,"p4ReviewedBlocks":82,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":18}},{"volumeId":"fangtao-v03","order":3,"title":"卷三","chapterTitle":"北山经","coverage":{"p1BlockKinds":{"commentary":2,"heading":156,"note":154,"original":92,"separator":92,"translation":92},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":92,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":588,"p3EntityCandidates":528,"p3Entries":528,"p3Occurrences":528,"p4BlockReviews":92,"p4EndpointStatuses":{"bound":436,"unresolved":21},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":189},"p4Relations":189,"p4ReviewedBlocks":92,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":21}},{"volumeId":"fangtao-v04","order":4,"title":"卷四","chapterTitle":"东山经","coverage":{"p1BlockKinds":{"commentary":5,"heading":92,"note":83,"original":51,"separator":51,"translation":51},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":51,"p1PendingReview":0,"p1ReviewAccepted":8,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":8,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":8,"unresolved":0}},"p1TotalBlocks":333,"p3EntityCandidates":249,"p3Entries":249,"p3Occurrences":249,"p4BlockReviews":51,"p4EndpointStatuses":{"bound":191,"unresolved":6},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":90},"p4Relations":90,"p4ReviewedBlocks":51,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":6}},{"volumeId":"fangtao-v05","order":5,"title":"卷五","chapterTitle":"中山经","coverage":{"p1BlockKinds":{"commentary":4,"heading":351,"note":287,"original":213,"separator":213,"translation":213},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":213,"p1PendingReview":0,"p1ReviewAccepted":77,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":75,"unresolved":2},"translation":{"failed":0,"pending":0,"pendingModelReview":75,"unresolved":2}},"p1TotalBlocks":1281,"p3EntityCandidates":1352,"p3Entries":1352,"p3Occurrences":1352,"p4BlockReviews":213,"p4EndpointStatuses":{"bound":707,"unresolved":38},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":7,"explicit":324},"p4Relations":331,"p4ReviewedBlocks":203,"p4ReviewedWithAmbiguityBlocks":9,"p4UnresolvedEndpoints":38}},{"volumeId":"fangtao-v06","order":6,"title":"卷六","chapterTitle":"海外南经","coverage":{"p1BlockKinds":{"commentary":3,"heading":44,"note":22,"original":25,"separator":25,"translation":25},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":25,"p1PendingReview":0,"p1ReviewAccepted":18,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0}},"p1TotalBlocks":144,"p3EntityCandidates":117,"p3Entries":117,"p3Occurrences":117,"p4BlockReviews":25,"p4EndpointStatuses":{"ambiguous":3,"bound":73,"unresolved":24},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":48},"p4Relations":48,"p4ReviewedBlocks":10,"p4ReviewedWithAmbiguityBlocks":15,"p4UnresolvedEndpoints":27}},{"volumeId":"fangtao-v07","order":7,"title":"卷七","chapterTitle":"海外西经","coverage":{"p1BlockKinds":{"commentary":3,"heading":40,"note":23,"original":23,"separator":23,"translation":23},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":23,"p1PendingReview":0,"p1ReviewAccepted":16,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0}},"p1TotalBlocks":135,"p3EntityCandidates":108,"p3Entries":108,"p3Occurrences":108,"p4BlockReviews":23,"p4EndpointStatuses":{"ambiguous":3,"bound":78,"unresolved":7},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":40},"p4Relations":42,"p4ReviewedBlocks":20,"p4ReviewedWithAmbiguityBlocks":3,"p4UnresolvedEndpoints":10}},{"volumeId":"fangtao-v08","order":8,"title":"卷八","chapterTitle":"海外北经","coverage":{"p1BlockKinds":{"commentary":3,"heading":38,"note":26,"original":22,"separator":23,"translation":22},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":22,"p1PendingReview":0,"p1ReviewAccepted":17,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":17,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":17,"unresolved":0}},"p1TotalBlocks":134,"p3EntityCandidates":117,"p3Entries":117,"p3Occurrences":117,"p4BlockReviews":22,"p4EndpointStatuses":{"bound":74,"unresolved":10},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":40},"p4Relations":40,"p4ReviewedBlocks":15,"p4ReviewedWithAmbiguityBlocks":7,"p4UnresolvedEndpoints":10}},{"volumeId":"fangtao-v09","order":9,"title":"卷九","chapterTitle":"海外东经","coverage":{"p1BlockKinds":{"commentary":2,"heading":31,"note":18,"original":17,"separator":17,"translation":17},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":17,"p1PendingReview":0,"p1ReviewAccepted":15,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0}},"p1TotalBlocks":102,"p3EntityCandidates":100,"p3Entries":100,"p3Occurrences":100,"p4BlockReviews":17,"p4EndpointStatuses":{"ambiguous":8,"bound":67,"unresolved":8},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":1,"explicit":40},"p4Relations":41,"p4ReviewedBlocks":6,"p4ReviewedWithAmbiguityBlocks":10,"p4UnresolvedEndpoints":16}},{"volumeId":"fangtao-v10","order":10,"title":"卷十","chapterTitle":"海内南经","coverage":{"p1BlockKinds":{"commentary":4,"heading":32,"note":20,"original":17,"separator":17,"translation":17},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":17,"p1PendingReview":0,"p1ReviewAccepted":11,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":11,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":11,"unresolved":0}},"p1TotalBlocks":107,"p3EntityCandidates":42,"p3Entries":42,"p3Occurrences":42,"p4BlockReviews":17,"p4EndpointStatuses":{"bound":51,"unresolved":18},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":32},"p4Relations":32,"p4ReviewedBlocks":12,"p4ReviewedWithAmbiguityBlocks":5,"p4UnresolvedEndpoints":18}},{"volumeId":"fangtao-v11","order":11,"title":"卷十一","chapterTitle":"海内西经","coverage":{"p1BlockKinds":{"commentary":3,"heading":39,"note":27,"original":20,"separator":19,"translation":20},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":20,"p1PendingReview":0,"p1ReviewAccepted":14,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":14,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":14,"unresolved":0}},"p1TotalBlocks":128,"p3EntityCandidates":97,"p3Entries":97,"p3Occurrences":97,"p4BlockReviews":20,"p4EndpointStatuses":{"ambiguous":3,"bound":111,"unresolved":29},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":1,"explicit":50},"p4Relations":51,"p4ReviewedBlocks":11,"p4ReviewedWithAmbiguityBlocks":8,"p4UnresolvedEndpoints":32}},{"volumeId":"fangtao-v12","order":12,"title":"卷十二","chapterTitle":"海内北经","coverage":{"p1BlockKinds":{"commentary":2,"heading":51,"note":26,"original":29,"separator":29,"translation":29},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":29,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0}},"p1TotalBlocks":166,"p3EntityCandidates":64,"p3Entries":64,"p3Occurrences":64,"p4BlockReviews":29,"p4EndpointStatuses":{"ambiguous":2,"bound":49,"unresolved":19},"p4FailedBlocks":0,"p4NoRelationBlocks":9,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":32},"p4Relations":32,"p4ReviewedBlocks":14,"p4ReviewedWithAmbiguityBlocks":6,"p4UnresolvedEndpoints":21}},{"volumeId":"fangtao-v13","order":13,"title":"卷十三","chapterTitle":"海内东经","coverage":{"p1BlockKinds":{"commentary":3,"heading":32,"note":11,"original":18,"separator":18,"translation":18},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":18,"p1PendingReview":0,"p1ReviewAccepted":15,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0}},"p1TotalBlocks":100,"p3EntityCandidates":34,"p3Entries":34,"p3Occurrences":34,"p4BlockReviews":18,"p4EndpointStatuses":{"ambiguous":2,"bound":37,"unresolved":16},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":25},"p4Relations":27,"p4ReviewedBlocks":14,"p4ReviewedWithAmbiguityBlocks":4,"p4UnresolvedEndpoints":18}},{"volumeId":"fangtao-v14","order":14,"title":"卷十四","chapterTitle":"大荒东经","coverage":{"p1BlockKinds":{"commentary":3,"heading":57,"note":37,"original":36,"separator":36,"translation":36},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":36,"p1PendingReview":0,"p1ReviewAccepted":16,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0}},"p1TotalBlocks":205,"p3EntityCandidates":173,"p3Entries":173,"p3Occurrences":173,"p4BlockReviews":36,"p4EndpointStatuses":{"ambiguous":4,"bound":68,"unresolved":22},"p4FailedBlocks":0,"p4NoRelationBlocks":16,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":38},"p4Relations":40,"p4ReviewedBlocks":13,"p4ReviewedWithAmbiguityBlocks":7,"p4UnresolvedEndpoints":26}},{"volumeId":"fangtao-v15","order":15,"title":"卷十五","chapterTitle":"大荒南经","coverage":{"p1BlockKinds":{"commentary":3,"heading":49,"note":33,"original":30,"separator":30,"translation":30},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":30,"p1PendingReview":0,"p1ReviewAccepted":7,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":7,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":7,"unresolved":0}},"p1TotalBlocks":175,"p3EntityCandidates":210,"p3Entries":210,"p3Occurrences":210,"p4BlockReviews":30,"p4EndpointStatuses":{"ambiguous":4,"bound":73,"unresolved":19},"p4FailedBlocks":0,"p4NoRelationBlocks":8,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":45},"p4Relations":45,"p4ReviewedBlocks":10,"p4ReviewedWithAmbiguityBlocks":12,"p4UnresolvedEndpoints":23}},{"volumeId":"fangtao-v16","order":16,"title":"卷十六","chapterTitle":"大荒西经","coverage":{"p1BlockKinds":{"commentary":4,"heading":81,"note":43,"original":50,"separator":50,"translation":50},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":50,"p1PendingReview":0,"p1ReviewAccepted":18,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0}},"p1TotalBlocks":278,"p3EntityCandidates":223,"p3Entries":223,"p3Occurrences":223,"p4BlockReviews":50,"p4EndpointStatuses":{"bound":70,"unresolved":9},"p4FailedBlocks":0,"p4NoRelationBlocks":29,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":35},"p4Relations":35,"p4ReviewedBlocks":21,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":9}},{"volumeId":"fangtao-v17","order":17,"title":"卷十七","chapterTitle":"大荒北经","coverage":{"p1BlockKinds":{"commentary":4,"heading":57,"note":34,"original":32,"separator":32,"translation":32},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":32,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":191,"p3EntityCandidates":220,"p3Entries":220,"p3Occurrences":220,"p4BlockReviews":32,"p4EndpointStatuses":{"bound":64,"unresolved":6},"p4FailedBlocks":0,"p4NoRelationBlocks":16,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":5,"explicit":25},"p4Relations":30,"p4ReviewedBlocks":12,"p4ReviewedWithAmbiguityBlocks":4,"p4UnresolvedEndpoints":6}},{"volumeId":"fangtao-v18","order":18,"title":"卷十八","chapterTitle":"海内经","coverage":{"p1BlockKinds":{"commentary":5,"heading":67,"note":47,"original":39,"separator":39,"translation":39},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":39,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0}},"p1TotalBlocks":236,"p3EntityCandidates":224,"p3Entries":224,"p3Occurrences":224,"p4BlockReviews":39,"p4EndpointStatuses":{"bound":87,"unresolved":9},"p4FailedBlocks":0,"p4NoRelationBlocks":17,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":38},"p4Relations":40,"p4ReviewedBlocks":20,"p4ReviewedWithAmbiguityBlocks":2,"p4UnresolvedEndpoints":9}}],"categories":[{"categoryId":"geography.mountain","label":"山岳与山系"},{"categoryId":"geography.water","label":"水域与水系"},{"categoryId":"geography.other","label":"其他地域与地貌"},{"categoryId":"polity.state","label":"邦国"},{"categoryId":"population.group","label":"族群与人群"},{"categoryId":"deity.divine","label":"神祇与神灵"},{"categoryId":"person.individual","label":"人物"},{"categoryId":"animal.creature","label":"动物与异兽"},{"categoryId":"plant.flora","label":"植物"},{"categoryId":"mineral.earthstone","label":"矿物与土石"},{"categoryId":"artifact.built_object","label":"器物与建筑"},{"categoryId":"celestial.natural","label":"天体与自然现象"}],"coverage":{"p1BlockKinds":{"commentary":60,"heading":1447,"note":1187,"original":839,"separator":840,"translation":839},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":839,"p1PendingReview":0,"p1ReviewAccepted":331,"p1TotalBlocks":5212,"p3EntityCandidates":4671,"p3Entries":4671,"p3Occurrences":4671,"p4BlockReviews":839,"p4EndpointStatuses":{"ambiguous":29,"bound":2787,"unresolved":292},"p4FailedBlocks":0,"p4NoRelationBlocks":98,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":22,"explicit":1341},"p4Relations":1363,"p4ReviewedBlocks":649,"p4ReviewedWithAmbiguityBlocks":92,"p4UnresolvedEndpoints":321,"volumes":18}}</script>
+  <script id="shj-bootstrap" type="application/json">{"schemaVersion":"p5-data-1.0","dataBase":"data/p5/v1/","manifestSha256":"079a7fb4fbbea3f545c797c8206797a7dc3b40019a0d0a426452e6f0f8b8d3c1","volumes":[{"volumeId":"fangtao-v01","order":1,"title":"卷一","chapterTitle":"南山经","coverage":{"p1BlockKinds":{"commentary":4,"heading":77,"note":91,"original":43,"separator":44,"translation":43},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":43,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":302,"p3EntityCandidates":213,"p3Entries":213,"p3Occurrences":213,"p4BlockReviews":43,"p4EndpointStatuses":{"bound":161,"unresolved":13},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":77},"p4Relations":77,"p4ReviewedBlocks":43,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":13},"guide":"循山系读山川、物产与异兽"},{"volumeId":"fangtao-v02","order":2,"title":"卷二","chapterTitle":"西山经","coverage":{"p1BlockKinds":{"commentary":3,"heading":153,"note":205,"original":82,"separator":82,"translation":82},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":82,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":20,"unresolved":1},"translation":{"failed":0,"pending":0,"pendingModelReview":20,"unresolved":1}},"p1TotalBlocks":607,"p3EntityCandidates":600,"p3Entries":600,"p3Occurrences":600,"p4BlockReviews":82,"p4EndpointStatuses":{"bound":390,"unresolved":18},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":173},"p4Relations":173,"p4ReviewedBlocks":82,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":18},"guide":"循山系读山川、物产与异兽"},{"volumeId":"fangtao-v03","order":3,"title":"卷三","chapterTitle":"北山经","coverage":{"p1BlockKinds":{"commentary":2,"heading":156,"note":154,"original":92,"separator":92,"translation":92},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":92,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":588,"p3EntityCandidates":528,"p3Entries":528,"p3Occurrences":528,"p4BlockReviews":92,"p4EndpointStatuses":{"bound":436,"unresolved":21},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":189},"p4Relations":189,"p4ReviewedBlocks":92,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":21},"guide":"循山系读山川、物产与异兽"},{"volumeId":"fangtao-v04","order":4,"title":"卷四","chapterTitle":"东山经","coverage":{"p1BlockKinds":{"commentary":5,"heading":92,"note":83,"original":51,"separator":51,"translation":51},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":51,"p1PendingReview":0,"p1ReviewAccepted":8,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":8,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":8,"unresolved":0}},"p1TotalBlocks":333,"p3EntityCandidates":249,"p3Entries":249,"p3Occurrences":249,"p4BlockReviews":51,"p4EndpointStatuses":{"bound":191,"unresolved":6},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":90},"p4Relations":90,"p4ReviewedBlocks":51,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":6},"guide":"循山系读山川、物产与异兽"},{"volumeId":"fangtao-v05","order":5,"title":"卷五","chapterTitle":"中山经","coverage":{"p1BlockKinds":{"commentary":4,"heading":351,"note":287,"original":213,"separator":213,"translation":213},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":213,"p1PendingReview":0,"p1ReviewAccepted":77,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":75,"unresolved":2},"translation":{"failed":0,"pending":0,"pendingModelReview":75,"unresolved":2}},"p1TotalBlocks":1281,"p3EntityCandidates":1352,"p3Entries":1352,"p3Occurrences":1352,"p4BlockReviews":213,"p4EndpointStatuses":{"bound":707,"unresolved":38},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":7,"explicit":324},"p4Relations":331,"p4ReviewedBlocks":203,"p4ReviewedWithAmbiguityBlocks":9,"p4UnresolvedEndpoints":38},"guide":"循山系读山川、物产与异兽"},{"volumeId":"fangtao-v06","order":6,"title":"卷六","chapterTitle":"海外南经","coverage":{"p1BlockKinds":{"commentary":3,"heading":44,"note":22,"original":25,"separator":25,"translation":25},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":25,"p1PendingReview":0,"p1ReviewAccepted":18,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0}},"p1TotalBlocks":144,"p3EntityCandidates":117,"p3Entries":117,"p3Occurrences":117,"p4BlockReviews":25,"p4EndpointStatuses":{"ambiguous":3,"bound":73,"unresolved":24},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":48},"p4Relations":48,"p4ReviewedBlocks":10,"p4ReviewedWithAmbiguityBlocks":15,"p4UnresolvedEndpoints":27},"guide":"读海外方位中的神人与奇物"},{"volumeId":"fangtao-v07","order":7,"title":"卷七","chapterTitle":"海外西经","coverage":{"p1BlockKinds":{"commentary":3,"heading":40,"note":23,"original":23,"separator":23,"translation":23},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":23,"p1PendingReview":0,"p1ReviewAccepted":16,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0}},"p1TotalBlocks":135,"p3EntityCandidates":108,"p3Entries":108,"p3Occurrences":108,"p4BlockReviews":23,"p4EndpointStatuses":{"ambiguous":3,"bound":78,"unresolved":7},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":40},"p4Relations":42,"p4ReviewedBlocks":20,"p4ReviewedWithAmbiguityBlocks":3,"p4UnresolvedEndpoints":10},"guide":"读海外方位中的神人与奇物"},{"volumeId":"fangtao-v08","order":8,"title":"卷八","chapterTitle":"海外北经","coverage":{"p1BlockKinds":{"commentary":3,"heading":38,"note":26,"original":22,"separator":23,"translation":22},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":22,"p1PendingReview":0,"p1ReviewAccepted":17,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":17,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":17,"unresolved":0}},"p1TotalBlocks":134,"p3EntityCandidates":117,"p3Entries":117,"p3Occurrences":117,"p4BlockReviews":22,"p4EndpointStatuses":{"bound":74,"unresolved":10},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":40},"p4Relations":40,"p4ReviewedBlocks":15,"p4ReviewedWithAmbiguityBlocks":7,"p4UnresolvedEndpoints":10},"guide":"读海外方位中的神人与奇物"},{"volumeId":"fangtao-v09","order":9,"title":"卷九","chapterTitle":"海外东经","coverage":{"p1BlockKinds":{"commentary":2,"heading":31,"note":18,"original":17,"separator":17,"translation":17},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":17,"p1PendingReview":0,"p1ReviewAccepted":15,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0}},"p1TotalBlocks":102,"p3EntityCandidates":100,"p3Entries":100,"p3Occurrences":100,"p4BlockReviews":17,"p4EndpointStatuses":{"ambiguous":8,"bound":67,"unresolved":8},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":1,"explicit":40},"p4Relations":41,"p4ReviewedBlocks":6,"p4ReviewedWithAmbiguityBlocks":10,"p4UnresolvedEndpoints":16},"guide":"读海外方位中的神人与奇物"},{"volumeId":"fangtao-v10","order":10,"title":"卷十","chapterTitle":"海内南经","coverage":{"p1BlockKinds":{"commentary":4,"heading":32,"note":20,"original":17,"separator":17,"translation":17},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":17,"p1PendingReview":0,"p1ReviewAccepted":11,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":11,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":11,"unresolved":0}},"p1TotalBlocks":107,"p3EntityCandidates":42,"p3Entries":42,"p3Occurrences":42,"p4BlockReviews":17,"p4EndpointStatuses":{"bound":51,"unresolved":18},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":32},"p4Relations":32,"p4ReviewedBlocks":12,"p4ReviewedWithAmbiguityBlocks":5,"p4UnresolvedEndpoints":18},"guide":"看海内诸国、山川与异闻"},{"volumeId":"fangtao-v11","order":11,"title":"卷十一","chapterTitle":"海内西经","coverage":{"p1BlockKinds":{"commentary":3,"heading":39,"note":27,"original":20,"separator":19,"translation":20},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":20,"p1PendingReview":0,"p1ReviewAccepted":14,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":14,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":14,"unresolved":0}},"p1TotalBlocks":128,"p3EntityCandidates":97,"p3Entries":97,"p3Occurrences":97,"p4BlockReviews":20,"p4EndpointStatuses":{"ambiguous":3,"bound":111,"unresolved":29},"p4FailedBlocks":0,"p4NoRelationBlocks":1,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":1,"explicit":50},"p4Relations":51,"p4ReviewedBlocks":11,"p4ReviewedWithAmbiguityBlocks":8,"p4UnresolvedEndpoints":32},"guide":"看海内诸国、山川与异闻"},{"volumeId":"fangtao-v12","order":12,"title":"卷十二","chapterTitle":"海内北经","coverage":{"p1BlockKinds":{"commentary":2,"heading":51,"note":26,"original":29,"separator":29,"translation":29},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":29,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0}},"p1TotalBlocks":166,"p3EntityCandidates":64,"p3Entries":64,"p3Occurrences":64,"p4BlockReviews":29,"p4EndpointStatuses":{"ambiguous":2,"bound":49,"unresolved":19},"p4FailedBlocks":0,"p4NoRelationBlocks":9,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":32},"p4Relations":32,"p4ReviewedBlocks":14,"p4ReviewedWithAmbiguityBlocks":6,"p4UnresolvedEndpoints":21},"guide":"看海内诸国、山川与异闻"},{"volumeId":"fangtao-v13","order":13,"title":"卷十三","chapterTitle":"海内东经","coverage":{"p1BlockKinds":{"commentary":3,"heading":32,"note":11,"original":18,"separator":18,"translation":18},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":18,"p1PendingReview":0,"p1ReviewAccepted":15,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":15,"unresolved":0}},"p1TotalBlocks":100,"p3EntityCandidates":34,"p3Entries":34,"p3Occurrences":34,"p4BlockReviews":18,"p4EndpointStatuses":{"ambiguous":2,"bound":37,"unresolved":16},"p4FailedBlocks":0,"p4NoRelationBlocks":0,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":25},"p4Relations":27,"p4ReviewedBlocks":14,"p4ReviewedWithAmbiguityBlocks":4,"p4UnresolvedEndpoints":18},"guide":"看海内诸国、山川与异闻"},{"volumeId":"fangtao-v14","order":14,"title":"卷十四","chapterTitle":"大荒东经","coverage":{"p1BlockKinds":{"commentary":3,"heading":57,"note":37,"original":36,"separator":36,"translation":36},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":36,"p1PendingReview":0,"p1ReviewAccepted":16,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":16,"unresolved":0}},"p1TotalBlocks":205,"p3EntityCandidates":173,"p3Entries":173,"p3Occurrences":173,"p4BlockReviews":36,"p4EndpointStatuses":{"ambiguous":4,"bound":68,"unresolved":22},"p4FailedBlocks":0,"p4NoRelationBlocks":16,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":38},"p4Relations":40,"p4ReviewedBlocks":13,"p4ReviewedWithAmbiguityBlocks":7,"p4UnresolvedEndpoints":26},"guide":"走进大荒中的神话与异兽"},{"volumeId":"fangtao-v15","order":15,"title":"卷十五","chapterTitle":"大荒南经","coverage":{"p1BlockKinds":{"commentary":3,"heading":49,"note":33,"original":30,"separator":30,"translation":30},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":30,"p1PendingReview":0,"p1ReviewAccepted":7,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":7,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":7,"unresolved":0}},"p1TotalBlocks":175,"p3EntityCandidates":210,"p3Entries":210,"p3Occurrences":210,"p4BlockReviews":30,"p4EndpointStatuses":{"ambiguous":4,"bound":73,"unresolved":19},"p4FailedBlocks":0,"p4NoRelationBlocks":8,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":45},"p4Relations":45,"p4ReviewedBlocks":10,"p4ReviewedWithAmbiguityBlocks":12,"p4UnresolvedEndpoints":23},"guide":"走进大荒中的神话与异兽"},{"volumeId":"fangtao-v16","order":16,"title":"卷十六","chapterTitle":"大荒西经","coverage":{"p1BlockKinds":{"commentary":4,"heading":81,"note":43,"original":50,"separator":50,"translation":50},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":50,"p1PendingReview":0,"p1ReviewAccepted":18,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":18,"unresolved":0}},"p1TotalBlocks":278,"p3EntityCandidates":223,"p3Entries":223,"p3Occurrences":223,"p4BlockReviews":50,"p4EndpointStatuses":{"bound":70,"unresolved":9},"p4FailedBlocks":0,"p4NoRelationBlocks":29,"p4PendingBlocks":0,"p4RelationStatuses":{"explicit":35},"p4Relations":35,"p4ReviewedBlocks":21,"p4ReviewedWithAmbiguityBlocks":0,"p4UnresolvedEndpoints":9},"guide":"走进大荒中的神话与异兽"},{"volumeId":"fangtao-v17","order":17,"title":"卷十七","chapterTitle":"大荒北经","coverage":{"p1BlockKinds":{"commentary":4,"heading":57,"note":34,"original":32,"separator":32,"translation":32},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":32,"p1PendingReview":0,"p1ReviewAccepted":12,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":12,"unresolved":0}},"p1TotalBlocks":191,"p3EntityCandidates":220,"p3Entries":220,"p3Occurrences":220,"p4BlockReviews":32,"p4EndpointStatuses":{"bound":64,"unresolved":6},"p4FailedBlocks":0,"p4NoRelationBlocks":16,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":5,"explicit":25},"p4Relations":30,"p4ReviewedBlocks":12,"p4ReviewedWithAmbiguityBlocks":4,"p4UnresolvedEndpoints":6},"guide":"走进大荒中的神话与异兽"},{"volumeId":"fangtao-v18","order":18,"title":"卷十八","chapterTitle":"海内经","coverage":{"p1BlockKinds":{"commentary":5,"heading":67,"note":47,"original":39,"separator":39,"translation":39},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":39,"p1PendingReview":0,"p1ReviewAccepted":21,"p1Roles":{"note":{"failed":0,"pending":0,"pendingModelReview":0,"unresolved":0},"original":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0},"translation":{"failed":0,"pending":0,"pendingModelReview":21,"unresolved":0}},"p1TotalBlocks":236,"p3EntityCandidates":224,"p3Entries":224,"p3Occurrences":224,"p4BlockReviews":39,"p4EndpointStatuses":{"bound":87,"unresolved":9},"p4FailedBlocks":0,"p4NoRelationBlocks":17,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":2,"explicit":38},"p4Relations":40,"p4ReviewedBlocks":20,"p4ReviewedWithAmbiguityBlocks":2,"p4UnresolvedEndpoints":9},"guide":"看海内诸国、山川与异闻"}],"previews":[{"volumeId":"fangtao-v01","title":"九尾狐","guide":"青丘山的狐狸形异兽长九条尾巴，叫声像婴儿。","text":"再往东三百里，有座青丘山，这山的南边盛产玉石，山的北边盛产青雘。山里有种怪兽，形状像狐狸，长有九条尾巴，叫声像婴儿的啼哭，吃人；人若吃了它，就可以不沾染妖邪之气。山里有种形状像雉鸡的鸟，发出的声音像人在斥骂，它的名字叫灌灌，把它佩带在身上可以不迷惑。英水就发源于这座山，之后向南注入即翼泽。附近的水里…","blockKey":"fangtao-v01:79:translation"},{"volumeId":"fangtao-v03","title":"精卫填海","guide":"女娃溺水化为精卫，常衔西山木石填海。","text":"再往北二百里，有座发鸠山，山上生长着大量的柘树。山里有种鸟，样子像乌鸦，长着花斑脑袋，有白色的嘴巴和红色的脚爪，它的名字叫精卫，这鸟的叫声就是自己的名字。精卫本来是炎帝的小女儿，名字叫女娃。女娃到东海游玩时不幸溺水，于是她变成了精卫鸟，常衔回西山的树枝和石子来填塞东海。漳水就从这山发源，之后向东注入…","blockKey":"fangtao-v03:439:translation"},{"volumeId":"fangtao-v07","title":"刑天","guide":"头被砍断后，刑天以乳头为眼、肚脐为口，仍持盾斧而舞。","text":"刑天与天帝争夺神位，天帝砍断了刑天的头，把他的头埋在常羊山。刑天就以乳头为眼睛，以肚脐为嘴巴，一手持盾牌一手舞动大斧继续作战。","blockKey":"fangtao-v07:48:translation"}],"categories":[{"categoryId":"geography.mountain","label":"山岳与山系"},{"categoryId":"geography.water","label":"水域与水系"},{"categoryId":"geography.other","label":"其他地域与地貌"},{"categoryId":"polity.state","label":"邦国"},{"categoryId":"population.group","label":"族群与人群"},{"categoryId":"deity.divine","label":"神祇与神灵"},{"categoryId":"person.individual","label":"人物"},{"categoryId":"animal.creature","label":"动物与异兽"},{"categoryId":"plant.flora","label":"植物"},{"categoryId":"mineral.earthstone","label":"矿物与土石"},{"categoryId":"artifact.built_object","label":"器物与建筑"},{"categoryId":"celestial.natural","label":"天体与自然现象"}],"coverage":{"p1BlockKinds":{"commentary":60,"heading":1447,"note":1187,"original":839,"separator":840,"translation":839},"p1FailedBlocks":0,"p1ModelUnresolved":0,"p1OriginalBlocks":839,"p1PendingReview":0,"p1ReviewAccepted":331,"p1TotalBlocks":5212,"p3EntityCandidates":4671,"p3Entries":4671,"p3Occurrences":4671,"p4BlockReviews":839,"p4EndpointStatuses":{"ambiguous":29,"bound":2787,"unresolved":292},"p4FailedBlocks":0,"p4NoRelationBlocks":98,"p4PendingBlocks":0,"p4RelationStatuses":{"ambiguous":22,"explicit":1341},"p4Relations":1363,"p4ReviewedBlocks":649,"p4ReviewedWithAmbiguityBlocks":92,"p4UnresolvedEndpoints":321,"volumes":18}}</script>
   <script>(() => {
   "use strict";
 
@@ -488,8 +526,41 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
 
   function showHome(manifest) {
     const heading = document.createElement("header");
-    heading.className = "page-heading";
-    heading.innerHTML = '<p class="eyebrow">十八篇</p><h1>山海经</h1><p class="lede">选择一篇，进入经文与相关资料的浏览入口。</p>';
+    heading.className = "page-heading shj-home__hero";
+    heading.innerHTML = '<p class="eyebrow">从奇山异兽读起</p><h1>山海经</h1><p class="lede">一部记录山川、草木、鸟兽与神话传说的古书。可以从一则故事开始，也可以沿着山海路线慢慢读。</p>';
+    const entrances = document.createElement("nav");
+    entrances.className = "shj-home__entrances";
+    entrances.setAttribute("aria-label", "按兴趣浏览");
+    entrances.append(
+      makeLink({ type: "search" }, "搜一个名字或故事"),
+      makeLink({ type: "catalog", categoryId: "animal.creature" }, "逛异兽与动物"),
+      makeLink({ type: "map" }, "看看山海路线")
+    );
+    const previews = document.createElement("section");
+    previews.className = "shj-home__previews";
+    const previewTitle = document.createElement("h2");
+    previewTitle.textContent = "先读几段";
+    previews.append(previewTitle);
+    const cards = document.createElement("div");
+    cards.className = "shj-home__preview-grid";
+    previews.append(cards);
+    for (const preview of bootstrap.previews || []) {
+      const card = document.createElement("article");
+      card.className = "shj-home__preview";
+      const h = document.createElement("h3");
+      h.textContent = preview.title + " · 从这里读起";
+      const copy = document.createElement("p");
+      copy.textContent = preview.text;
+      const guide = document.createElement("p");
+      guide.className = "shj-home__guide";
+      guide.textContent = "本站导读：" + preview.guide;
+      const source = makeLink({ type: "reader", volumeId: preview.volumeId, blockKey: preview.blockKey }, "阅读原文、译文与注释");
+      const attribution = document.createElement("p");
+      attribution.className = "shj-home__attribution";
+      attribution.textContent = "译文节选 · 方韬译注用户副本";
+      card.append(h, guide, copy, attribution, source);
+      cards.append(card);
+    }
     const list = document.createElement("ol");
     list.className = "chapter-grid";
     for (const chapter of bootstrap.volumes) {
@@ -502,14 +573,21 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
       const title = document.createElement("span");
       title.className = "chapter-title";
       title.textContent = volumeLabel(chapter);
-      anchor.append(number, title);
+      const guide = document.createElement("span");
+      guide.className = "chapter-guide";
+      guide.textContent = "本站导读：" + (chapter.guide || "读天地、山川与万物的记述");
+      anchor.append(number, title, guide);
       item.append(anchor);
       list.append(item);
     }
-    const stats = document.createElement("p");
-    stats.className = "stats";
-    stats.textContent = `原文段落 ${manifest.coverage.p1OriginalBlocks} · 文本出现 ${manifest.coverage.p3Occurrences} · 空间关系 ${manifest.coverage.p4Relations}`;
-    view.replaceChildren(heading, list, stats);
+    const stats = document.createElement("details");
+    stats.className = "shj-home__coverage";
+    const summary = document.createElement("summary");
+    summary.textContent = "收录与来源";
+    const description = document.createElement("p");
+    description.textContent = `十八篇原文及登记译注；另有分类、身份整理与经文空间关系。原文是阅读依据，译注用于辅助理解。`;
+    stats.append(summary, description);
+    view.replaceChildren(heading, entrances, previews, list, stats);
     document.title = "山海经 · 总览";
   }
 
@@ -735,6 +813,10 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
   const MARKER_PREFIX = String.fromCodePoint(0x3014, 0x5b57, 0x5f62, 0x56fe, 0x3a);
   const MARKER_SUFFIX = String.fromCodePoint(0x3015);
 
+  function friendlyGlyphText(text) {
+    return String(text || "").replace(/〔字形图:[^〕]+〕/g, "〔原书嵌字图，文字未识读〕");
+  }
+
   function element(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -866,7 +948,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     image.width = 52;
     image.height = 42;
     image.addEventListener("error", () => {
-      wrapper.replaceChildren(document.createTextNode(sourceToken));
+      wrapper.replaceChildren(document.createTextNode("〔原书嵌字图，文字未识读〕"));
       wrapper.classList.add("shj-reader__glyph--fallback");
     }, { once: true });
     link.append(image);
@@ -880,7 +962,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const rawGlyphs = [];
     const refs = glyphRows.slice().sort((a, b) => a.reference.offset - b.reference.offset);
     if (!refs.length) {
-      parent.append(document.createTextNode(rawText));
+      parent.append(document.createTextNode(friendlyGlyphText(rawText)));
       return rawGlyphs;
     }
     const codepoints = Array.from(rawText);
@@ -898,16 +980,16 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
         rawGlyphs.push({ row, status: "源文本偏移未匹配，保留原始文本", sourceToken: token, glyphRendered: false });
         continue;
       }
-      parent.append(document.createTextNode(codepoints.slice(cursor, start).join("")));
+      parent.append(document.createTextNode(friendlyGlyphText(codepoints.slice(cursor, start).join(""))));
       appendGlyph(parent, row, glyphRecords.get(row.stableId), baseUrl, rawGlyphs, token);
       cursor = end;
       found = true;
     }
     if (!found) {
-      parent.append(document.createTextNode(rawText));
+      parent.append(document.createTextNode(friendlyGlyphText(rawText)));
       return rawGlyphs;
     }
-    parent.append(document.createTextNode(codepoints.slice(cursor).join("")));
+    parent.append(document.createTextNode(friendlyGlyphText(codepoints.slice(cursor).join(""))));
     return rawGlyphs;
   }
 
@@ -991,6 +1073,8 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     article.dataset.blockKey = idKey(id);
     article.dataset.kind = id.kind;
     if (idKey(id) === deepBlockKey) article.classList.add("shj-reader__block--target");
+    const sourceInfo = element("details", "shj-reader__block-source-info");
+    sourceInfo.append(element("summary", null, "出处与对应说明"));
     const heading = element("header", "shj-reader__block-header");
     heading.append(element("span", "shj-reader__kind", KIND_LABELS[id.kind] || id.kind));
     heading.append(element("span", "shj-reader__block-number", "块 " + id.blockOrder));
@@ -1008,7 +1092,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
       for (const item of rawGlyphs) {
         const row = item.row;
         const note = element("p", "shj-reader__glyph-note");
-        note.append(element("code", null, item.sourceToken));
+        note.append(element("span", null, "原书嵌字图（文字未识读）"));
         note.append(document.createTextNode(" · " + item.status + " · " + row.reference.xhtmlPath + " · 字符偏移 " + row.reference.offset + " · "));
         if (item.glyphRendered) {
           const asset = element("a", null, "打开图像预览");
@@ -1019,16 +1103,101 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
         }
         glyphDetails.append(note);
       }
-      article.append(glyphDetails);
+      sourceInfo.append(glyphDetails);
     }
     if (relations.length) {
       const index = element("details", "shj-reader__relations");
-      index.append(element("summary", null, `相关关系与复核 ${relations.length} 项`));
+      index.append(element("summary", null, `原文与译注对应 ${relations.length} 项（查看依据与未定情况）`));
       for (const relation of relations) index.append(relationCard(relation.type, relation.row, relation.review));
-      article.append(index);
+      sourceInfo.append(index);
     }
-    article.append(sourceDetails(block, volume));
+    sourceInfo.append(sourceDetails(block, volume));
+    article.append(sourceInfo);
     return article;
+  }
+
+  function pairSupported(item) {
+    return item && item.type === "pair" && (item.review ? item.review.alignmentStatus === "model_supported" : item.row.status === "supported_by_unique_name_evidence");
+  }
+
+  function comparisonGroups(volume, relationIndex) {
+    const blocks = new Map(volume.p1.sourceBlocks.map(block => [idKey(block.blockId), block]));
+    const groups = [];
+    const covered = new Set();
+    for (const row of volume.p1.contentPairChecks || []) {
+      const relation = relationIndex.get((row.sourceBlocks || [])[0] ? idKey(row.sourceBlocks[0]) : "")?.find(item => item.type === "pair" && refsKey(item.row) === refsKey(row));
+      if (!pairSupported(relation)) continue;
+      const sources = (row.sourceBlocks || []).map(ref => blocks.get(idKey(ref))).filter(block => block && block.blockId.kind === "original");
+      const translations = (row.translationBlocks || []).map(ref => blocks.get(idKey(ref))).filter(block => block && block.blockId.kind === "translation");
+      if (!sources.length || !translations.length) continue;
+      groups.push({ row, sources, translations });
+      for (const block of sources) covered.add(idKey(block.blockId));
+    }
+    for (const block of volume.p1.sourceBlocks.filter(row => row.blockId.kind === "original" && !covered.has(idKey(row.blockId)))) groups.push({ row: null, sources: [block], translations: [] });
+    return groups.sort((a, b) => a.sources[0].blockId.blockOrder - b.sources[0].blockId.blockOrder);
+  }
+
+  function renderComparisonGroup(group, volume, relationIndex, glyphByBlock, glyphRecords, baseUrl, deepBlockKey) {
+    const section = element("section", "shj-reader__comparison-group");
+    for (const block of group.sources) {
+      const article = element("article", "shj-reader__comparison-text shj-reader__comparison-original");
+      article.id = blockDomId(block);
+      article.tabIndex = -1;
+      article.dataset.blockKey = idKey(block.blockId);
+      if (idKey(block.blockId) === deepBlockKey) article.classList.add("shj-reader__block--target");
+      article.append(element("h2", "shj-reader__comparison-label", "經文原文"));
+      const content = element("p", "shj-reader__text");
+      content.lang = "zh-Hant";
+      const glyphRows = (glyphByBlock.get(idKey(block.blockId)) || []).filter(row => row.reference.xhtmlPath === block.xhtmlPath);
+      appendSourceText(content, block, glyphRows, glyphRecords, baseUrl);
+      article.append(content);
+      section.append(article);
+    }
+    if (group.translations.length) {
+      if (group.sources.length > 1) section.append(element("p", "shj-reader__group-note", "以下译文整体对应上列多段原文；原资料没有将它们拆成逐段配对。"));
+      else if (group.translations.length > 1) section.append(element("p", "shj-reader__group-note", "这段原文对应多段译文，以下按原资料顺序呈现。"));
+      for (const block of group.translations) {
+        const article = element("article", "shj-reader__comparison-text shj-reader__comparison-translation");
+        article.append(element("h2", "shj-reader__comparison-label", "已有译文"));
+        const content = element("p", "shj-reader__text");
+        content.lang = "zh";
+        const glyphRows = (glyphByBlock.get(idKey(block.blockId)) || []).filter(row => row.reference.xhtmlPath === block.xhtmlPath);
+        appendSourceText(content, block, glyphRows, glyphRecords, baseUrl);
+        article.append(content);
+        section.append(article);
+      }
+    } else {
+      section.append(element("p", "shj-reader__translation-unresolved", "本段原文与译文的对应尚未确认；译文仍按来源顺序保留，不按相邻位置配对。"));
+    }
+    const notes = new Map();
+    for (const ref of group.row?.noteBlocks || []) {
+      const note = volume.p1.sourceBlocks.find(candidate => idKey(candidate.blockId) === idKey(ref));
+      if (note) notes.set(idKey(note.blockId), note);
+    }
+    for (const block of group.sources) {
+      for (const item of relationIndex.get(idKey(block.blockId)) || []) {
+        if (item.type !== "note") continue;
+        for (const ref of item.row.noteBlocks || []) {
+          const note = volume.p1.sourceBlocks.find(candidate => idKey(candidate.blockId) === idKey(ref));
+          if (note) notes.set(idKey(note.blockId), note);
+        }
+      }
+    }
+    if (notes.size) {
+      const noteDetails = element("details", "shj-reader__comparison-notes");
+      noteDetails.append(element("summary", null, "查看相关书内注释"));
+      for (const note of notes.values()) noteDetails.append(element("p", "shj-reader__text shj-reader__note-text", friendlyGlyphText(note.text)));
+      section.append(noteDetails);
+    }
+    const sourceInfo = element("details", "shj-reader__block-source-info");
+    sourceInfo.append(element("summary", null, "出处与对应说明"));
+    for (const block of [...group.sources, ...group.translations, ...notes.values()]) sourceInfo.append(sourceDetails(block, volume));
+    if (group.row) {
+      const review = relationIndex.get(idKey(group.sources[0].blockId))?.find(item => item.type === "pair" && refsKey(item.row) === refsKey(group.row));
+      if (review) sourceInfo.append(relationCard("pair", review.row, review.review));
+    }
+    section.append(sourceInfo);
+    return section;
   }
 
   async function mountReader(container, context) {
@@ -1043,8 +1212,6 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const edition = identity.edition;
     const authors = (edition.authors || []).map(author => author.name + (author.role ? " · " + author.role : "")).join("；");
     const sourceLine = [edition.title, authors, edition.publisher, edition.publicationYear, edition.isbn].filter(Boolean).join(" · ");
-    if (sourceLine) title.append(element("p", "shj-reader__source-line", sourceLine));
-    title.append(element("p", "shj-reader__source-note", "原文、译文与注释来自项目登记的方韬译注用户副本；译注以原导入身份展示，本模块不补译或改写。"));
 
     const controls = element("div", "shj-reader__controls");
     const label = element("label", "shj-reader__volume-label", "选择篇章");
@@ -1061,8 +1228,9 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const summaryCounts = element("p", "shj-reader__counts");
     const kindCounts = volume.coverage.p1BlockKinds || {};
     summaryCounts.textContent = `原文 ${kindCounts.original || 0} 块 · 译文 ${kindCounts.translation || 0} 块 · 注释 ${kindCounts.note || 0} 块`;
-    controls.append(summaryCounts);
-    if (summary) addReviewSummary(controls, globalData, volume.volumeId);
+    const sourceModeButton = element("button", "shj-reader__source-mode", "查看来源全文");
+    sourceModeButton.type = "button";
+    controls.append(sourceModeButton);
 
     const originalBlocks = volume.p1.sourceBlocks.filter(block => block.blockId.kind === "original");
     const toc = element("details", "shj-reader__toc");
@@ -1070,7 +1238,8 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const tocList = element("ol", "shj-reader__toc-list");
     for (const block of originalBlocks) {
       const row = element("li");
-      const link = element("a", "shj-reader__toc-link", "原文块 " + block.blockId.blockOrder);
+      const label = friendlyGlyphText(block.sectionLabel || block.text || "").replace(/\s+/g, " ").slice(0, 28);
+      const link = element("a", "shj-reader__toc-link", label || "本篇原文段落 " + (tocList.children.length + 1));
       link.href = SHJ.linkTo({ type: "reader", volumeId: volume.volumeId, blockKey: idKey(block.blockId) });
       row.append(link);
       tocList.append(row);
@@ -1091,17 +1260,32 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const baseUrl = new URL(SHJ.bootstrap.dataBase, document.baseURI);
     const stream = element("div", "shj-reader__stream");
     const deepBlockKey = context.route.blockKey || null;
-    for (const block of rawBlocks) {
-      stream.append(renderBlock(block, volume, relationIndex.get(idKey(block.blockId)) || [], glyphByBlock, glyphRecords, baseUrl, deepBlockKey));
-    }
+    let sourceMode = Boolean(context.target.block && context.target.block.blockId.kind !== "original");
+    const renderStream = () => {
+      sourceModeButton.textContent = sourceMode ? "返回原译对照" : "查看来源全文";
+      sourceModeButton.setAttribute("aria-pressed", String(sourceMode));
+      stream.replaceChildren();
+      if (sourceMode) {
+        for (const block of rawBlocks) stream.append(renderBlock(block, volume, relationIndex.get(idKey(block.blockId)) || [], glyphByBlock, glyphRecords, baseUrl, deepBlockKey));
+      } else {
+        for (const group of comparisonGroups(volume, relationIndex)) stream.append(renderComparisonGroup(group, volume, relationIndex, glyphByBlock, glyphRecords, baseUrl, deepBlockKey));
+      }
+    };
+    renderStream();
     const sourceDetailsElement = element("details", "shj-reader__edition-details");
     sourceDetailsElement.append(element("summary", null, "版本来源说明"));
+    sourceDetailsElement.append(summaryCounts);
+    if (summary) addReviewSummary(sourceDetailsElement, globalData, volume.volumeId);
+    if (sourceLine) sourceDetailsElement.append(element("p", "shj-reader__source-line", sourceLine));
+    sourceDetailsElement.append(element("p", "shj-reader__source-note", "原文、译文与注释来自项目登记的方韬译注用户副本；译注以原导入身份展示。"));
     if (edition.editionStatement) sourceDetailsElement.append(element("p", null, edition.editionStatement));
     if (identity.source.copyrightAndProvenance) sourceDetailsElement.append(element("p", null, identity.source.copyrightAndProvenance));
 
     container.replaceChildren(title, controls, toc, sourceDetailsElement, stream);
     const onVolumeChange = () => SHJ.navigate({ type: "reader", volumeId: select.value });
+    const onSourceMode = () => { sourceMode = !sourceMode; renderStream(); };
     select.addEventListener("change", onVolumeChange);
+    sourceModeButton.addEventListener("click", onSourceMode);
     if (context.target.block) {
       const targetId = blockDomId(context.target.block);
       requestAnimationFrame(() => {
@@ -1115,6 +1299,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     }
     return () => {
       select.removeEventListener("change", onVolumeChange);
+      sourceModeButton.removeEventListener("click", onSourceMode);
       container.replaceChildren();
     };
   }
@@ -1179,6 +1364,10 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     return node;
   }
 
+  function readableText(text) {
+    return String(text || "").replace(/〔字形图:[^〕]+〕/g, "〔原书嵌字图，文字未识读〕");
+  }
+
   function heading(parent, level, text, className) {
     const node = el("h" + level, className, text);
     parent.append(node);
@@ -1233,6 +1422,31 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     return { block, text: text.slice(occurrence.start, occurrence.end).join("") };
   }
 
+  function pairRefsKey(row) {
+    return ["sourceBlocks", "translationBlocks", "noteBlocks"].map(role => (row[role] || []).map(ref => `${ref.volumeId}:${ref.blockOrder}:${ref.kind}`).sort().join(",")).join("|");
+  }
+
+  function relatedTranslations(volume, occurrence, globalData) {
+    const source = findBlock(volume, occurrence);
+    if (!source) return [];
+    const key = `${source.blockId.volumeId}:${source.blockId.blockOrder}:${source.blockId.kind}`;
+    const reviews = new Map();
+    for (const pack of Object.values(globalData.p1ReviewDetails?.[volume.volumeId] || {})) {
+      for (const review of pack.reviews || []) reviews.set(pairRefsKey(review), review);
+    }
+    const refs = (volume.p1.contentPairChecks || []).filter(row => {
+      if (!(row.sourceBlocks || []).some(ref => `${ref.volumeId}:${ref.blockOrder}:${ref.kind}` === key)) return false;
+      const review = reviews.get(pairRefsKey(row));
+      return review ? review.alignmentStatus === "model_supported" : row.status === "supported_by_unique_name_evidence";
+    }).flatMap(row => row.translationBlocks || []);
+    const seen = new Set();
+    return refs.map(ref => volume.p1.sourceBlocks.find(block => block.blockId.volumeId === ref.volumeId && block.blockId.blockOrder === ref.blockOrder && block.blockId.kind === ref.kind)).filter(block => {
+      if (!block || seen.has(block.blockId.blockOrder)) return false;
+      seen.add(block.blockId.blockOrder);
+      return true;
+    });
+  }
+
   function categoriesFor(volume, occurrenceId) {
     return volume.p3.categoryOverlay.filter(row => row.occurrenceId === occurrenceId);
   }
@@ -1252,7 +1466,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
       item.append(el("h4", null, names.length ? names.join("、") : "未给出类别"));
       addStatus(item, "类别状态", row.categoryStatus, CATEGORY_STATUS, "未提供");
       addStatus(item, "复核状态", row.reviewStatus, REVIEW_STATUS, "未提供");
-      if (row.contextQuote) item.append(el("blockquote", "shj-entry__quote", row.contextQuote));
+      if (row.contextQuote) item.append(el("blockquote", "shj-entry__quote", readableText(row.contextQuote)));
       if (row.rationale) item.append(el("p", "shj-entry__reason", row.rationale));
       details.append(item);
     }
@@ -1325,10 +1539,12 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const card = el("article", "shj-entry__card");
     card.dataset.occurrenceId = occurrence.occurrenceId;
     const span = sourceSpan(volume, occurrence);
-    card.append(el("h3", "shj-entry__card-title", span ? span.text : occurrence.surface || "原文跨度不可用"));
-    addStatus(card, "出现形式", occurrence.mentionForm, OCCURRENCE_STATUS, "已记录");
-    addStatus(card, "来源层", occurrence.sourceLayer, SOURCE_LAYER, "未提供");
-    card.append(el("p", "shj-entry__location", `${volumeLabel(volume)} · 原文块 ${occurrence.blockOrder} · 字符 ${occurrence.start}–${occurrence.end}`));
+    card.append(el("h3", "shj-entry__card-title", readableText(span ? span.text : occurrence.surface || "原文跨度不可用")));
+    const translations = relatedTranslations(volume, occurrence, globalData);
+    if (translations.length) {
+      const copy = el("p", "shj-entry__translation", translations.map(block => readableText(block.text)).join(" / "));
+      card.append(copy);
+    }
     const nav = el("div", "shj-entry__links");
     nav.append(link({ type: "occurrence", volumeId: volume.volumeId, id: occurrence.occurrenceId }, "查看文本出现"));
     nav.append(link({ type: "candidate", volumeId: volume.volumeId, id: occurrence.entityCandidateId }, "查看实体候选"));
@@ -1349,17 +1565,20 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const root = el("div", "shj-entry");
     root.dataset.entryId = entry.entryId;
     root.append(el("p", "shj-entry__eyebrow", volumeLabel(volume)));
-    heading(root, 1, entry.displayText || "未命名条目", "shj-entry__title");
-    addStatus(root, "整理条目状态", entry.status, ENTRY_STATUS, "未提供");
-    root.append(el("p", "shj-entry__muted", "整理条目是对文本材料的组织记录；它不等同于实体确认。"));
+    heading(root, 1, readableText(entry.displayText || "相关经文记录"), "shj-entry__title");
     const related = el("section", "shj-entry__section");
-    heading(related, 2, "文本出现与实体候选");
+    heading(related, 2, "经文中的相关内容");
     const occurrences = (entry.occurrenceRefs || []).map(id => findOccurrence(volume, id)).filter(Boolean);
     if (!occurrences.length) related.append(el("p", "shj-entry__muted", "没有可回指的文本出现记录。"));
     for (const occurrence of occurrences) appendOccurrenceCard(related, volume, occurrence, globalData, { includeCategories: true });
     root.append(related);
+    const notes = el("details", "shj-entry__details");
+    notes.append(el("summary", null, "整理说明与来源信息"));
+    addStatus(notes, "整理状态", entry.status, ENTRY_STATUS, "未提供");
+    notes.append(el("p", "shj-entry__muted", "这是对文本材料的整理记录；是否属于同一实体仍以单独的身份证据为准。"));
+    root.append(notes);
     container.replaceChildren(root);
-    document.title = (entry.displayText || "条目") + " · 山海经";
+    document.title = readableText(entry.displayText || "条目") + " · 山海经";
     return () => container.replaceChildren();
   }
 
@@ -1370,40 +1589,37 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     root.dataset.occurrenceId = occurrence.occurrenceId;
     root.append(el("p", "shj-entry__eyebrow", volumeLabel(volume) + " · 文本出现"));
     const span = sourceSpan(volume, occurrence);
-    heading(root, 1, span ? span.text : occurrence.surface || "文本出现", "shj-entry__title");
-    addStatus(root, "出现形式", occurrence.mentionForm, OCCURRENCE_STATUS, "已记录");
-    root.append(el("p", "shj-entry__location", `原文块 ${occurrence.blockOrder} · 字符 ${occurrence.start}–${occurrence.end} · 来源哈希 ${occurrence.sourceTextSha256 || "未提供"}`));
+    heading(root, 1, readableText(span ? span.text : occurrence.surface || "经文中的相关内容"), "shj-entry__title");
+    const evidence = el("section", "shj-entry__section");
+    heading(evidence, 2, "经文与译文");
+    if (span) evidence.append(el("blockquote", "shj-entry__quote", readableText(span.block.text)));
+    const translations = relatedTranslations(volume, occurrence, globalData);
+    if (translations.length) {
+      for (const block of translations) evidence.append(el("p", "shj-entry__translation", readableText(block.text)));
+    } else evidence.append(el("p", "shj-entry__muted", "本处原文与译文的对应尚未确定；可以在读本中分别查阅，不按相邻顺序推配。"));
+    evidence.append(link({ type: "reader", volumeId: volume.volumeId, blockKey: [volume.volumeId, occurrence.blockOrder, occurrence.sourceLayer || "original"].join(":") }, "回到本篇读本"));
+    root.append(evidence);
     const candidate = volume.p3.entityCandidates.find(row => row.entityCandidateId === occurrence.entityCandidateId);
     const entry = volume.p3.entries.find(row => row.entryId === occurrence.entryId);
+    const metadata = el("details", "shj-entry__details");
+    metadata.append(el("summary", null, "分类、身份与来源信息"));
+    addStatus(metadata, "出现形式", occurrence.mentionForm, OCCURRENCE_STATUS, "已记录");
+    addStatus(metadata, "来源层", occurrence.sourceLayer, SOURCE_LAYER, "未提供");
+    metadata.append(el("p", "shj-entry__location", `${volumeLabel(volume)} · 原文块 ${occurrence.blockOrder} · 字符 ${occurrence.start}–${occurrence.end} · 来源哈希 ${occurrence.sourceTextSha256 || "未提供"}`));
     if (entry) {
-      addStatus(root, "整理条目状态", entry.status, ENTRY_STATUS, "未提供");
-      root.append(link({ type: "entry", volumeId: volume.volumeId, id: entry.entryId }, "打开整理条目"));
+      addStatus(metadata, "整理记录状态", entry.status, ENTRY_STATUS, "未提供");
+      metadata.append(link({ type: "entry", volumeId: volume.volumeId, id: entry.entryId }, "查看相关整理记录"));
     }
     if (candidate) {
-      addStatus(root, "原始候选状态", candidate.identityStatus, IDENTITY_STATUS, "候选身份已记录");
-      root.append(link({ type: "candidate", volumeId: volume.volumeId, id: candidate.entityCandidateId }, "打开实体候选"));
-      addIdentityEvidence(root, candidate, globalData);
+      addStatus(metadata, "身份状态", candidate.identityStatus, IDENTITY_STATUS, "候选身份已记录");
+      metadata.append(link({ type: "candidate", volumeId: volume.volumeId, id: candidate.entityCandidateId }, "查看相关身份整理"));
+      addIdentityEvidence(metadata, candidate, globalData);
     }
-    const evidence = el("section", "shj-entry__section");
-    heading(evidence, 2, "原文来源");
-    if (span) {
-      const quote = el("blockquote", "shj-entry__quote");
-      const sourceCodepoints = Array.from(span.block.text);
-      quote.append(document.createTextNode(sourceCodepoints.slice(Math.max(0, occurrence.start - 32), occurrence.start).join("")));
-      const mark = el("mark", null, span.text);
-      quote.append(mark);
-      quote.append(document.createTextNode(sourceCodepoints.slice(occurrence.end, occurrence.end + 32).join("")));
-      evidence.append(quote);
-    } else {
-      evidence.append(el("p", "shj-entry__muted", "原文块或字符跨度无法在当前冻结数据中解析。"));
-    }
-    const sourceNav = el("div", "shj-entry__links");
-    addSourceLink(sourceNav, occurrence);
-    evidence.append(sourceNav);
-    root.append(evidence);
-    addCategoryEvidence(root, volume, occurrence, globalData);
+    addCategoryEvidence(metadata, volume, occurrence, globalData);
+    addSourceLink(metadata, occurrence);
+    root.append(metadata);
     container.replaceChildren(root);
-    document.title = (span ? span.text : "文本出现") + " · 山海经";
+    document.title = readableText(span ? span.text : "文本出现") + " · 山海经";
     return () => container.replaceChildren();
   }
 
@@ -1414,34 +1630,34 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     root.dataset.candidateId = candidate.entityCandidateId;
     root.append(el("p", "shj-entry__eyebrow", volumeLabel(volume) + " · 实体候选"));
     const entry = volume.p3.entries.find(row => (candidate.entryRefs || []).includes(row.entryId));
-    heading(root, 1, entry ? entry.displayText : candidate.entityCandidateId, "shj-entry__title");
-    addStatus(root, "原始候选状态", candidate.identityStatus, IDENTITY_STATUS, "候选，身份状态未提供");
-    root.append(el("p", "shj-entry__muted", "实体候选保持独立身份；本页不会因同名或相似词形合并其他候选。"));
-    addIdentityEvidence(root, candidate, globalData);
+    heading(root, 1, readableText(entry ? entry.displayText : "经文中的相关内容"), "shj-entry__title");
     const referencedEntries = (candidate.entryRefs || []).map(id => volume.p3.entries.find(row => row.entryId === id)).filter(Boolean);
     const section = el("section", "shj-entry__section");
-    heading(section, 2, "关联整理条目 " + referencedEntries.length + "/" + (candidate.entryRefs || []).length);
-    for (const relatedEntry of referencedEntries) {
-      const item = el("article", "shj-entry__card");
-      const h = el("h3", "shj-entry__card-title");
-      h.append(link({ type: "entry", volumeId: volume.volumeId, id: relatedEntry.entryId }, relatedEntry.displayText || relatedEntry.entryId));
-      item.append(h);
-      addStatus(item, "条目状态", relatedEntry.status, ENTRY_STATUS, "未提供");
-      section.append(item);
-    }
+    heading(section, 2, "经文中的相关内容");
     const occurrenceIds = [...new Set(referencedEntries.flatMap(row => row.occurrenceRefs || []))].filter(id => {
       const occurrence = findOccurrence(volume, id);
       return occurrence && occurrence.entityCandidateId === candidate.entityCandidateId;
     });
-    heading(section, 2, "关联文本出现 " + occurrenceIds.length);
     for (const id of occurrenceIds) {
       const occurrence = findOccurrence(volume, id);
       appendOccurrenceCard(section, volume, occurrence, globalData, { includeCategories: true });
     }
     if (!occurrenceIds.length) section.append(el("p", "shj-entry__muted", "没有可回指的出现记录。"));
     root.append(section);
+    if (referencedEntries.length) {
+      const related = el("details", "shj-entry__details");
+      related.append(el("summary", null, "相关整理记录"));
+      for (const row of referencedEntries) related.append(link({ type: "entry", volumeId: volume.volumeId, id: row.entryId }, readableText(row.displayText || "查看整理记录")));
+      root.append(related);
+    }
+    const identityDetails = el("details", "shj-entry__details");
+    identityDetails.append(el("summary", null, "身份整理与来源记录"));
+    addStatus(identityDetails, "候选状态", candidate.identityStatus, IDENTITY_STATUS, "身份状态未提供");
+    identityDetails.append(el("p", "shj-entry__muted", "相同名字或相似词形本身不能证明是同一对象；本页只保留已记录的证据和未定状态。"));
+    addIdentityEvidence(identityDetails, candidate, globalData);
+    root.append(identityDetails);
     container.replaceChildren(root);
-    document.title = (entry ? entry.displayText : "实体候选") + " · 山海经";
+    document.title = readableText(entry ? entry.displayText : "实体候选") + " · 山海经";
     return () => container.replaceChildren();
   }
 
@@ -1471,11 +1687,8 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     }).filter(Boolean);
     const root = el("div", "shj-entry");
     root.append(el("p", "shj-entry__eyebrow", "跨篇身份整理"));
-    heading(root, 1, entity.entityId, "shj-entry__title");
-    addStatus(root, "整理身份", "canonical", { canonical: "身份整理记录中已确认的整理实体" }, "未提供");
-    addStatus(root, "指称层级", entity.referentLevel, REFERENT_LEVEL, "未提供");
-    root.append(el("p", "shj-entry__muted", "本页只呈现身份整理记录明确列出的候选成员与证据出现。实体归并依据来自已验收的身份记录；名称相似本身不作为归并依据。"));
-    if (entity.reason) root.append(el("p", "shj-entry__reason", entity.reason));
+    const firstEntry = candidates.map(({ volume, candidate }) => volume.p3.entries.find(row => (candidate.entryRefs || []).includes(row.entryId))).find(Boolean);
+    heading(root, 1, readableText(firstEntry ? firstEntry.displayText : "经文中的相关内容"), "shj-entry__title");
     const identityMeta = el("section", "shj-entry__evidence");
     heading(identityMeta, 2, "归并记录");
     addStatus(identityMeta, "身份任务", (entity.taskIds || []).join("；"), {}, "未提供");
@@ -1487,23 +1700,21 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
       else canonicalEvidence.append(el("span", "shj-entry__muted", "未绑定篇章的身份引用：" + id));
     }
     if (canonicalEvidence.childNodes.length) identityMeta.append(canonicalEvidence);
-    root.append(identityMeta);
     const memberSection = el("section", "shj-entry__section");
-    heading(memberSection, 2, "归并记录中的实体候选 " + candidates.length + "/" + (entity.candidateIds || []).length);
+    heading(memberSection, 2, "相关篇章与内容");
     for (const { volume, candidate } of candidates) {
       const item = el("article", "shj-entry__card");
       item.dataset.candidateId = candidate.entityCandidateId;
       const entry = volume.p3.entries.find(row => (candidate.entryRefs || []).includes(row.entryId));
       const h = el("h3", "shj-entry__card-title");
-      h.append(link({ type: "candidate", volumeId: volume.volumeId, id: candidate.entityCandidateId }, entry ? entry.displayText : candidate.entityCandidateId));
+      h.append(link({ type: "candidate", volumeId: volume.volumeId, id: candidate.entityCandidateId }, readableText(entry ? entry.displayText : "查看相关内容")));
       item.append(h);
       item.append(el("p", "shj-entry__location", volumeLabel(volume) + " · " + statusText(IDENTITY_STATUS, candidate.identityStatus, "候选身份已记录")));
       memberSection.append(item);
     }
     if (!candidates.length) memberSection.append(el("p", "shj-entry__muted", "引用的候选数据未能从当前按篇包中解析；原 candidate ID 仍保留在下方证据引用中。"));
-    root.append(memberSection);
     const evidenceSection = el("section", "shj-entry__section");
-    heading(evidenceSection, 2, "身份证据出现 " + (entity.evidenceOccurrenceIds || []).length + " 项");
+    heading(evidenceSection, 2, "经文中的相关内容");
     let evidenceCount = 0;
     for (const id of entity.evidenceOccurrenceIds || []) {
       const volumeRow = volumeForObjectId(id);
@@ -1514,17 +1725,19 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
         evidenceSection.append(missing);
         continue;
       }
-      const card = el("article", "shj-entry__card");
-      const span = sourceSpan(volume, occurrence);
-      card.append(el("h3", "shj-entry__card-title", span ? span.text : occurrence.surface || id));
-      card.append(el("p", "shj-entry__location", volumeLabel(volume) + " · 原文块 " + occurrence.blockOrder));
-      card.append(link({ type: "occurrence", volumeId: volume.volumeId, id: occurrence.occurrenceId }, "查看文本出现"));
-      card.append(link({ type: "reader", volumeId: volume.volumeId, blockKey: [volume.volumeId, occurrence.blockOrder, occurrence.sourceLayer || "original"].join(":") }, "打开读本原文"));
-      evidenceSection.append(card);
+      appendOccurrenceCard(evidenceSection, volume, occurrence, globalData);
       evidenceCount += 1;
     }
     if (!evidenceCount && !(entity.evidenceOccurrenceIds || []).length) evidenceSection.append(el("p", "shj-entry__muted", "未提供证据出现引用。"));
-    root.append(evidenceSection);
+    root.append(evidenceSection, memberSection);
+    const identityDetails = el("details", "shj-entry__details");
+    identityDetails.append(el("summary", null, "身份整理与来源记录"));
+    addStatus(identityDetails, "整理身份", "canonical", { canonical: "身份整理记录中已确认的整理实体" }, "未提供");
+    addStatus(identityDetails, "指称层级", entity.referentLevel, REFERENT_LEVEL, "未提供");
+    identityDetails.append(el("p", "shj-entry__muted", "本页只呈现身份整理记录明确列出的候选成员与证据出现。名称相似本身不作为归并依据。"));
+    if (entity.reason) identityDetails.append(el("p", "shj-entry__reason", entity.reason));
+    identityDetails.append(identityMeta);
+    root.append(identityDetails);
     if (entity.auxiliaryRefs && entity.auxiliaryRefs.length) {
       const auxiliary = el("details", "shj-entry__details");
       auxiliary.append(el("summary", null, "辅助引用 " + entity.auxiliaryRefs.length + " 项"));
@@ -1532,7 +1745,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
       root.append(auxiliary);
     }
     container.replaceChildren(root);
-    document.title = entity.entityId + " · 山海经";
+    document.title = readableText(firstEntry ? firstEntry.displayText : "相关经文记录") + " · 山海经";
     return () => container.replaceChildren();
   }
 
@@ -1560,22 +1773,14 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     return node;
   }
 
+  function readableText(text) {
+    return String(text || "").replace(/〔字形图:[^〕]+〕/g, "〔原书嵌字图，文字未识读〕");
+  }
+
   function link(target, label) {
     const node = el("a", null, label);
     node.href = SHJ.linkTo(target);
     return node;
-  }
-
-  function statusLabel(status) {
-    const labels = {
-      supported: "分类规则支持",
-      candidate: "分类候选",
-      unresolved: "分类未定",
-      pending: "分类待处理",
-      rejected: "分类未接受",
-      rule_boundary_flag: "分类边界待核"
-    };
-    return labels[status] || status || "未提供";
   }
 
   function findOccurrence(volume, id) {
@@ -1586,8 +1791,52 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     return volume.p3.entries.find(row => row.entryId === occurrence.entryId) || null;
   }
 
+  function pairRefsKey(row) {
+    return ["sourceBlocks", "translationBlocks", "noteBlocks"].map(role => (row[role] || []).map(ref => `${ref.volumeId}:${ref.blockOrder}:${ref.kind}`).sort().join(",")).join("|");
+  }
+
+  function translationsFor(volume, occurrence, globalData) {
+    const reviews = new Map();
+    for (const pack of Object.values(globalData.p1ReviewDetails?.[volume.volumeId] || {})) for (const row of pack.reviews || []) reviews.set(pairRefsKey(row), row);
+    const sourceKey = `${volume.volumeId}:${occurrence.blockOrder}:${occurrence.sourceLayer || "original"}`;
+    const refs = (volume.p1.contentPairChecks || []).filter(row => {
+      if (!(row.sourceBlocks || []).some(ref => `${ref.volumeId}:${ref.blockOrder}:${ref.kind}` === sourceKey)) return false;
+      const review = reviews.get(pairRefsKey(row));
+      return review ? review.alignmentStatus === "model_supported" : row.status === "supported_by_unique_name_evidence";
+    }).flatMap(row => row.translationBlocks || []);
+    const seen = new Set();
+    return refs.map(ref => volume.p1.sourceBlocks.find(row => `${row.blockId.volumeId}:${row.blockId.blockOrder}:${row.blockId.kind}` === `${ref.volumeId}:${ref.blockOrder}:${ref.kind}`)).filter(row => {
+      if (!row || seen.has(row.blockId.blockOrder)) return false;
+      seen.add(row.blockId.blockOrder);
+      return true;
+    });
+  }
+
   function volumeLabel(volume) {
     return [volume.title, volume.chapterTitle].filter(Boolean).join(" · ");
+  }
+
+  function excerptNear(text, term, start, end, radius = 70) {
+    const chars = Array.from(text || "");
+    const needle = Array.from(term || "");
+    let found = -1;
+    if (needle.length) {
+      for (let i = 0; i <= chars.length - needle.length; i++) {
+        if (needle.every((char, offset) => chars[i + offset] === char)) {
+          if (found >= 0) return null;
+          found = i;
+        }
+      }
+      if (found >= 0) { start = found; end = found + needle.length; }
+      else if (start === end) return null;
+    }
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start || end > chars.length) return null;
+    const from = Math.max(0, start - radius), to = Math.min(chars.length, end + radius);
+    return (from ? "…" : "") + chars.slice(from, to).join("") + (to < chars.length ? "…" : "");
+  }
+
+  function sourceBlockFor(volume, occurrence) {
+    return volume.p1.sourceBlocks.find(block => block.blockId.volumeId === occurrence.volumeId && block.blockId.blockOrder === occurrence.blockOrder && block.blockId.kind === occurrence.sourceLayer) || null;
   }
 
   function catalogueName(category) {
@@ -1595,6 +1844,8 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
   }
 
   function renderCategoryLinks(parent, categories, selectedId) {
+    const details = el("details", "shj-catalog__category-switcher");
+    details.append(el("summary", null, "切换类别"));
     const nav = el("nav", "shj-catalog__category-nav");
     nav.setAttribute("aria-label", "十二类录册");
     const all = link({ type: "catalog" }, "全部录册");
@@ -1606,7 +1857,8 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
       if (category.categoryId === selectedId) anchor.setAttribute("aria-current", "page");
       nav.append(anchor);
     }
-    parent.append(nav);
+    details.append(nav);
+    parent.append(details);
   }
 
   function renderOccurrence(volume, overlay, occurrence, globalData) {
@@ -1617,27 +1869,125 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const entry = entryFor(volume, occurrence);
     if (entry) card.dataset.entryId = entry.entryId;
     card.dataset.candidateId = occurrence.entityCandidateId || "";
-    const title = entry && entry.displayText || occurrence.surface || occurrence.occurrenceId;
+    const title = readableText(entry && entry.displayText || occurrence.surface || "经文中的相关内容");
     const h = el("h4");
     h.append(link({ type: "occurrence", volumeId: volume.volumeId, id: occurrence.occurrenceId }, title));
     card.append(h);
-    card.append(el("p", "shj-catalog__status", statusLabel(overlay.categoryStatus) + " · 出现 " + occurrence.occurrenceId));
-    if (overlay.contextQuote) card.append(el("blockquote", "shj-catalog__quote", overlay.contextQuote));
-    if (overlay.rationale) card.append(el("p", "shj-catalog__reason", overlay.rationale));
-    const links = el("div", "shj-catalog__links");
-    if (entry) links.append(link({ type: "entry", volumeId: volume.volumeId, id: entry.entryId }, "整理条目"));
-    links.append(link({ type: "candidate", volumeId: volume.volumeId, id: occurrence.entityCandidateId }, "实体候选"));
-    links.append(link({
+    const translations = translationsFor(volume, occurrence, globalData);
+    const sourceBlock = sourceBlockFor(volume, occurrence);
+    const sourceExcerpt = sourceBlock && excerptNear(sourceBlock.text, occurrence.surface, occurrence.start, occurrence.end);
+    if (translations.length) {
+      const matches = [];
+      for (const row of translations) {
+        const excerpt = excerptNear(row.text, occurrence.surface, 0, 0, 78);
+        if (excerpt) matches.push(excerpt);
+      }
+      if (matches.length === 1) {
+        card.append(el("p", "shj-catalog__translation-label", "译文节选（名称所在语境）"));
+        card.append(el("p", "shj-catalog__translation", readableText(matches[0])));
+      } else card.append(el("p", "shj-catalog__policy", "对应译文中没有唯一相同词形；下方显示原文位置附近，不猜异名。"));
+    } else card.append(el("p", "shj-catalog__policy", "本处还没有确认对应的译文；下方显示原文位置附近的上下文。"));
+    if (sourceExcerpt) {
+      card.append(el("p", "shj-catalog__translation-label", "原文上下文节选"));
+      card.append(el("blockquote", "shj-catalog__quote", readableText(sourceExcerpt)));
+    } else card.append(el("p", "shj-catalog__policy", "原文位置暂时无法显示，请进入读本查看。"));
+    card.append(link({
       type: "reader",
       volumeId: volume.volumeId,
       blockKey: [volume.volumeId, occurrence.blockOrder, occurrence.sourceLayer || "original"].join(":")
-    }, `读本原文块 ${occurrence.blockOrder}`));
-    card.append(links);
+    }, "在本篇阅读原文和对应译文"));
+    const links = el("div", "shj-catalog__links");
+    const more = el("details", "shj-catalog__identity-details");
+    more.append(el("summary", null, "分类与身份资料"));
+    const categoryLabels = { supported: "已归入此类", candidate: "可能属于此类", unresolved: "类别尚未确定", pending: "类别仍待确认", rejected: "未归入此类", rule_boundary_flag: "分类边界尚不明确" };
+    more.append(el("p", "shj-catalog__status", "分类记录：" + (categoryLabels[overlay.categoryStatus] || "状态未提供")));
+    if (overlay.rationale) more.append(el("p", "shj-catalog__reason", overlay.rationale));
+    more.append(el("p", "shj-catalog__location", "来源：" + volumeLabel(volume)));
+    if (entry) links.append(link({ type: "entry", volumeId: volume.volumeId, id: entry.entryId }, "整理条目"));
+    links.append(link({ type: "candidate", volumeId: volume.volumeId, id: occurrence.entityCandidateId }, "实体候选"));
+    more.append(links);
     const candidate = volume.p3.entityCandidates.find(row => row.entityCandidateId === occurrence.entityCandidateId);
-    if (candidate) card.append(el("p", "shj-catalog__status", "原始候选状态：" + (CANDIDATE_STATUS[candidate.identityStatus] || candidate.identityStatus || "未提供")));
+    if (candidate) more.append(el("p", "shj-catalog__status", "身份记录：" + (CANDIDATE_STATUS[candidate.identityStatus] || "状态未提供")));
     const canonical = candidate && globalData.identityOverlay.canonicalEntities.find(row => row.candidateIds.includes(candidate.entityCandidateId));
-    if (canonical) card.append(link({ type: "entity", id: canonical.entityId }, "已归并整理实体 " + canonical.entityId));
+    if (canonical) more.append(link({ type: "entity", id: canonical.entityId }, "查看跨篇身份整理"));
+    card.append(more);
     return card;
+  }
+
+  function addPreviews(parent, categoryId, context, globalData, cleanups) {
+    const section = el("section", "shj-catalog__featured");
+    section.append(el("h2", null, "从相关内容开始逛"));
+    const cards = el("div", "shj-catalog__preview-grid");
+    const status = el("p", "shj-catalog__empty", "正在查找相关内容…");
+    const moreButton = el("button", "shj-catalog__more", "再看一些");
+    moreButton.type = "button";
+    moreButton.disabled = true;
+    section.append(cards, status, moreButton);
+    parent.append(section);
+    const refs = SHJ.bootstrap.volumes;
+    const state = { volumeIndex: 0, occurrenceIndex: 0, volume: null, overlays: null, loading: false };
+    const pageSize = 6;
+    const volumeLimit = 6;
+    async function loadNext() {
+      if (state.loading || context.signal.aborted) return;
+      state.loading = true;
+      moreButton.disabled = true;
+      moreButton.hidden = false;
+      moreButton.textContent = "正在读取…";
+      status.textContent = "正在查找后续内容…";
+      let added = 0;
+      let scanned = 0;
+      let failed = false;
+      while (added < pageSize && scanned < volumeLimit && state.volumeIndex < refs.length && !context.signal.aborted) {
+        if (!state.volume) {
+          const failedRef = refs[state.volumeIndex];
+          try {
+            state.volume = await context.data.getVolume(failedRef.volumeId, { signal: context.signal });
+            state.overlays = new Map(state.volume.p3.categoryOverlay.filter(row => (row.categoryIds || []).includes(categoryId)).map(row => [row.occurrenceId, row]));
+          } catch (error) {
+            if (context.signal.aborted || error.name === "AbortError") break;
+            failed = true;
+            moreButton.textContent = "重试读取本篇";
+            status.textContent = volumeLabel(failedRef) + "暂时无法读取；已显示内容仍保留。再次点击可重试。";
+            break;
+          }
+        }
+        const occurrences = state.volume.p3.occurrences;
+        while (state.occurrenceIndex < occurrences.length && added < pageSize) {
+          const occurrence = occurrences[state.occurrenceIndex++];
+          const overlay = state.overlays.get(occurrence.occurrenceId);
+          if (!overlay) continue;
+          cards.append(renderOccurrence(state.volume, overlay, occurrence, globalData));
+          added++;
+        }
+        if (state.occurrenceIndex >= occurrences.length) {
+          state.volumeIndex++;
+          state.occurrenceIndex = 0;
+          state.volume = null;
+          state.overlays = null;
+          scanned++;
+        }
+      }
+      if (context.signal.aborted) return;
+      if (failed) {
+        moreButton.hidden = false;
+        moreButton.disabled = false;
+        state.loading = false;
+        return;
+      }
+      const done = state.volumeIndex >= refs.length;
+      moreButton.hidden = done;
+      moreButton.disabled = false;
+      moreButton.textContent = "再看一些";
+      if (done) status.textContent = cards.childElementCount ? "已看到本类目前收录的相关内容。" : "目前没有找到可展示的内容。";
+      else if (added === 0) status.textContent = "这几篇暂时没有相关内容，可以继续往后看。";
+      else status.textContent = "还可以继续浏览后面的内容。";
+      state.loading = false;
+    }
+    const onMore = () => { void loadNext(); };
+    moreButton.addEventListener("click", onMore);
+    cleanups.push(() => moreButton.removeEventListener("click", onMore));
+    void loadNext();
   }
 
   function createLazyVolumeGroup(volumeRef, context, globalData, predicate, emptyText, cleanups) {
@@ -1647,25 +1997,23 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const summary = el("summary");
     summary.dataset.action = "load-volume";
     summary.dataset.volumeId = volumeRef.volumeId;
-    summary.append(document.createTextNode(volumeLabel(volumeRef) + " · 按需载入"));
+    summary.append(document.createTextNode(volumeLabel(volumeRef)));
     const contents = el("div", "shj-catalog__volume-content");
-    contents.append(el("p", "shj-catalog__empty", "展开后仅读取本篇并回接逐出现分类记录。"));
+    contents.append(el("p", "shj-catalog__empty", "展开查看本篇相关内容。"));
     group.append(summary, contents);
     let state = "idle";
     const loadGroup = async () => {
       if (state === "loading" || state === "loaded" || context.signal.aborted) return;
       state = "loading";
       group.dataset.loadState = state;
-      contents.replaceChildren(el("p", "shj-catalog__empty", "正在读取本篇分类记录…"));
+      contents.replaceChildren(el("p", "shj-catalog__empty", "正在打开本篇…"));
       try {
         const volume = await context.data.getVolume(volumeRef.volumeId, { signal: context.signal });
         if (context.signal.aborted) return;
         const rows = volume.p3.categoryOverlay.filter(predicate);
         const byOccurrence = new Map(rows.map(row => [row.occurrenceId, row]));
         const matches = volume.p3.occurrences.filter(row => byOccurrence.has(row.occurrenceId));
-        summary.textContent = volumeLabel(volume) + " · " + matches.length + " 项";
-        summary.dataset.itemCount = String(matches.length);
-        group.dataset.itemCount = String(matches.length);
+        summary.textContent = volumeLabel(volume);
         const content = document.createDocumentFragment();
         content.append(link({ type: "reader", volumeId: volume.volumeId }, "打开本篇读本"));
         if (!matches.length) content.append(el("p", "shj-catalog__empty", emptyText));
@@ -1677,7 +2025,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
         if (context.signal.aborted) return;
         state = "error";
         group.dataset.loadState = state;
-        const message = el("p", "shj-catalog__empty", "本篇读取失败：" + (error && error.message || "未知错误"));
+        const message = el("p", "shj-catalog__empty", "本篇暂时无法读取，已显示内容仍保留。可以重试。 ");
         const retry = el("button", "shj-catalog__retry", "重试读取本篇");
         const onRetry = () => loadGroup();
         retry.addEventListener("click", onRetry);
@@ -1697,19 +2045,21 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     const selectedId = context.target.category ? context.target.category.categoryId : null;
     const selected = selectedId ? categories.find(row => row.categoryId === selectedId) : null;
     const root = el("div", "shj-catalog");
+    const catalogCleanups = [];
     if (selectedId) root.dataset.categoryId = selectedId;
     root.append(el("p", "shj-catalog__eyebrow", "十二类录册 · 十八篇"));
     const title = el("h1", "shj-catalog__title", selected ? catalogueName(selected) : "分类册");
     root.append(title);
-    if (selected && selected.categoryId === "deity.divine") {
-      root.append(el("p", "shj-catalog__definition", "分类：" + selected.label));
-    }
     renderCategoryLinks(root, categories, selectedId);
     if (selected) {
-      if (selected.definition) root.append(el("p", "shj-catalog__definition", selected.definition));
-      root.append(el("p", "shj-catalog__policy", "按已有分类判定展示适用出现；候选和未定状态仍保留，不按同名合并。卡片中的身份状态是原始候选状态，正式身份复核见实体候选详情。"));
+      addPreviews(root, selected.categoryId, context, globalData, catalogCleanups);
+      if (selected.definition) {
+        const definition = el("details", "shj-catalog__definition-details");
+        definition.append(el("summary", null, "本类说明"), el("p", "shj-catalog__definition", selected.definition));
+        root.append(definition);
+      }
     } else {
-      root.append(el("p", "shj-catalog__policy", "选择类别查看该类在十八篇中的适用条目。目录依据已确认的分类规范；各项按逐出现判定展示。"));
+      addPreviews(root, "animal.creature", context, globalData, catalogCleanups);
       const summaries = el("div", "shj-catalog__overview");
       for (const category of categories) {
         const card = el("article", "shj-catalog__category");
@@ -1722,10 +2072,10 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
       root.append(summaries);
       const unresolved = el("details", "shj-catalog__unresolved");
       unresolved.dataset.categoryId = "unresolved";
-      const unresolvedSummary = el("summary", null, "尚未确定类别 · 尚未归入十二类");
+      const unresolvedSummary = el("summary", null, "类别尚待确认的内容");
       unresolvedSummary.dataset.action = "show-unresolved";
       unresolved.append(unresolvedSummary);
-      unresolved.append(el("p", "shj-catalog__policy", "此处收录尚未确定类别的逐出现记录，保留其原分类状态、上下文与理由；不替它指定类别。"));
+      unresolved.append(el("p", "shj-catalog__policy", "这些内容暂时无法确定类别，仍按原样保留。"));
       const unresolvedVolumes = el("div", "shj-catalog__results");
       const cleanupList = [];
       for (const volumeRef of SHJ.bootstrap.volumes) {
@@ -1734,7 +2084,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
           context,
           globalData,
           row => !(row.categoryIds || []).length,
-          "本篇没有尚未确定类别的记录。",
+          "这篇暂时没有类别未定的内容。",
           cleanupList
         ));
       }
@@ -1744,26 +2094,26 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
     }
     if (selected) {
       const results = el("section", "shj-catalog__results");
-      const groupCleanups = [];
       for (const volumeRef of SHJ.bootstrap.volumes) {
         results.append(createLazyVolumeGroup(
           volumeRef,
           context,
           globalData,
           row => (row.categoryIds || []).includes(selected.categoryId),
-          "本篇没有已记录的该类别适用出现。",
-          groupCleanups
+          "这篇暂时没有归入此类的内容。",
+          catalogCleanups
         ));
       }
-      root.append(el("p", "shj-catalog__count", "十八篇按篇列出；展开任一篇时才读取该篇并显示逐出现记录。"));
-      root.append(results);
+      const byVolume = el("details", "shj-catalog__browse-by-volume");
+      byVolume.append(el("summary", null, "按篇浏览全部内容"));
+      byVolume.append(el("p", "shj-catalog__policy", "也可以按篇打开经文中的相关内容。"), results);
+      root.append(byVolume);
       container.replaceChildren(root);
       document.title = catalogueName(selected) + " · 山海经";
-      return () => {
-        for (const cleanup of groupCleanups) cleanup();
-        container.replaceChildren();
-      };
+      context.onCleanup(() => catalogCleanups.forEach(cleanup => cleanup()));
+      return () => container.replaceChildren();
     }
+    context.onCleanup(() => catalogCleanups.forEach(cleanup => cleanup()));
     container.replaceChildren(root);
     document.title = (selected ? selected.label : "分类册") + " · 山海经";
     return () => container.replaceChildren();
@@ -1773,7 +2123,7 @@ code, .id-value { font-family: Consolas, "SFMono-Regular", monospace; font-size:
 })();
 </script>
   <script src="output/site-assets/search-service.js?v=100c5ea33136128c" data-feature="search"></script>
-  <script src="output/site-assets/search.js?v=ff5c8de04a41cc7d" data-feature="search"></script>
-  <script src="output/site-assets/map.js?v=27d13827c1411022" data-feature="map"></script>
+  <script src="output/site-assets/search.js?v=87a8d3c7c7288347" data-feature="search"></script>
+  <script src="output/site-assets/map.js?v=0500d236d995becf" data-feature="map"></script>
 </body>
 </html>

@@ -4,11 +4,11 @@
   const SHJ = window.SHJ;
   const SERVICE = window.SHJSearch;
   const TYPE_LABELS = {
-    occurrence: "对象出现",
-    entity: "整理实体",
+    occurrence: "经文中的相关条目",
+    entity: "跨篇整理记录",
     original: "原文",
-    translation: "原译文",
-    note: "原注释"
+    translation: "已有译文",
+    note: "原有注释"
   };
   const STATUS_LABELS = {
     supported: "分类判定支持",
@@ -107,37 +107,47 @@
     const heading = el("h2", "shj-search__result-title");
     const main = el("a");
     main.href = SHJ.linkTo(row.target);
-    main.textContent = row.title || row.id;
+    main.textContent = (row.title || row.id).replace(/〔字形图:[^〕]+〕/g, "（原书嵌字图）");
     heading.append(main);
     article.append(heading);
-    article.append(el("p", "shj-search__result-kind", TYPE_LABELS[row.type] || row.type));
+    article.append(el("p", "shj-search__result-kind", TYPE_LABELS[row.type] || "相关内容"));
     const sourceVolumes = row.type === "entity" ? row.volumeIds : [row.volumeId];
     if (sourceVolumes && sourceVolumes.length) {
       const titles = sourceVolumes.map(id => volumeOptions().find(item => item.value === id)?.label || id);
       article.append(el("p", "shj-search__source", [...new Set(titles)].join("、")));
     }
-    if (row.type === "occurrence") article.append(el("p", "shj-search__surface", "原文出现：" + (row.surface || row.text || "")));
-    if (row.rawIdentityStatus) article.append(el("p", "shj-search__raw-status", "原始候选状态：" + labelFor(RAW_STATUS_LABELS, row.rawIdentityStatus)));
+    if (row.sourceExcerpt) article.append(el("blockquote", "shj-search__excerpt", row.sourceExcerpt.replace(/〔字形图:[^〕]+〕/g, "（此处有原书嵌字图，可在读本查看）")));
+    const categories = row.categoryIds || [];
+    const categoryStatuses = row.categoryStatuses || [];
+    const identityStatuses = row.identityStatuses || [];
+    if (categories.includes("none") || categoryStatuses.some(value => ["unresolved", "pending", "rule_boundary_flag"].includes(value))) {
+      article.append(el("p", "shj-search__plain-status", "这条内容的类别尚未确认。"));
+    } else if (categoryStatuses.includes("candidate")) article.append(el("p", "shj-search__plain-status", "这条内容与所选类别的关系仍在判断。"));
+    if (identityStatuses.some(value => ["unresolved", "pending", "ambiguous"].includes(value))) article.append(el("p", "shj-search__plain-status", "这条内容的身份仍有未确定之处。"));
+    if (row.rawIdentityStatus === "unmerged_candidate") article.append(el("p", "shj-search__plain-status", "这条记录尚未与其他记录归并。"));
+    if ((row.rawIdentityStatuses || []).includes("unmerged_candidate")) article.append(el("p", "shj-search__plain-status", "其中有成员尚未与其他记录归并。"));
+    const sourceDetails = el("details", "shj-search__source-details");
+    sourceDetails.append(el("summary", null, "来源与整理说明"));
+    if (row.rawIdentityStatus) sourceDetails.append(el("p", "shj-search__raw-status", "原始候选状态：" + labelFor(RAW_STATUS_LABELS, row.rawIdentityStatus)));
     if (row.rawIdentityStatuses && row.rawIdentityStatuses.length) {
       const raw = el("p", "shj-search__raw-status", "成员原始候选状态：");
       addStatusTags(raw, row.rawIdentityStatuses);
-      article.append(raw);
+      sourceDetails.append(raw);
     }
-    if (row.type !== "entity" && (row.categoryIds.length || row.categoryStatuses.length)) {
+    if (row.type !== "entity" && (categories.length || categoryStatuses.length)) {
       const states = el("div", "shj-search__states");
-      for (const id of row.categoryIds) states.append(el("span", "shj-search__tag", id === "none" ? "尚未确定类别" : (SHJ.bootstrap.categories.find(item => item.categoryId === id)?.label || id)));
-      addStatusTags(states, row.categoryStatuses);
-      article.append(states);
+      for (const id of categories) states.append(el("span", "shj-search__tag", id === "none" ? "尚未确定类别" : (SHJ.bootstrap.categories.find(item => item.categoryId === id)?.label || id)));
+      addStatusTags(states, categoryStatuses);
+      sourceDetails.append(states);
     }
-    if (row.identityStatuses.length) {
+    if (identityStatuses.length) {
       const states = el("div", "shj-search__states");
-      addStatusTags(states, row.identityStatuses);
-      article.append(states);
+      addStatusTags(states, identityStatuses);
+      sourceDetails.append(states);
     }
-    if (row.sourceExcerpt) article.append(el("blockquote", "shj-search__excerpt", row.sourceExcerpt));
     if (row.type === "entity") {
-      addFacetAssertions(article, "成员分类", row.categoryAssertions || [], "category");
-      addFacetAssertions(article, "成员身份", row.identityAssertions || [], "identity");
+      addFacetAssertions(sourceDetails, "成员分类", row.categoryAssertions || [], "category");
+      addFacetAssertions(sourceDetails, "成员身份", row.identityAssertions || [], "identity");
     }
     if (row.links && row.links.length) {
       const links = el("div", "shj-search__links");
@@ -146,8 +156,9 @@
         anchor.href = SHJ.linkTo(item.target);
         links.append(anchor);
       }
-      article.append(links);
+      sourceDetails.append(links);
     }
+    if (sourceDetails.childElementCount > 1) article.append(sourceDetails);
     return article;
   }
 
@@ -157,7 +168,7 @@
     root.dataset.state = "idle";
     const title = el("h1", "shj-search__title", "检索与浏览");
     root.append(title);
-    root.append(el("p", "shj-search__intro", "按原文、译文、注释、文本出现与已有整理实体检索。匹配使用原始出现词形与原文块文字；身份理由和分类理由不作为经文内容。多个已记录状态会并列保留；正文块没有推定的类别或身份。整理实体名称只取已有成员词形，不代表新增别名。"));
+    root.append(el("p", "shj-search__intro", "输入一个名字或词语即可查找原文、译文和相关记录。"));
 
     const form = el("form", "shj-search__form");
     const queryField = el("div", "shj-search__field");
@@ -171,6 +182,16 @@
     queryField.append(queryLabel, queryInput);
     form.append(queryField);
 
+    const examples = el("div", "shj-search__examples");
+    examples.append(el("span", null, "试试："));
+    for (const word of ["精卫", "青丘山", "夸父"]) {
+      const button = el("button", "shj-search__example", word);
+      button.type = "button";
+      button.addEventListener("click", () => { queryInput.value = word; void runSearch(1, true); });
+      examples.append(button);
+    }
+    form.append(examples);
+
     const volumeSelect = makeMultiSelect("shj-search-volumes", "篇章（可多选）", volumeOptions(), uiState.filters.volumeIds || []);
     const categorySelect = makeMultiSelect("shj-search-categories", "类别（可多选）", categoryOptions(), uiState.filters.categories || []);
     const typeSelect = makeMultiSelect("shj-search-types", "记录类型（可多选）", [
@@ -183,7 +204,10 @@
       ["canonical", "已整理为实体"], ["same_entity", "身份复核为同一指称"], ["distinct_entities", "身份复核为不同指称"],
       ["unresolved", "身份尚未确定"], ["unmerged_candidate", "尚未归入整理实体"], ["non_physical", "记录为非个体或地点实体"]
     ].map(([value, label]) => ({ value, label })), uiState.filters.identityStatuses || []);
-    for (const item of [volumeSelect, categorySelect, typeSelect, categoryStatusSelect, identityStatusSelect]) form.append(item.wrapper);
+    const advanced = el("details", "shj-search__advanced");
+    advanced.append(el("summary", null, "更多筛选（篇章、类别与记录状态）"));
+    const advancedFields = el("div", "shj-search__advanced-fields");
+    for (const item of [volumeSelect, categorySelect, typeSelect, categoryStatusSelect, identityStatusSelect]) advancedFields.append(item.wrapper);
 
     const sorting = el("div", "shj-search__field");
     const sortLabel = el("label", null, "排序");
@@ -194,7 +218,7 @@
     }
     sortLabel.htmlFor = sortSelect.id;
     sorting.append(sortLabel, sortSelect);
-    form.append(sorting);
+    advancedFields.append(sorting);
 
     const pageSizeField = el("div", "shj-search__field");
     const pageSizeLabel = el("label", null, "每页结果");
@@ -205,7 +229,9 @@
     }
     pageSizeLabel.htmlFor = pageSize.id;
     pageSizeField.append(pageSizeLabel, pageSize);
-    form.append(pageSizeField);
+    advancedFields.append(pageSizeField);
+    advanced.append(advancedFields);
+    form.append(advanced);
 
     const actions = el("div", "shj-search__actions");
     const submit = el("button", "shj-search__submit", "检索 / 浏览"); submit.type = "submit";
@@ -213,7 +239,7 @@
     actions.append(submit, clear);
     form.append(actions);
     root.append(form);
-    const status = el("p", "shj-search__status", "提交后开始读取十八篇索引；空表单可浏览全部记录。");
+    const status = el("p", "shj-search__status", "输入关键词后搜索，也可以展开更多筛选。空白搜索会浏览全部记录。");
     status.setAttribute("aria-live", "polite");
     root.append(status);
     const resultsHost = el("div", "shj-search__results");
@@ -270,9 +296,19 @@
         }, { signal: controller.signal });
         if (!isCurrent()) return;
         root.dataset.state = "ready";
-        status.textContent = `找到 ${found.total} 项 · 第 ${found.page}/${found.totalPages} 页 · 索引覆盖 ${found.indexCounts.volumes} 篇、${found.indexCounts.records} 条记录。`;
-        if (found.metadataFiltersApplied) status.append(document.createTextNode(" 类别/状态筛选仅作用于对象出现和整理实体；正文块不推定类别或身份。"));
-        if (!found.total) resultsHost.append(el("p", "shj-search__empty", "没有符合条件的结果。可清空部分筛选后再试。"));
+        status.textContent = `找到 ${found.total} 项 · 第 ${found.page}/${found.totalPages} 页。`;
+        const scope = el("details", "shj-search__scope");
+        scope.append(el("summary", null, "本次检索范围与整理状态"));
+        scope.append(el("p", null, `索引覆盖 ${found.indexCounts.volumes} 篇、${found.indexCounts.records} 条记录。原文块不推定类别或身份；类别与身份筛选仅作用于对象记录。`));
+        status.append(scope);
+        if (!found.total) {
+          resultsHost.append(el("p", "shj-search__empty", "没有找到相关内容。试试较短的关键词，或清除筛选。"));
+          const emptyActions = el("div", "shj-search__actions");
+          const clearEmpty = el("button", "shj-search__clear", "清除筛选并重试"); clearEmpty.type = "button"; clearEmpty.addEventListener("click", onClear);
+          const browseCatalog = el("a", "action-link secondary", "逛分类册"); browseCatalog.href = SHJ.linkTo({ type: "catalog", categoryId: "animal.creature" });
+          emptyActions.append(clearEmpty, browseCatalog);
+          resultsHost.append(emptyActions);
+        }
         else {
           const list = el("div", "shj-search__list");
           for (const row of found.results) list.append(renderResult(row));
