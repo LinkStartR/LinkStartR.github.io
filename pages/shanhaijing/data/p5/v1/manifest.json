@@ -15,9 +15,9 @@
     "p1PendingReview": 0,
     "p1ReviewAccepted": 331,
     "p1TotalBlocks": 5212,
-    "p3EntityCandidates": 4671,
-    "p3Entries": 4671,
-    "p3Occurrences": 4671,
+    "p3EntityCandidates": 4670,
+    "p3Entries": 4670,
+    "p3Occurrences": 4670,
     "p4BlockReviews": 839,
     "p4EndpointStatuses": {
       "ambiguous": 29,
@@ -40,7 +40,7 @@
   "unresolved": {
     "p1GlyphUnresolvedReferences": 796,
     "p1PendingReview": 0,
-    "p3IdentityMaterialUnresolvedTasks": 268,
+    "p3IdentityMaterialUnresolvedTasks": 269,
     "p3IdentityPendingTasks": 0,
     "p4UnresolvedEndpoints": 321
   },
@@ -978,8 +978,8 @@
       "sha256": "ff92d252c449b89f965a04f3fd6cebf0d3814fbda61a91de306f55c65eca7e8c"
     },
     "global.json": {
-      "bytes": 2785898,
-      "sha256": "ac35ebc009ca9d6e820bd8aa93de8f38c3b413775ff28b6790bb80a2aa7217f6"
+      "bytes": 2787054,
+      "sha256": "075eec9ede6667dc06ac1231572dabde5c034bc21312a518171c122ef32ec2c9"
     },
     "volumes/fangtao-v01.json": {
       "bytes": 582839,
@@ -1002,8 +1002,8 @@
       "sha256": "3a0210036d3d113a8ad82f6526af750de484c806f845daa9e55ccd0514df4de0"
     },
     "volumes/fangtao-v06.json": {
-      "bytes": 275768,
-      "sha256": "01f58a4a91151f6f9bdbd8b6a270f6651e5732a47b865359bb5e12371a9d9e4b"
+      "bytes": 274696,
+      "sha256": "f87e4dcb648d452d96715e703a969e22cc2ae47c5357e35e35c5c8218ae8ef5e"
     },
     "volumes/fangtao-v07.json": {
       "bytes": 250098,
@@ -1026,16 +1026,16 @@
       "sha256": "2203d6929e6883be9260d8512c23b70ca4dc13fb1e71e6842e6daaa92ab311c4"
     },
     "volumes/fangtao-v12.json": {
-      "bytes": 217288,
-      "sha256": "48270d1fb7f4d1fb43cc2853c8b843ce2162dc6655549936c47bfdb7f445c340"
+      "bytes": 217244,
+      "sha256": "a1a10693f7bbc3b7345daddb3c6ce08bcea3a56ae2d1fbb7e28c13568cc0b10e"
     },
     "volumes/fangtao-v13.json": {
       "bytes": 124471,
       "sha256": "c5b08e989e11d12c8e4859c368d3f599d10449bb6d8ff378d738307ad5a8cc4f"
     },
     "volumes/fangtao-v14.json": {
-      "bytes": 389119,
-      "sha256": "a93be4a964ea985542df0b720a4016729aa14f4455005ab7434fc6ed720795dc"
+      "bytes": 389470,
+      "sha256": "26fa43978b7dd82a577de72eb96872d95e27ce756bd546b9a606f81f3449e825"
     },
     "volumes/fangtao-v15.json": {
       "bytes": 419132,
@@ -1056,8 +1056,8 @@
   },
   "inputVersions": {
     "p1": "v1.0.4",
-    "p3Graph": "v1.3",
-    "p3Identity": "v1.2",
-    "p4": "v1.1"
+    "p3Graph": "v1.3+correction-20261029",
+    "p3Identity": "v1.2+correction-20261029",
+    "p4": "v1.1+correction-20261029"
   }
 }
